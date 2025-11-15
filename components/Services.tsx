@@ -8,7 +8,7 @@ const services = [
         </svg>
     ),
     title: 'Nunți',
-    description: 'De la întâmpinarea oaspeților la dansul mirilor, creăm un program complet ce aduce emoție și autenticitate nunții voastre, transformând ziua cea mare într-o poveste memorabilă.',
+    description: 'De la întâmpinarea oaspeților la tradiții, creăm un program complet ce aduce emoție și autenticitate nunții voastre, transformând ziua cea mare într-o poveste memorabilă.',
   },
   {
     icon: (

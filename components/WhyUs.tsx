@@ -76,7 +76,7 @@ const WhyUs: React.FC = () => {
           observer.unobserve(entry.target);
         }
       },
-      { threshold: 0.2 }
+      { threshold: 0.5 } // Trigger when 50% of the component is visible
     );
 
     const currentRef = sectionRef.current;
