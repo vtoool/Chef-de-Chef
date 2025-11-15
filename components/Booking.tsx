@@ -110,7 +110,7 @@ const BookingComponent: React.FC = () => {
   return (
     <section id="book" className="py-12 md:py-16 bg-white">
       <div className="container mx-auto max-w-6xl px-6">
-        <h2 className="font-serif text-2xl md:text-3xl font-bold text-brand-brown-dark mb-3 text-center">Rezervă Ansamblul</h2>
+        <h2 className="font-serif text-2xl md:text-3xl font-bold text-brand-brown-dark mb-3 text-center">Rezervă Acum</h2>
         <p className="text-brand-brown-light max-w-2xl mx-auto mb-10 text-center">
           Verificați disponibilitatea și trimiteți o cerere. Vă contactăm rapid pentru confirmare și detalii.
         </p>
