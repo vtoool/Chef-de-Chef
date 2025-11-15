@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { supabase } from '../../lib/supabaseClient';
 
 const Logo = () => (
     <div className="flex flex-col items-center space-y-2 mb-8">
@@ -14,27 +16,28 @@ export default function AdminLoginPage() {
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+    const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setError('');
 
-        // Placeholder for future authentication logic (e.g., with Supabase Auth)
-        console.log('Attempting login with:', { email, password });
-        
-        // Simulate an API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // This is a mock authentication check
-        if (email === 'admin@chefdechef.md' && password === 'admin') {
-            alert('Login successful! (Placeholder)\nRedirecting to dashboard...');
-            // In a real app, you would use Next.js Router to redirect:
-            // import { useRouter } from 'next/navigation';
-            // const router = useRouter();
-            // router.push('/admin/dashboard');
+        if (!supabase) {
+            setError('Clientul Supabase nu este disponibil.');
+            setIsLoading(false);
+            return;
+        }
+
+        const { error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        });
+
+        if (error) {
+            setError(error.message === 'Invalid login credentials' ? 'Email sau parolă incorectă.' : error.message);
         } else {
-            setError('Email sau parolă incorectă.');
+            router.push('/admin/dashboard');
         }
 
         setIsLoading(false);
