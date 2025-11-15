@@ -2,10 +2,13 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { format } from 'date-fns';
+import { ro } from 'date-fns/locale';
 import { supabase } from '../../../lib/supabaseClient';
 import { Booking } from '../../../types';
+import AdminCalendar from './AdminCalendar';
 
-// Helper components defined inside the main component or in a separate file if they grow
+// Helper components
 const Logo = () => (
     <div className="flex items-center space-x-2">
         <img src="https://scontent.fkiv7-1.fna.fbcdn.net/v/t39.30808-6/456236959_829273562675263_5934463475455699464_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=-FwFg2FB9XoQ7kNvwE_khUg&_nc_oc=AdksXFMIZCuyZ_qiRyTobtMYjXbrpMRUTfB_UxWQviL9dwKY2JSbGc9mZ4fG0Jd1PDDofFzdHDXrwb4BgViofAG8&_nc_zt=23&_nc_ht=scontent.fkiv7-1.fna&_nc_gid=M9t8gcOoEteEPolC2SuR9Q&oh=00_AfhhmmqUYoveeMuTaQdkbvqE973TIqDyPsIaCJ4E-mYWAQ&oe=691DA8FB" alt="Chef de Chef Logo" className="h-10 w-10 rounded-full object-cover" />
@@ -124,7 +127,7 @@ const Toast: React.FC<{ message: string; type: 'success' | 'error'; onClose: () 
         return () => clearTimeout(timer);
     }, [onClose]);
 
-    const baseClasses = 'fixed bottom-5 right-5 p-4 rounded-lg shadow-lg text-white font-semibold transition-all duration-300';
+    const baseClasses = 'fixed bottom-5 right-5 p-4 rounded-lg shadow-lg text-white font-semibold transition-all duration-300 z-50';
     const typeClasses = type === 'success' ? 'bg-green-600' : 'bg-red-600';
 
     return <div className={`${baseClasses} ${typeClasses}`}>{message}</div>;
@@ -137,6 +140,7 @@ export default function AdminDashboardPage() {
     const [sortConfig, setSortConfig] = useState<{ key: keyof Booking; direction: 'asc' | 'desc' }>({ key: 'event_date', direction: 'asc' });
     const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
     const [toast, setToast] = useState<{ message: string; type: 'success' | 'error'; visible: boolean }>({ message: '', type: 'success', visible: false });
+    const [filterDate, setFilterDate] = useState<Date | null>(null);
     const router = useRouter();
 
     const fetchBookings = useCallback(async () => {
@@ -179,7 +183,6 @@ export default function AdminDashboardPage() {
     const handleSaveBooking = async (updatedBooking: Booking) => {
         if (!supabase || !updatedBooking.id) return;
         
-        // Create an object with only the fields that are actually editable in the modal
         const updateData = {
             status: updatedBooking.status,
             price: updatedBooking.price ? Number(updatedBooking.price) : null,
@@ -197,13 +200,18 @@ export default function AdminDashboardPage() {
             showToast(`Eroare la salvare: ${error.message}`, 'error');
         } else {
             showToast('Modificări salvate cu succes!', 'success');
-             // Update the local state to reflect the change immediately for a faster UI response
             setBookings(prevBookings => 
                 prevBookings.map(b => b.id === updatedBooking.id ? { ...b, ...updateData } : b)
             );
-            setSelectedBooking(null); // Close modal on success
+            setSelectedBooking(null);
         }
     };
+
+    const confirmedDates = useMemo(() => {
+        return bookings
+            .filter(b => b.status === 'confirmed')
+            .map(b => new Date(b.event_date + 'T00:00:00Z'));
+    }, [bookings]);
 
     const filteredAndSortedBookings = useMemo(() => {
         let filtered = bookings.filter(b =>
@@ -211,6 +219,11 @@ export default function AdminDashboardPage() {
             b.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
             b.phone.includes(searchQuery)
         );
+
+        if (filterDate) {
+            const formattedFilterDate = format(filterDate, 'yyyy-MM-dd');
+            filtered = filtered.filter(b => b.event_date === formattedFilterDate);
+        }
 
         return filtered.sort((a, b) => {
             const aValue = a[sortConfig.key];
@@ -223,7 +236,7 @@ export default function AdminDashboardPage() {
             if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
             return 0;
         });
-    }, [bookings, searchQuery, sortConfig]);
+    }, [bookings, searchQuery, sortConfig, filterDate]);
 
     const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const [key, direction] = e.target.value.split('-');
@@ -245,83 +258,108 @@ export default function AdminDashboardPage() {
             <main>
                 <h1 className="text-2xl md:text-3xl font-bold text-brand-cream mb-6">Dashboard Rezervări</h1>
 
-                <div className="flex flex-col sm:flex-row gap-4 mb-6">
-                    <input
-                        type="text"
-                        placeholder="Caută după nume, email, telefon..."
-                        value={searchQuery}
-                        onChange={e => setSearchQuery(e.target.value)}
-                        className="w-full sm:w-1/2 lg:w-1/3 p-2 bg-brand-brown-light/50 text-white border border-brand-brown-dark/80 rounded-md focus:ring-brand-orange focus:border-brand-orange"
-                    />
-                    <select
-                        onChange={handleSortChange}
-                        value={`${sortConfig.key}-${sortConfig.direction}`}
-                        className="w-full sm:w-auto p-2 bg-brand-brown-light/50 text-white border border-brand-brown-dark/80 rounded-md focus:ring-brand-orange focus:border-brand-orange"
-                    >
-                        <option value="event_date-asc">Data Eveniment (Crescător)</option>
-                        <option value="event_date-desc">Data Eveniment (Descrescător)</option>
-                        <option value="status-asc">Status (A-Z)</option>
-                        <option value="status-desc">Status (Z-A)</option>
-                    </select>
-                </div>
-
-                {isLoading ? (
-                    <div className="text-center text-brand-cream/80 py-10">Se încarcă rezervările...</div>
-                ) : filteredAndSortedBookings.length === 0 ? (
-                    <div className="text-center text-brand-cream/80 bg-brand-brown-light/50 p-6 rounded-lg">
-                        {searchQuery ? 'Nu am găsit nicio rezervare conform căutării.' : 'Nu există nicio rezervare înregistrată.'}
+                <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                    {/* Left Column: Calendar & Filters */}
+                    <div className="xl:col-span-1 flex flex-col gap-8">
+                        <div>
+                             <h2 className="text-xl font-bold text-brand-cream mb-4">Calendar Evenimente</h2>
+                             <AdminCalendar
+                                confirmedDates={confirmedDates}
+                                filterDate={filterDate}
+                                onDateClick={setFilterDate}
+                             />
+                        </div>
+                        <div>
+                            <h2 className="text-xl font-bold text-brand-cream mb-4">Filtre & Sortare</h2>
+                            <div className="flex flex-col gap-4 p-4 bg-brand-brown-light/30 rounded-lg">
+                                <input
+                                    type="text"
+                                    placeholder="Caută după nume, email, telefon..."
+                                    value={searchQuery}
+                                    onChange={e => setSearchQuery(e.target.value)}
+                                    className="w-full p-2 bg-brand-brown-light/50 text-white border border-brand-brown-dark/80 rounded-md focus:ring-brand-orange focus:border-brand-orange"
+                                />
+                                <select
+                                    onChange={handleSortChange}
+                                    value={`${sortConfig.key}-${sortConfig.direction}`}
+                                    className="w-full p-2 bg-brand-brown-light/50 text-white border border-brand-brown-dark/80 rounded-md focus:ring-brand-orange focus:border-brand-orange"
+                                >
+                                    <option value="event_date-asc">Data Eveniment (Crescător)</option>
+                                    <option value="event_date-desc">Data Eveniment (Descrescător)</option>
+                                    <option value="status-asc">Status (A-Z)</option>
+                                    <option value="status-desc">Status (Z-A)</option>
+                                </select>
+                                {filterDate && (
+                                    <div className="bg-brand-brown-light/50 p-3 rounded-md text-center">
+                                        <p className="text-sm">Afișez rezervări pentru: <span className="font-bold">{format(filterDate, 'd MMMM yyyy', { locale: ro })}</span></p>
+                                        <button onClick={() => setFilterDate(null)} className="text-xs text-brand-orange hover:underline mt-1">Șterge filtru</button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     </div>
-                ) : (
-                    <>
-                        {/* Desktop Table View */}
-                        <div className="hidden md:block overflow-x-auto bg-brand-brown-light/30 rounded-lg shadow-lg">
-                            <table className="w-full text-sm text-left text-brand-cream/90">
-                                <thead className="text-xs text-brand-cream uppercase bg-brand-brown-light/50">
-                                    <tr>
-                                        <th scope="col" className="px-6 py-3">Data Evenimentului</th>
-                                        <th scope="col" className="px-6 py-3">Nume Client</th>
-                                        <th scope="col" className="px-6 py-3">Tip Eveniment</th>
-                                        <th scope="col" className="px-6 py-3">Status</th>
-                                        <th scope="col" className="px-6 py-3"><span className="sr-only">Actions</span></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {filteredAndSortedBookings.map((booking) => (
-                                        <tr key={booking.id} className="border-b border-brand-brown-light/30 hover:bg-brand-brown-light/50">
-                                            <td className="px-6 py-4 font-medium">{booking.event_date}</td>
-                                            <td className="px-6 py-4">{booking.name}</td>
-                                            <td className="px-6 py-4">{booking.event_type}</td>
-                                            <td className="px-6 py-4"><StatusBadge status={booking.status} /></td>
-                                            <td className="px-6 py-4 text-right">
-                                                <button onClick={() => setSelectedBooking(booking)} className="font-medium text-brand-orange hover:underline">Detalii</button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
 
-                        {/* Mobile Card View */}
-                        <div className="block md:hidden space-y-4">
-                            {filteredAndSortedBookings.map((booking) => (
-                                <div key={booking.id} className="bg-brand-brown-light/50 p-4 rounded-lg shadow">
-                                    <div className="flex justify-between items-start">
-                                        <div>
-                                            <p className="font-bold text-lg text-white">{booking.name}</p>
-                                            <p className="text-sm text-brand-cream/80">{booking.event_date}</p>
-                                        </div>
-                                        <StatusBadge status={booking.status} />
-                                    </div>
-                                    <div className="mt-4 text-right">
-                                        <button onClick={() => setSelectedBooking(booking)} className="font-medium text-brand-orange hover:underline">
-                                            Vezi Detalii & Editează
-                                        </button>
-                                    </div>
+                    {/* Right Column: Bookings List */}
+                    <div className="xl:col-span-2">
+                        {isLoading ? (
+                            <div className="text-center text-brand-cream/80 py-10">Se încarcă rezervările...</div>
+                        ) : filteredAndSortedBookings.length === 0 ? (
+                            <div className="text-center text-brand-cream/80 bg-brand-brown-light/50 p-6 rounded-lg">
+                                {searchQuery || filterDate ? 'Nu am găsit nicio rezervare conform filtrelor.' : 'Nu există nicio rezervare înregistrată.'}
+                            </div>
+                        ) : (
+                            <>
+                                {/* Desktop Table View */}
+                                <div className="hidden md:block overflow-x-auto bg-brand-brown-light/30 rounded-lg shadow-lg">
+                                    <table className="w-full text-sm text-left text-brand-cream/90">
+                                        <thead className="text-xs text-brand-cream uppercase bg-brand-brown-light/50">
+                                            <tr>
+                                                <th scope="col" className="px-6 py-3">Data Evenimentului</th>
+                                                <th scope="col" className="px-6 py-3">Nume Client</th>
+                                                <th scope="col" className="px-6 py-3">Tip Eveniment</th>
+                                                <th scope="col" className="px-6 py-3">Status</th>
+                                                <th scope="col" className="px-6 py-3"><span className="sr-only">Actions</span></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {filteredAndSortedBookings.map((booking) => (
+                                                <tr key={booking.id} className="border-b border-brand-brown-light/30 hover:bg-brand-brown-light/50">
+                                                    <td className="px-6 py-4 font-medium">{booking.event_date}</td>
+                                                    <td className="px-6 py-4">{booking.name}</td>
+                                                    <td className="px-6 py-4">{booking.event_type}</td>
+                                                    <td className="px-6 py-4"><StatusBadge status={booking.status} /></td>
+                                                    <td className="px-6 py-4 text-right">
+                                                        <button onClick={() => setSelectedBooking(booking)} className="font-medium text-brand-orange hover:underline">Detalii</button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
                                 </div>
-                            ))}
-                        </div>
-                    </>
-                )}
+
+                                {/* Mobile Card View */}
+                                <div className="block md:hidden space-y-4">
+                                    {filteredAndSortedBookings.map((booking) => (
+                                        <div key={booking.id} className="bg-brand-brown-light/50 p-4 rounded-lg shadow">
+                                            <div className="flex justify-between items-start">
+                                                <div>
+                                                    <p className="font-bold text-lg text-white">{booking.name}</p>
+                                                    <p className="text-sm text-brand-cream/80">{booking.event_date}</p>
+                                                </div>
+                                                <StatusBadge status={booking.status} />
+                                            </div>
+                                            <div className="mt-4 text-right">
+                                                <button onClick={() => setSelectedBooking(booking)} className="font-medium text-brand-orange hover:underline">
+                                                    Vezi Detalii & Editează
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
             </main>
 
             {selectedBooking && (
