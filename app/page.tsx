@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Hero from '../components/Hero';
 import Services from '../components/Services';
+import WhyUs from '../components/WhyUs';
 import Gallery, { GalleryModal } from '../components/Gallery';
 import About from '../components/About';
 import Testimonials from '../components/Testimonials';
@@ -55,6 +56,9 @@ export default function HomePage() {
         <Hero />
         <AnimatedSection>
           <Services />
+        </AnimatedSection>
+        <AnimatedSection>
+          <WhyUs />
         </AnimatedSection>
         <AnimatedSection>
           <Gallery onImageSelect={setSelectedAsset} />
