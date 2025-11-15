@@ -47,9 +47,112 @@ The `.env.local` file is ignored by Git and will never be published.
 
 1.  Create a new project in Supabase.
 2.  Once the project is ready, navigate to the **SQL Editor**.
-3.  Open the `supabase_schema.sql` file from your project.
-4.  Copy the entire content of the file and paste it into the Supabase SQL Editor.
-5.  Click the **RUN** button. This script will automatically create all the necessary tables (`bookings`, `contact_messages`, etc.).
+3.  Copy the entire SQL script provided below.
+4.  Paste the script into the Supabase SQL Editor and click the **RUN** button. This will create all necessary tables, security policies, and sample data.
+
+```sql
+-- Chef de Chef Supabase Schema
+-- Version 1.0
+
+-- 1. Create bookings table
+CREATE TABLE public.bookings (
+    id uuid NOT NULL DEFAULT gen_random_uuid(),
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    event_date date NOT NULL,
+    event_type text NOT NULL,
+    location text NOT NULL,
+    name text NOT NULL,
+    email text NOT NULL,
+    phone text NOT NULL,
+    notes text NULL,
+    status text NOT NULL DEFAULT 'pending'::text,
+    CONSTRAINT bookings_pkey PRIMARY KEY (id)
+);
+COMMENT ON TABLE public.bookings IS 'Stores booking requests from the website.';
+
+-- 2. Create contact_messages table
+CREATE TABLE public.contact_messages (
+    id uuid NOT NULL DEFAULT gen_random_uuid(),
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    name text NOT NULL,
+    email text NOT NULL,
+    phone text NOT NULL,
+    message text NOT NULL,
+    CONSTRAINT contact_messages_pkey PRIMARY KEY (id)
+);
+COMMENT ON TABLE public.contact_messages IS 'Stores messages sent through the contact form.';
+
+-- 3. Create testimonials table
+CREATE TABLE public.testimonials (
+    id uuid NOT NULL DEFAULT gen_random_uuid(),
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    name text NOT NULL,
+    event_type text NOT NULL,
+    message text NOT NULL,
+    rating smallint NOT NULL,
+    CONSTRAINT testimonials_pkey PRIMARY KEY (id),
+    CONSTRAINT testimonials_rating_check CHECK (((rating >= 1) AND (rating <= 5)))
+);
+COMMENT ON TABLE public.testimonials IS 'Stores customer testimonials.';
+
+-- 4. Create media_assets table for gallery
+CREATE TABLE public.media_assets (
+    id uuid NOT NULL DEFAULT gen_random_uuid(),
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    type text NOT NULL DEFAULT 'image'::text,
+    url text NOT NULL,
+    thumbnail_url text NULL,
+    description text NULL,
+    CONSTRAINT media_assets_pkey PRIMARY KEY (id)
+);
+COMMENT ON TABLE public.media_assets IS 'Stores images and videos for the gallery.';
+
+
+-- 5. Set up Row Level Security (RLS) for all tables
+ALTER TABLE public.bookings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.contact_messages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.testimonials ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.media_assets ENABLE ROW LEVEL SECURITY;
+
+-- 6. Create RLS policies
+-- Bookings:
+-- Allow public to create new bookings.
+CREATE POLICY "Allow public insert for bookings" ON public.bookings FOR INSERT WITH CHECK (true);
+-- Allow public to read all booking dates for the calendar.
+CREATE POLICY "Allow public read access to booking dates" ON public.bookings FOR SELECT USING (true);
+
+-- Contact Messages:
+-- Allow public to create new contact messages.
+CREATE POLICY "Allow public insert for contact messages" ON public.contact_messages FOR INSERT WITH CHECK (true);
+-- No read access for public.
+
+-- Testimonials:
+-- Allow public to read all testimonials.
+CREATE POLICY "Allow public read access to testimonials" ON public.testimonials FOR SELECT USING (true);
+
+-- Media Assets:
+-- Allow public to read all media assets for the gallery.
+CREATE POLICY "Allow public read access to media assets" ON public.media_assets FOR SELECT USING (true);
+
+
+-- 7. Insert sample data
+-- Sample Testimonials
+INSERT INTO public.testimonials (name, event_type, message, rating) VALUES
+('Ana & Ion Popescu', 'Nuntă', 'Ați fost absolut fantastici! Ați creat o atmosferă de poveste și toți invitații au fost impresionați. Recomandăm cu toată inima!', 5),
+('Familia Cojocaru', 'Cumătrie', 'Profesionalism și mult suflet. Ați făcut din cumătria fetiței noastre un eveniment de neuitat. Mulțumim!', 5),
+('Tech Solutions SRL', 'Eveniment Corporate', 'Oaspeții noștri din străinătate au fost fascinați de programul vostru. O pată de culoare și tradiție la petrecerea noastră corporate.', 5);
+
+-- Sample Media Assets for Gallery
+INSERT INTO public.media_assets (type, url, thumbnail_url, description) VALUES
+('image', 'https://picsum.photos/seed/1/600/400', 'https://picsum.photos/seed/1/300/200', 'Eveniment 1'),
+('image', 'https://picsum.photos/seed/2/600/400', 'https://picsum.photos/seed/2/300/200', 'Eveniment 2'),
+('image', 'https://picsum.photos/seed/3/600/400', 'https://picsum.photos/seed/3/300/200', 'Eveniment 3'),
+('image', 'https://picsum.photos/seed/4/600/400', 'https://picsum.photos/seed/4/300/200', 'Eveniment 4'),
+('image', 'https://picsum.photos/seed/5/600/400', 'https://picsum.photos/seed/5/300/200', 'Eveniment 5'),
+('image', 'https://picsum.photos/seed/6/600/400', 'https://picsum.photos/seed/6/300/200', 'Eveniment 6'),
+('image', 'https://picsum.photos/seed/7/600/400', 'https://picsum.photos/seed/7/300/200', 'Eveniment 7'),
+('image', 'https://picsum.photos/seed/8/600/400', 'https://picsum.photos/seed/8/300/200', 'Eveniment 8');
+```
 
 ## 5. Running the Project Locally
 
