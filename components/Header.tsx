@@ -11,6 +11,7 @@ const Logo = () => (
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSticky, setIsSticky] = useState(true);
 
   useEffect(() => {
     if (isMenuOpen) {
@@ -22,6 +23,26 @@ const Header: React.FC = () => {
       document.body.classList.remove('overflow-hidden');
     };
   }, [isMenuOpen]);
+
+  useEffect(() => {
+    const servicesSection = document.getElementById('services');
+    if (!servicesSection) return;
+
+    const servicesOffsetTop = servicesSection.offsetTop;
+    
+    const handleScroll = () => {
+      if (window.scrollY >= servicesOffsetTop) {
+        setIsSticky(false);
+      } else {
+        setIsSticky(true);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   const navLinks = [
     { name: 'Servicii', href: '#services' },
@@ -36,7 +57,7 @@ const Header: React.FC = () => {
 
   return (
     <>
-      <header className="w-full bg-brand-cream sticky top-0 z-50">
+      <header className={`w-full bg-brand-cream z-50 ${isSticky ? 'sticky top-0' : ''}`}>
         <div className="container mx-auto max-w-6xl px-6 py-3 flex justify-between items-center">
           <a href="#home" aria-label="Pagina principală"><Logo /></a>
           <nav className="hidden md:flex items-center space-x-8">

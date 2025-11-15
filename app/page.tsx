@@ -15,6 +15,7 @@ import { MediaAsset } from '../types';
 
 export default function HomePage() {
   const [selectedAsset, setSelectedAsset] = useState<MediaAsset | null>(null);
+  const [showBackToTop, setShowBackToTop] = useState(false);
 
   useEffect(() => {
     if (selectedAsset) {
@@ -26,6 +27,26 @@ export default function HomePage() {
       document.body.classList.remove('overflow-hidden');
     };
   }, [selectedAsset]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 400) {
+        setShowBackToTop(true);
+      } else {
+        setShowBackToTop(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
 
   return (
     <div className="relative overflow-x-hidden">
@@ -53,6 +74,16 @@ export default function HomePage() {
       </main>
       <Footer />
       <GalleryModal asset={selectedAsset} onClose={() => setSelectedAsset(null)} />
+      
+      <button
+        onClick={scrollToTop}
+        className={`fixed bottom-6 right-6 z-50 bg-brand-gold text-white p-3 rounded-full shadow-lg hover:bg-brand-gold/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-orange transition-opacity duration-300 ${showBackToTop ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        aria-label="Înapoi sus"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+        </svg>
+      </button>
     </div>
   );
 }
