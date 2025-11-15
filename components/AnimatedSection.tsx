@@ -23,7 +23,7 @@ const AnimatedSection: React.FC<AnimatedSectionProps> = ({ children, className }
       {
         root: null, // relative to the viewport
         rootMargin: '0px',
-        threshold: 0.1, // trigger when 10% of the element is visible
+        threshold: 0.15, // trigger when 15% of the element is visible
       }
     );
 
@@ -42,7 +42,7 @@ const AnimatedSection: React.FC<AnimatedSectionProps> = ({ children, className }
   return (
     <div
       ref={sectionRef}
-      className={`transition-all duration-700 ease-in-out transform ${
+      className={`transition-all duration-1000 ease-in-out transform ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
       } ${className || ''}`}
     >
