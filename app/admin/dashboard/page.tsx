@@ -117,6 +117,18 @@ const BookingDetailsModal: React.FC<{
     );
 };
 
+// Toast Notification Component
+const Toast: React.FC<{ message: string; type: 'success' | 'error'; onClose: () => void; }> = ({ message, type, onClose }) => {
+    useEffect(() => {
+        const timer = setTimeout(onClose, 3000);
+        return () => clearTimeout(timer);
+    }, [onClose]);
+
+    const baseClasses = 'fixed bottom-5 right-5 p-4 rounded-lg shadow-lg text-white font-semibold transition-all duration-300';
+    const typeClasses = type === 'success' ? 'bg-green-600' : 'bg-red-600';
+
+    return <div className={`${baseClasses} ${typeClasses}`}>{message}</div>;
+};
 
 export default function AdminDashboardPage() {
     const [bookings, setBookings] = useState<Booking[]>([]);
@@ -124,14 +136,19 @@ export default function AdminDashboardPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [sortConfig, setSortConfig] = useState<{ key: keyof Booking; direction: 'asc' | 'desc' }>({ key: 'event_date', direction: 'asc' });
     const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+    const [toast, setToast] = useState<{ message: string; type: 'success' | 'error'; visible: boolean }>({ message: '', type: 'success', visible: false });
     const router = useRouter();
 
     const fetchBookings = useCallback(async () => {
         if (!supabase) return;
+        setIsLoading(true);
         const { data, error } = await supabase.from('bookings').select('*');
 
         if (data) setBookings(data);
-        if (error) console.error("Error fetching bookings:", error);
+        if (error) {
+          console.error("Error fetching bookings:", error);
+          showToast(`Eroare la preluarea datelor: ${error.message}`, 'error');
+        }
         
         setIsLoading(false);
     }, []);
@@ -149,6 +166,10 @@ export default function AdminDashboardPage() {
         checkUser();
     }, [router, fetchBookings]);
 
+    const showToast = (message: string, type: 'success' | 'error') => {
+        setToast({ message, type, visible: true });
+    };
+
     const handleLogout = async () => {
         if (!supabase) return;
         await supabase.auth.signOut();
@@ -158,21 +179,28 @@ export default function AdminDashboardPage() {
     const handleSaveBooking = async (updatedBooking: Booking) => {
         if (!supabase || !updatedBooking.id) return;
         
-        const { id, created_at, ...updateData } = updatedBooking;
-        // Convert empty strings from inputs to null for the database
-        const price = updateData.price ? Number(updateData.price) : null;
-        const prepayment = updateData.prepayment ? Number(updateData.prepayment) : null;
+        // Create an object with only the fields that are actually editable in the modal
+        const updateData = {
+            status: updatedBooking.status,
+            price: updatedBooking.price ? Number(updatedBooking.price) : null,
+            prepayment: updatedBooking.prepayment ? Number(updatedBooking.prepayment) : null,
+            payment_status: updatedBooking.payment_status,
+        };
 
         const { error } = await supabase
             .from('bookings')
-            .update({ ...updateData, price, prepayment })
-            .eq('id', id);
+            .update(updateData)
+            .eq('id', updatedBooking.id);
 
         if (error) {
             console.error("Error updating booking:", error);
-            // Here you could add a toast notification for the error
+            showToast(`Eroare la salvare: ${error.message}`, 'error');
         } else {
-            await fetchBookings(); // Refetch data to show updated info
+            showToast('Modificări salvate cu succes!', 'success');
+             // Update the local state to reflect the change immediately for a faster UI response
+            setBookings(prevBookings => 
+                prevBookings.map(b => b.id === updatedBooking.id ? { ...b, ...updateData } : b)
+            );
             setSelectedBooking(null); // Close modal on success
         }
     };
@@ -223,7 +251,7 @@ export default function AdminDashboardPage() {
                         placeholder="Caută după nume, email, telefon..."
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
-                        className="w-full sm:w-1/2 p-2 bg-brand-brown-light/50 text-white border border-brand-brown-dark/80 rounded-md focus:ring-brand-orange focus:border-brand-orange"
+                        className="w-full sm:w-1/2 lg:w-1/3 p-2 bg-brand-brown-light/50 text-white border border-brand-brown-dark/80 rounded-md focus:ring-brand-orange focus:border-brand-orange"
                     />
                     <select
                         onChange={handleSortChange}
@@ -237,46 +265,65 @@ export default function AdminDashboardPage() {
                     </select>
                 </div>
 
-
                 {isLoading ? (
-                    <div className="text-center text-brand-cream/80">Se încarcă rezervările...</div>
+                    <div className="text-center text-brand-cream/80 py-10">Se încarcă rezervările...</div>
                 ) : filteredAndSortedBookings.length === 0 ? (
                     <div className="text-center text-brand-cream/80 bg-brand-brown-light/50 p-6 rounded-lg">
                         {searchQuery ? 'Nu am găsit nicio rezervare conform căutării.' : 'Nu există nicio rezervare înregistrată.'}
                     </div>
                 ) : (
-                    <div className="overflow-x-auto bg-brand-brown-light/30 rounded-lg shadow-lg">
-                        <table className="w-full text-sm text-left text-brand-cream/90">
-                            <thead className="text-xs text-brand-cream uppercase bg-brand-brown-light/50">
-                                <tr>
-                                    <th scope="col" className="px-6 py-3">Data Evenimentului</th>
-                                    <th scope="col" className="px-6 py-3">Nume Client</th>
-                                    <th scope="col" className="px-6 py-3">Tip Eveniment</th>
-                                    <th scope="col" className="px-6 py-3">Status</th>
-                                    <th scope="col" className="px-6 py-3"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredAndSortedBookings.map((booking) => (
-                                    <tr key={booking.id} className="border-b border-brand-brown-light/30 hover:bg-brand-brown-light/50">
-                                        <td className="px-6 py-4 font-medium">{booking.event_date}</td>
-                                        <td className="px-6 py-4">{booking.name}</td>
-                                        <td className="px-6 py-4">{booking.event_type}</td>
-                                        <td className="px-6 py-4">
-                                            <StatusBadge status={booking.status} />
-                                        </td>
-                                        <td className="px-6 py-4 text-right">
-                                            <button onClick={() => setSelectedBooking(booking)} className="font-medium text-brand-orange hover:underline">
-                                                Detalii
-                                            </button>
-                                        </td>
+                    <>
+                        {/* Desktop Table View */}
+                        <div className="hidden md:block overflow-x-auto bg-brand-brown-light/30 rounded-lg shadow-lg">
+                            <table className="w-full text-sm text-left text-brand-cream/90">
+                                <thead className="text-xs text-brand-cream uppercase bg-brand-brown-light/50">
+                                    <tr>
+                                        <th scope="col" className="px-6 py-3">Data Evenimentului</th>
+                                        <th scope="col" className="px-6 py-3">Nume Client</th>
+                                        <th scope="col" className="px-6 py-3">Tip Eveniment</th>
+                                        <th scope="col" className="px-6 py-3">Status</th>
+                                        <th scope="col" className="px-6 py-3"><span className="sr-only">Actions</span></th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody>
+                                    {filteredAndSortedBookings.map((booking) => (
+                                        <tr key={booking.id} className="border-b border-brand-brown-light/30 hover:bg-brand-brown-light/50">
+                                            <td className="px-6 py-4 font-medium">{booking.event_date}</td>
+                                            <td className="px-6 py-4">{booking.name}</td>
+                                            <td className="px-6 py-4">{booking.event_type}</td>
+                                            <td className="px-6 py-4"><StatusBadge status={booking.status} /></td>
+                                            <td className="px-6 py-4 text-right">
+                                                <button onClick={() => setSelectedBooking(booking)} className="font-medium text-brand-orange hover:underline">Detalii</button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Mobile Card View */}
+                        <div className="block md:hidden space-y-4">
+                            {filteredAndSortedBookings.map((booking) => (
+                                <div key={booking.id} className="bg-brand-brown-light/50 p-4 rounded-lg shadow">
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <p className="font-bold text-lg text-white">{booking.name}</p>
+                                            <p className="text-sm text-brand-cream/80">{booking.event_date}</p>
+                                        </div>
+                                        <StatusBadge status={booking.status} />
+                                    </div>
+                                    <div className="mt-4 text-right">
+                                        <button onClick={() => setSelectedBooking(booking)} className="font-medium text-brand-orange hover:underline">
+                                            Vezi Detalii & Editează
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </>
                 )}
             </main>
+
             {selectedBooking && (
                 <BookingDetailsModal 
                     booking={selectedBooking} 
@@ -284,6 +331,7 @@ export default function AdminDashboardPage() {
                     onSave={handleSaveBooking}
                 />
             )}
+            {toast.visible && <Toast message={toast.message} type={toast.type} onClose={() => setToast(prev => ({...prev, visible: false}))} />}
         </div>
     );
 }
