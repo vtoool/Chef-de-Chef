@@ -1,0 +1,98 @@
+'use client';
+
+import React, { useState } from 'react';
+
+const Logo = () => (
+    <div className="flex flex-col items-center space-y-2 mb-8">
+        <img src="https://scontent.fkiv7-1.fna.fbcdn.net/v/t39.30808-6/456236959_829273562675263_5934463475455699464_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=-FwFg2FB9XoQ7kNvwE_khUg&_nc_oc=AdksXFMIZCuyZ_qiRyTobtMYjXbrpMRUTfB_UxWQviL9dwKY2JSbGc9mZ4fG0Jd1PDDofFzdHDXrwb4BgViofAG8&_nc_zt=23&_nc_ht=scontent.fkiv7-1.fna&_nc_gid=M9t8gcOoEteEPolC2SuR9Q&oh=00_AfhhmmqUYoveeMuTaQdkbvqE973TIqDyPsIaCJ4E-mYWAQ&oe=691DA8FB" alt="Chef de Chef Logo" className="h-16 w-16 rounded-full object-cover" />
+        <span className="font-cursive text-4xl font-normal bg-chef-gradient bg-clip-text text-transparent pr-1">Chef de Chef</span>
+    </div>
+);
+
+export default function AdminLoginPage() {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState('');
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setError('');
+
+        // Placeholder for future authentication logic (e.g., with Supabase Auth)
+        console.log('Attempting login with:', { email, password });
+        
+        // Simulate an API call
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // This is a mock authentication check
+        if (email === 'admin@chefdechef.md' && password === 'admin') {
+            alert('Login successful! (Placeholder)\nRedirecting to dashboard...');
+            // In a real app, you would use Next.js Router to redirect:
+            // import { useRouter } from 'next/navigation';
+            // const router = useRouter();
+            // router.push('/admin/dashboard');
+        } else {
+            setError('Email sau parolă incorectă.');
+        }
+
+        setIsLoading(false);
+    };
+
+    return (
+        <div className="flex items-center justify-center min-h-screen text-white p-4">
+            <div className="w-full max-w-sm p-8 space-y-6 bg-brand-brown-light rounded-xl shadow-2xl">
+                <Logo />
+                <h1 className="text-xl font-bold text-center text-brand-cream">
+                    Panou de Administrare
+                </h1>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label htmlFor="email" className="text-sm font-bold text-brand-cream/80 block mb-1">Email</label>
+                        <input
+                            id="email"
+                            name="email"
+                            type="email"
+                            autoComplete="email"
+                            required
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="w-full p-2 bg-brand-brown-dark/50 text-white border border-brand-brown-dark/80 rounded-md focus:ring-brand-orange focus:border-brand-orange transition-colors"
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="password" className="text-sm font-bold text-brand-cream/80 block mb-1">Parolă</label>
+                        <input
+                            id="password"
+                            name="password"
+                            type="password"
+                            autoComplete="current-password"
+                            required
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="w-full p-2 bg-brand-brown-dark/50 text-white border border-brand-brown-dark/80 rounded-md focus:ring-brand-orange focus:border-brand-orange transition-colors"
+                        />
+                    </div>
+                    {error && (
+                        <p className="text-sm text-center text-red-400">{error}</p>
+                    )}
+                    <div>
+                        <button
+                            type="submit"
+                            disabled={isLoading}
+                            className="w-full mt-2 bg-chef-gradient text-white font-bold py-2 px-6 rounded-full shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-50"
+                        >
+                            {isLoading ? 'Se conectează...' : 'Conectare'}
+                        </button>
+                    </div>
+                </form>
+                <div className="text-center">
+                    <a href="/" className="text-xs text-brand-cream/50 hover:text-brand-cream/80 transition-colors">
+                        ← Înapoi la site
+                    </a>
+                </div>
+            </div>
+        </div>
+    );
+}
