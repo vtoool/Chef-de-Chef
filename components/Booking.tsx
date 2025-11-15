@@ -137,8 +137,8 @@ const BookingComponent: React.FC = () => {
               className="m-0"
               styles={{
                 caption: { color: '#3B2414', fontWeight: 'bold' },
-                day_selected: { backgroundColor: '#F7931E', color: 'white' },
-                day_today: { color: '#F7931E', fontWeight: 'bold' },
+                selected: { backgroundColor: '#F7931E', color: 'white' },
+                today: { color: '#F7931E', fontWeight: 'bold' },
               }}
             />
           </div>
