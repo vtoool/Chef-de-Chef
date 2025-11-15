@@ -7,7 +7,7 @@ const Hero: React.FC = () => {
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="text-center md:text-left">
             <h1 className="font-serif text-4xl md:text-5xl font-black text-brand-brown-dark leading-tight mb-4">
-              Elevați-vă Evenimentele!
+              Tradiție și eleganță pentru un eveniment memorabil
             </h1>
             <p className="text-lg text-brand-brown-light max-w-xl mx-auto md:mx-0 mb-8">
               Celebrați frumusețea culturii populare moldovenești prin spectacole pline de energie, culoare și emoție.

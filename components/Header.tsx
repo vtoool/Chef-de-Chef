@@ -50,7 +50,13 @@ const Header: React.FC = () => {
           <a href="#book" className="hidden md:inline-block bg-chef-gradient text-white font-bold py-2 px-6 rounded-full shadow-lg hover:shadow-xl transition-shadow duration-300">
             Rezervă Acum
           </a>
-          <button className="md:hidden text-brand-brown-dark z-50" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Meniu">
+          <button 
+            className="md:hidden text-brand-brown-dark z-50" 
+            onClick={() => setIsMenuOpen(!isMenuOpen)} 
+            aria-label={isMenuOpen ? "Închide meniul" : "Deschide meniul"}
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-menu"
+          >
             {isMenuOpen ? (
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -65,7 +71,12 @@ const Header: React.FC = () => {
       </header>
       
       {/* Mobile Menu Overlay */}
-      <div className={`fixed inset-0 z-40 bg-brand-cream transform ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out md:hidden`}>
+      <div 
+        id="mobile-menu"
+        role="dialog"
+        aria-modal="true"
+        className={`fixed inset-0 z-40 bg-brand-cream transform ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out md:hidden`}
+      >
         <nav className="flex flex-col items-center justify-center h-full space-y-6">
           {navLinks.map((link) => (
             <a key={link.name} href={link.href} onClick={handleLinkClick} className="text-2xl font-serif text-brand-brown-dark hover:text-brand-orange transition-colors">
