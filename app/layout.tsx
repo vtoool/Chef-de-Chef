@@ -35,7 +35,6 @@ export default function RootLayout({
   return (
     <html lang="ro" className={`${inter.variable} ${playfairDisplay.variable} ${cormorant.variable}`}>
       <head>
-        <link rel="stylesheet" href="https://aistudiocdn.com/react-day-picker@^8.10.1/dist/style.css" />
       </head>
       <body>{children}</body>
     </html>
