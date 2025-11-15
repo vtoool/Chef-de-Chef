@@ -5,6 +5,7 @@ import { format } from 'date-fns';
 import { ro } from 'date-fns/locale';
 import { supabase, isSupabaseConfigured } from '../lib/supabaseClient';
 import { Booking } from '../types';
+import Calendar from './Calendar'; // Import the new component
 
 const BookingComponent: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
@@ -37,7 +38,8 @@ const BookingComponent: React.FC = () => {
       return;
     }
     
-    const dates = data.map(b => new Date(b.event_date + 'T12:00:00Z')); // Adjust for timezone issues
+    // Supabase returns date as YYYY-MM-DD string. We need to parse it correctly, assuming UTC to avoid timezone shifts.
+    const dates = data.map(b => new Date(b.event_date + 'T00:00:00Z')); 
     setUnavailableDates(dates);
   }, []);
 
@@ -47,12 +49,9 @@ const BookingComponent: React.FC = () => {
     }
   }, [fetchUnavailableDates]);
   
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value) {
-        setSelectedDate(new Date(e.target.value + 'T00:00:00'));
-    } else {
-        setSelectedDate(undefined);
-    }
+  const handleDateSelect = (date: Date) => {
+    setSelectedDate(date);
+    setFormStatus({ type: 'idle', message: '' }); // Reset status on new date selection
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -103,6 +102,10 @@ const BookingComponent: React.FC = () => {
   };
   
   const isDateBooked = selectedDate && unavailableDates.some(d => format(d, 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd'));
+  
+  // Set minDate for calendar to today
+  const minDate = new Date();
+  minDate.setHours(0, 0, 0, 0);
 
   return (
     <section id="book" className="py-12 md:py-16 bg-white">
@@ -111,35 +114,34 @@ const BookingComponent: React.FC = () => {
         <p className="text-brand-brown-light max-w-2xl mx-auto mb-10 text-center">
           Verificați disponibilitatea noastră și trimiteți o cerere de rezervare. Vă vom contacta în cel mai scurt timp.
         </p>
-        <div className="grid lg:grid-cols-2 gap-10 bg-brand-cream p-6 rounded-lg shadow-lg">
-          <div className="flex flex-col items-center justify-center space-y-4">
-              <label htmlFor="event-date" className="font-serif text-xl font-bold text-brand-brown-dark">1. Alegeți data evenimentului</label>
-              <input
-                id="event-date"
-                type="date"
-                value={selectedDate ? format(selectedDate, 'yyyy-MM-dd') : ''}
-                onChange={handleDateChange}
-                min={format(new Date(), 'yyyy-MM-dd')}
-                className="w-full max-w-xs p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-orange focus:border-brand-orange text-brand-brown-dark disabled:opacity-50"
-                aria-label="Selectați data evenimentului"
-                disabled={!isSupabaseConfigured}
-              />
-              {!isSupabaseConfigured && (
-                  <p className="mt-2 text-xs text-center text-brand-brown-light/80">
-                      Calendarul este inactiv în modul de previzualizare.
+        <div className="grid lg:grid-cols-2 gap-10 bg-brand-cream p-6 md:p-8 rounded-lg shadow-lg">
+          <div className="flex flex-col items-center">
+              <h3 className="font-serif text-xl font-bold text-brand-brown-dark mb-4">1. Alegeți data evenimentului</h3>
+              {isSupabaseConfigured ? (
+                <Calendar 
+                  selectedDate={selectedDate}
+                  onDateSelect={handleDateSelect}
+                  unavailableDates={unavailableDates}
+                  minDate={minDate}
+                />
+              ) : (
+                <div className="w-full max-w-sm p-4 text-center bg-white/50 rounded-lg">
+                   <p className="text-brand-brown-light/80">
+                      Calendarul este inactiv în modul de previzualizare deoarece cheile Supabase nu sunt configurate.
                   </p>
+                </div>
               )}
           </div>
-          <div>
+          <div className="flex flex-col justify-center">
             {selectedDate ? (
-              isDateBooked ? (
+              isDateBooked ? ( // This state should not be reachable if calendar logic is correct, but as a fallback
                  <div className="text-center p-6 bg-red-100 text-red-800 rounded-lg h-full flex flex-col justify-center items-center">
                     <h3 className="font-bold text-md">Data este indisponibilă</h3>
                     <p className="text-sm">Ne pare rău, data de {format(selectedDate, 'd MMMM yyyy', { locale: ro })} este deja rezervată.</p>
                  </div>
               ) : (
                 <form onSubmit={handleSubmit}>
-                  <h3 className="font-serif text-lg font-bold mb-4">2. Completați detaliile: <span className="text-brand-orange">{format(selectedDate, 'd MMMM yyyy', { locale: ro })}</span></h3>
+                  <h3 className="font-serif text-lg font-bold mb-4">2. Completați detaliile pentru: <br className="sm:hidden"/><span className="text-brand-orange">{format(selectedDate, 'd MMMM yyyy', { locale: ro })}</span></h3>
                   <div className="grid sm:grid-cols-2 gap-3 mb-3">
                     <input type="text" name="name" placeholder="Numele Dvs." required value={formData.name} onChange={handleInputChange} disabled={!isSupabaseConfigured} className="w-full p-2 bg-white text-brand-brown-dark border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange disabled:opacity-50"/>
                     <input type="email" name="email" placeholder="Email" required value={formData.email} onChange={handleInputChange} disabled={!isSupabaseConfigured} className="w-full p-2 bg-white text-brand-brown-dark border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange disabled:opacity-50"/>
