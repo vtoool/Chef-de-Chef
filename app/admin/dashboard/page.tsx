@@ -99,8 +99,10 @@ export default function AdminDashboardPage() {
                                     <th scope="col" className="px-6 py-3">Data Evenimentului</th>
                                     <th scope="col" className="px-6 py-3">Nume Client</th>
                                     <th scope="col" className="px-6 py-3">Tip Eveniment</th>
+                                    <th scope="col" className="px-6 py-3">Locație</th>
                                     <th scope="col" className="px-6 py-3">Status</th>
                                     <th scope="col" className="px-6 py-3">Contact</th>
+                                    <th scope="col" className="px-6 py-3">Detalii</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -109,12 +111,16 @@ export default function AdminDashboardPage() {
                                         <td className="px-6 py-4 font-medium">{booking.event_date}</td>
                                         <td className="px-6 py-4">{booking.name}</td>
                                         <td className="px-6 py-4">{booking.event_type}</td>
+                                        <td className="px-6 py-4">{booking.location}</td>
                                         <td className="px-6 py-4">
                                             <StatusBadge status={booking.status} />
                                         </td>
                                         <td className="px-6 py-4">
                                             <div>{booking.phone}</div>
                                             <div className="text-xs text-brand-cream/60">{booking.email}</div>
+                                        </td>
+                                        <td className="px-6 py-4 text-xs text-brand-cream/80 max-w-[200px]" title={booking.notes || ''}>
+                                            <p className="truncate">{booking.notes || 'N/A'}</p>
                                         </td>
                                     </tr>
                                 ))}
