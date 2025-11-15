@@ -7,7 +7,8 @@ export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey);
 
 let supabase: SupabaseClient | null = null;
 
-if (isSupabaseConfigured) {
+// Use a direct check on the variables to allow TypeScript to narrow their types.
+if (supabaseUrl && supabaseAnonKey) {
   supabase = createClient(supabaseUrl, supabaseAnonKey);
 } else {
   // Log a clear warning in the browser console if keys are missing
