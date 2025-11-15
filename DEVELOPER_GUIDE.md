@@ -52,7 +52,7 @@ The `.env.local` file is ignored by Git and will never be published.
 
 ```sql
 -- Chef de Chef Supabase Schema
--- Version 1.1
+-- Version 1.2
 
 -- 1. Create bookings table
 CREATE TABLE public.bookings (
@@ -65,6 +65,7 @@ CREATE TABLE public.bookings (
     email text NOT NULL,
     phone text NOT NULL,
     notes text NULL,
+    notes_interne text NULL,
     status text NOT NULL DEFAULT 'pending'::text,
     price numeric NULL,
     prepayment numeric NULL,
@@ -123,8 +124,8 @@ ALTER TABLE public.media_assets ENABLE ROW LEVEL SECURITY;
 -- Bookings:
 -- Allow public to create new bookings.
 CREATE POLICY "Allow public insert for bookings" ON public.bookings FOR INSERT WITH CHECK (true);
--- Allow public to read all booking dates for the calendar.
-CREATE POLICY "Allow public read access to booking dates" ON public.bookings FOR SELECT ("status" IN ('pending', 'confirmed'));
+-- Allow public read access to all bookings for the calendar.
+CREATE POLICY "Allow public read access to all bookings" ON public.bookings FOR SELECT USING (true);
 -- Allow authenticated users (admins) to read all columns.
 CREATE POLICY "Allow admin read access" ON public.bookings FOR SELECT USING (auth.role() = 'authenticated');
 -- Allow authenticated users (admins) to update bookings.

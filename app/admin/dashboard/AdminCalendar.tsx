@@ -15,15 +15,16 @@ import {
   isToday,
 } from 'date-fns';
 import { ro } from 'date-fns/locale';
+import { Booking } from '../../../types';
 
 interface AdminCalendarProps {
-  confirmedDates: Date[];
+  bookings: Booking[];
   filterDate: Date | null;
   onDateClick: (date: Date | null) => void;
 }
 
 const AdminCalendar: React.FC<AdminCalendarProps> = ({
-  confirmedDates,
+  bookings,
   filterDate,
   onDateClick,
 }) => {
@@ -81,8 +82,20 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({
       <div className="grid grid-cols-7 text-center mt-2">
         {days.map((day) => {
           const isDayInCurrentMonth = isSameMonth(day, monthStart);
-          const isDayConfirmed = confirmedDates.some((d) => isSameDay(day, d));
           const isFilterActive = filterDate && isSameDay(day, filterDate);
+          
+          const bookingsOnDay = bookings.filter(b => isSameDay(new Date(b.event_date + 'T00:00:00Z'), day));
+          
+          let statusClass = '';
+          if (bookingsOnDay.length > 0) {
+              if (bookingsOnDay.some(b => b.status === 'confirmed')) {
+                  statusClass = 'bg-green-500/30 text-white font-bold hover:bg-green-500/50';
+              } else if (bookingsOnDay.some(b => b.status === 'pending')) {
+                  statusClass = 'bg-yellow-500/30 text-white font-bold hover:bg-yellow-500/50';
+              } else if (bookingsOnDay.some(b => b.status === 'completed')) {
+                  statusClass = 'bg-blue-500/30 text-white font-bold hover:bg-blue-500/50';
+              }
+          }
 
           const handleDayClick = () => {
              if (isFilterActive) {
@@ -95,8 +108,8 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({
           const cellClasses = [
             'w-10 h-10 flex items-center justify-center rounded-full transition-colors duration-200 cursor-pointer',
             isDayInCurrentMonth ? 'text-white' : 'text-gray-500',
-            !isDayConfirmed && 'hover:bg-brand-brown-dark/50',
-            isDayConfirmed && 'bg-green-500/30 text-white font-bold hover:bg-green-500/50',
+            !statusClass && 'hover:bg-brand-brown-dark/50',
+            statusClass,
             isToday(day) && !isFilterActive && 'ring-2 ring-white/50',
             isFilterActive && 'ring-2 ring-brand-orange ring-offset-2 ring-offset-brand-brown-light',
           ]
@@ -127,10 +140,18 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({
       {renderHeader()}
       {renderDays()}
       {renderCells()}
-       <div className="mt-4 flex items-center justify-center space-x-4 text-xs text-brand-cream/80">
+       <div className="mt-4 flex items-center justify-center flex-wrap gap-x-4 gap-y-2 text-xs text-brand-cream/80">
+            <div className="flex items-center space-x-2">
+                <span className="w-3 h-3 rounded-full bg-yellow-500/30"></span>
+                <span>În așteptare</span>
+            </div>
             <div className="flex items-center space-x-2">
                 <span className="w-3 h-3 rounded-full bg-green-500/30"></span>
                 <span>Confirmat</span>
+            </div>
+             <div className="flex items-center space-x-2">
+                <span className="w-3 h-3 rounded-full bg-blue-500/30"></span>
+                <span>Completat</span>
             </div>
             <div className="flex items-center space-x-2">
                 <span className="w-3 h-3 rounded-full ring-2 ring-white/50"></span>

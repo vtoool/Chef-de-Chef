@@ -9,6 +9,7 @@ export interface Booking {
   email: string;
   phone: string;
   notes?: string;
+  notes_interne?: string | null;
   status: 'pending' | 'confirmed' | 'rejected' | 'completed';
   price?: number | null;
   prepayment?: number | null;

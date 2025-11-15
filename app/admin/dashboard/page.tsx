@@ -74,7 +74,7 @@ const BookingDetailsModal: React.FC<{
                             <p>{booking.location}</p>
                         </div>
                          <div>
-                            <label className="text-xs font-bold text-brand-cream/60 block">Detalii Suplimentare</label>
+                            <label className="text-xs font-bold text-brand-cream/60 block">Detalii Suplimentare (Client)</label>
                             <p className="text-sm whitespace-pre-wrap">{booking.notes || 'N/A'}</p>
                         </div>
                     </div>
@@ -104,6 +104,10 @@ const BookingDetailsModal: React.FC<{
                                 <option value="avans platit">Avans Plătit</option>
                                 <option value="platit integral">Plătit Integral</option>
                             </select>
+                        </div>
+                        <div>
+                            <label htmlFor="notes_interne" className="text-sm font-bold text-brand-cream/80 block mb-1">Notițe Interne</label>
+                            <textarea id="notes_interne" name="notes_interne" value={editedBooking.notes_interne || ''} onChange={handleInputChange} rows={3} placeholder="Detalii confidențiale, planificări..." className="w-full p-2 bg-brand-brown-dark/50 text-white border border-brand-brown-dark/80 rounded-md focus:ring-brand-orange focus:border-brand-orange"></textarea>
                         </div>
                     </div>
                 </div>
@@ -148,7 +152,7 @@ export default function AdminDashboardPage() {
         setIsLoading(true);
         const { data, error } = await supabase.from('bookings').select('*');
 
-        if (data) setBookings(data);
+        if (data) setBookings(data as Booking[]);
         if (error) {
           console.error("Error fetching bookings:", error);
           showToast(`Eroare la preluarea datelor: ${error.message}`, 'error');
@@ -183,35 +187,34 @@ export default function AdminDashboardPage() {
     const handleSaveBooking = async (updatedBooking: Booking) => {
         if (!supabase || !updatedBooking.id) return;
         
+        // Prepare data for Supabase, ensuring numeric fields are numbers or null
         const updateData = {
             status: updatedBooking.status,
             price: updatedBooking.price ? Number(updatedBooking.price) : null,
             prepayment: updatedBooking.prepayment ? Number(updatedBooking.prepayment) : null,
-            payment_status: updatedBooking.payment_status,
+            payment_status: updatedBooking.payment_status || 'neplatit',
+            notes_interne: updatedBooking.notes_interne || null,
         };
 
-        const { error } = await supabase
+        const { data: savedBooking, error } = await supabase
             .from('bookings')
             .update(updateData)
-            .eq('id', updatedBooking.id);
+            .eq('id', updatedBooking.id)
+            .select()
+            .single();
 
         if (error) {
             console.error("Error updating booking:", error);
             showToast(`Eroare la salvare: ${error.message}`, 'error');
-        } else {
+        } else if (savedBooking) {
             showToast('Modificări salvate cu succes!', 'success');
+            // Update local state with the confirmed data from the database
             setBookings(prevBookings => 
-                prevBookings.map(b => b.id === updatedBooking.id ? { ...b, ...updateData } : b)
+                prevBookings.map(b => b.id === savedBooking.id ? savedBooking as Booking : b)
             );
             setSelectedBooking(null);
         }
     };
-
-    const confirmedDates = useMemo(() => {
-        return bookings
-            .filter(b => b.status === 'confirmed')
-            .map(b => new Date(b.event_date + 'T00:00:00Z'));
-    }, [bookings]);
 
     const filteredAndSortedBookings = useMemo(() => {
         let filtered = bookings.filter(b =>
@@ -355,7 +358,7 @@ export default function AdminDashboardPage() {
                     <div className="xl:col-span-1">
                         <h2 className="text-xl font-bold text-brand-cream mb-4">Calendar Evenimente</h2>
                         <AdminCalendar
-                            confirmedDates={confirmedDates}
+                            bookings={bookings}
                             filterDate={filterDate}
                             onDateClick={setFilterDate}
                         />
