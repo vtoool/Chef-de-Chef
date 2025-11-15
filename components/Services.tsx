@@ -3,8 +3,10 @@ import React from 'react';
 const services = [
   {
     icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="-0.5 -0.5 16 16" fill="none" stroke="currentColor" strokeWidth={1.5}>
+            <path d="M0.9375 9.5875a4.475 4.475 0 1 0 8.95 0 4.475 4.475 0 1 0 -8.95 0" strokeMiterlimit="10"></path>
+            <path d="M6.3125 7.800000000000001a3.875 3.875 0 1 0 7.75 0 3.875 3.875 0 1 0 -7.75 0" strokeMiterlimit="10"></path>
+            <path d="m10.48125 3.9187499999999997 -0.59375 0 -1.7874999999999999 -1.7874999999999999 0.59375 -1.1937499999999999 2.9812499999999997 0 0.6 1.1937499999999999 -1.7937500000000002 1.7874999999999999z" strokeMiterlimit="10"></path>
         </svg>
     ),
     title: 'Nunți',
@@ -12,8 +14,13 @@ const services = [
   },
   {
     icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M17 4.5a9 9 0 0 1 3.864 5.89 2.5 2.5 0 0 1 -0.29 4.36 9 9 0 0 1 -17.137 0 2.5 2.5 0 0 1 -0.29 -4.36 9 9 0 0 1 3.746 -5.81"></path>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9.5 16a3.5 3.5 0 0 0 5 0"></path>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M8.5 2C10 3 11 5.5 11 7"></path>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12.5 2c1.5 2 2 3.5 2 5"></path>
+            <path strokeLinecap="round" strokeLinejoin="round" d="m9 12 0.01 0"></path>
+            <path strokeLinecap="round" strokeLinejoin="round" d="m15 12 0.01 0"></path>
         </svg>
     ),
     title: 'Cumătrii',
@@ -21,8 +28,8 @@ const services = [
   },
   {
     icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 256 256" fill="currentColor">
+            <path d="M 128 0 C 147.68 0 164.04 14.213 167.377 32.934 C 182.974 22.055 204.594 23.574 218.51 37.49 C 232.426 51.406 233.944 73.025 223.066 88.622 C 241.787 91.96 256 108.32 256 128 C 256 147.68 241.787 164.04 223.065 167.377 C 233.944 182.974 232.426 204.594 218.51 218.51 C 204.594 232.426 182.974 233.944 167.377 223.065 C 164.04 241.787 147.68 256 128 256 C 108.32 256 91.959 241.787 88.622 223.065 C 73.025 233.944 51.406 232.426 37.49 218.51 C 23.574 204.594 22.055 182.974 32.934 167.377 C 14.213 164.04 0 147.68 0 128 C 0 108.32 14.213 91.96 32.934 88.622 C 22.056 73.025 23.574 51.406 37.49 37.49 C 51.406 23.574 73.025 22.055 88.622 32.934 C 91.96 14.213 108.32 0 128 0 Z" />
         </svg>
     ),
     title: 'Tradiții Populare',

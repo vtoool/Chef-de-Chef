@@ -32,16 +32,21 @@ const Calendar: React.FC<CalendarProps> = ({
 }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
+  const isPrevMonthDisabled = isBefore(startOfMonth(currentMonth), startOfMonth(minDate)) || isSameMonth(currentMonth, minDate);
+
   const renderHeader = () => {
     return (
       <div className="flex justify-between items-center mb-4">
         <button
           type="button"
           onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-          className="p-2 rounded-full hover:bg-brand-cream transition-colors"
+          disabled={isPrevMonthDisabled}
+          className="p-2 rounded-full hover:bg-brand-cream disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-brand-orange/50"
           aria-label="Luna precedentă"
         >
-          &lt;
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-brand-brown-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
         </button>
         <h2 className="font-serif font-bold text-lg text-brand-brown-dark capitalize">
           {format(currentMonth, 'MMMM yyyy', { locale: ro })}
@@ -49,10 +54,12 @@ const Calendar: React.FC<CalendarProps> = ({
         <button
           type="button"
           onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-          className="p-2 rounded-full hover:bg-brand-cream transition-colors"
+          className="p-2 rounded-full hover:bg-brand-cream transition-all duration-200 transform hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-brand-orange/50"
           aria-label="Luna următoare"
         >
-          &gt;
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-brand-brown-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
         </button>
       </div>
     );
