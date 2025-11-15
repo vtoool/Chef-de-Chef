@@ -4,6 +4,9 @@ import Hero from '../components/Hero';
 import Services from '../components/Services';
 import Gallery from '../components/Gallery';
 import About from '../components/About';
+import Testimonials from '../components/Testimonials';
+import Booking from '../components/Booking';
+import Contact from '../components/Contact';
 import Footer from '../components/Footer';
 
 export default function HomePage() {
@@ -15,30 +18,9 @@ export default function HomePage() {
         <Services />
         <Gallery />
         <About />
-        
-        {/* --- SECTIONS TEMPORARILY DISABLED FOR DEBUGGING --- */}
-
-        <section id="testimoniale" className="py-20 bg-brand-cream">
-            <div className="container mx-auto px-6 text-center">
-                <h2 className="font-serif text-4xl font-bold text-brand-brown-dark mb-4">Testimoniale (Dezactivat temporar)</h2>
-                <p className="text-brand-brown-light">Această secțiune va fi reactivată.</p>
-            </div>
-        </section>
-
-        <section id="rezerva" className="py-20 bg-white">
-            <div className="container mx-auto px-6 text-center">
-                <h2 className="font-serif text-4xl font-bold text-brand-brown-dark mb-4">Rezervări (Dezactivat temporar)</h2>
-                <p className="text-brand-brown-light">Formularul de rezervare va fi reactivat după configurarea mediului.</p>
-            </div>
-        </section>
-
-        <section id="contact" className="py-20 bg-brand-cream">
-            <div className="container mx-auto px-6 text-center">
-                <h2 className="font-serif text-4xl font-bold text-brand-brown-dark mb-4">Contact (Dezactivat temporar)</h2>
-                <p className="text-brand-brown-light">Formularul de contact va fi reactivat după configurarea mediului.</p>
-            </div>
-        </section>
-
+        <Testimonials />
+        <Booking />
+        <Contact />
       </main>
       <Footer />
     </div>
