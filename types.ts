@@ -9,7 +9,10 @@ export interface Booking {
   email: string;
   phone: string;
   notes?: string;
-  status: 'pending' | 'confirmed' | 'rejected';
+  status: 'pending' | 'confirmed' | 'rejected' | 'completed';
+  price?: number;
+  prepayment?: number;
+  payment_status?: 'neplatit' | 'avans platit' | 'platit integral';
 }
 
 export interface ContactMessage {

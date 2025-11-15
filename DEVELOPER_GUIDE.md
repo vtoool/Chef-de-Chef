@@ -52,7 +52,7 @@ The `.env.local` file is ignored by Git and will never be published.
 
 ```sql
 -- Chef de Chef Supabase Schema
--- Version 1.0
+-- Version 1.1
 
 -- 1. Create bookings table
 CREATE TABLE public.bookings (
@@ -66,7 +66,12 @@ CREATE TABLE public.bookings (
     phone text NOT NULL,
     notes text NULL,
     status text NOT NULL DEFAULT 'pending'::text,
-    CONSTRAINT bookings_pkey PRIMARY KEY (id)
+    price numeric NULL,
+    prepayment numeric NULL,
+    payment_status text NULL DEFAULT 'neplatit'::text,
+    CONSTRAINT bookings_pkey PRIMARY KEY (id),
+    CONSTRAINT bookings_payment_status_check CHECK (payment_status IN ('neplatit', 'avans platit', 'platit integral')),
+    CONSTRAINT bookings_status_check CHECK (status IN ('pending', 'confirmed', 'rejected', 'completed'))
 );
 COMMENT ON TABLE public.bookings IS 'Stores booking requests from the website.';
 
@@ -119,20 +124,30 @@ ALTER TABLE public.media_assets ENABLE ROW LEVEL SECURITY;
 -- Allow public to create new bookings.
 CREATE POLICY "Allow public insert for bookings" ON public.bookings FOR INSERT WITH CHECK (true);
 -- Allow public to read all booking dates for the calendar.
-CREATE POLICY "Allow public read access to booking dates" ON public.bookings FOR SELECT USING (true);
+CREATE POLICY "Allow public read access to booking dates" ON public.bookings FOR SELECT ("status" IN ('pending', 'confirmed'));
+-- Allow authenticated users (admins) to read all columns.
+CREATE POLICY "Allow admin read access" ON public.bookings FOR SELECT USING (auth.role() = 'authenticated');
+-- Allow authenticated users (admins) to update bookings.
+CREATE POLICY "Allow admin update access" ON public.bookings FOR UPDATE USING (auth.role() = 'authenticated');
+
 
 -- Contact Messages:
 -- Allow public to create new contact messages.
 CREATE POLICY "Allow public insert for contact messages" ON public.contact_messages FOR INSERT WITH CHECK (true);
--- No read access for public.
+-- Allow authenticated users (admins) to read all messages.
+CREATE POLICY "Allow admin read access for contact" ON public.contact_messages FOR SELECT USING (auth.role() = 'authenticated');
 
 -- Testimonials:
 -- Allow public to read all testimonials.
 CREATE POLICY "Allow public read access to testimonials" ON public.testimonials FOR SELECT USING (true);
+-- Allow authenticated users (admins) to manage testimonials.
+CREATE POLICY "Allow admin full access for testimonials" ON public.testimonials FOR ALL USING (auth.role() = 'authenticated');
 
 -- Media Assets:
 -- Allow public to read all media assets for the gallery.
 CREATE POLICY "Allow public read access to media assets" ON public.media_assets FOR SELECT USING (true);
+-- Allow authenticated users (admins) to manage media assets.
+CREATE POLICY "Allow admin full access for media" ON public.media_assets FOR ALL USING (auth.role() = 'authenticated');
 
 
 -- 7. Insert sample data
