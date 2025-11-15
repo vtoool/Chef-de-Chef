@@ -18,7 +18,8 @@ const config: Config = {
       fontFamily: {
         'serif': ['var(--font-playfair-display)', 'serif'],
         'sans': ['var(--font-inter)', 'sans-serif'],
-        'serif-alt': ['var(--font-cormorant)', 'serif']
+        'serif-alt': ['var(--font-cormorant)', 'serif'],
+        'cursive': ['var(--font-yesteryear)', 'cursive'],
       },
       backgroundImage: {
         'chef-gradient': 'linear-gradient(to right, #F7931E, #FFC857)',

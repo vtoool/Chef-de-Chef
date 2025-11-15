@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 const Logo = () => (
     <div className="flex items-center space-x-2">
         <img src="https://scontent.fkiv7-1.fna.fbcdn.net/v/t39.30808-6/456236959_829273562675263_5934463475455699464_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=-FwFg2FB9XoQ7kNvwE_khUg&_nc_oc=AdksXFMIZCuyZ_qiRyTobtMYjXbrpMRUTfB_UxWQviL9dwKY2JSbGc9mZ4fG0Jd1PDDofFzdHDXrwb4BgViofAG8&_nc_zt=23&_nc_ht=scontent.fkiv7-1.fna&_nc_gid=M9t8gcOoEteEPolC2SuR9Q&oh=00_AfhhmmqUYoveeMuTaQdkbvqE973TIqDyPsIaCJ4E-mYWAQ&oe=691DA8FB" alt="Chef de Chef Logo" className="h-10 w-10 rounded-full object-cover" />
-        <span className="font-serif-alt font-bold text-xl text-brand-brown-dark">Chef de Chef</span>
+        <span className="font-cursive text-3xl font-normal bg-chef-gradient bg-clip-text text-transparent">Chef de Chef</span>
     </div>
 );
 
