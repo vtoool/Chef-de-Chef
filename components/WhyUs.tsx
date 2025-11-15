@@ -102,10 +102,10 @@ const WhyUs: React.FC = () => {
           {stats.map((stat, index) => (
             <div
               key={index}
-              className={`transition-all duration-700 ease-out ${
+              className={`transition-all duration-500 ease-out ${
                 isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
               }`}
-              style={{ transitionDelay: `${isVisible ? index * 150 : 0}ms` }}
+              style={{ transitionDelay: `${isVisible ? index * 250 : 0}ms` }}
             >
                 {stat.isIcon ? (
                      <h3 className="text-4xl md:text-5xl font-black text-brand-orange mb-2 h-[56px] flex items-center justify-center">
