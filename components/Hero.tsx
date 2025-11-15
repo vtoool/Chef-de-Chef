@@ -21,7 +21,7 @@ const Hero: React.FC = () => {
           <div className="relative">
             <div className="bg-white p-2 rounded-lg shadow-xl transform md:rotate-2">
                 <img 
-                  src="https://images.unsplash.com/photo-1594822039235-76624941a53c?q=80&w=1887&auto=format&fit=crop" 
+                  src="https://images.unsplash.com/photo-1587327397741-697be231901a?q=80&w=1887&auto=format&fit=crop" 
                   alt="Dancer in a traditional red Moldovan dress" 
                   className="rounded-md w-full h-auto object-cover"
                 />
