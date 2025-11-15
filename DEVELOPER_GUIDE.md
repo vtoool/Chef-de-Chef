@@ -1,91 +1,91 @@
-# Ghid de Utilizare și Mentenanță: Ansamblul Chef de Chef (Next.js)
+# Setup and Maintenance Guide: Ansamblul Chef de Chef (Next.js)
 
-Bun venit! Acest ghid te va ajuta să configurezi, să rulezi și să gestionezi noul website al ansamblului "Chef de Chef", construit cu Next.js, Supabase și Resend.
+Welcome! This guide will help you set up, run, and manage the new website for the "Chef de Chef" ensemble, built with Next.js, Supabase, and Resend.
 
-## 1. Arhitectura Proiectului
+## 1. Project Architecture
 
 *   **Framework:** Next.js 14 (App Router)
 *   **Styling:** Tailwind CSS
-*   **Bază de date:** Supabase (pentru rezervări, mesaje, etc.)
-*   **Email-uri:** Resend (pentru notificări)
+*   **Database:** Supabase (for bookings, messages, etc.)
+*   **Emails:** Resend (for notifications)
 *   **Hosting:** Vercel
 
-## 2. Configurare Inițială
+## 2. Initial Setup
 
-### Pasul 2.1: Servicii Necesare
+### Step 2.1: Required Services
 
-Asigură-te că ai conturi pe următoarele platforme:
+Ensure you have accounts on the following platforms:
 
-*   **GitHub:** Pentru stocarea codului.
-*   **Vercel:** Pentru hosting.
-*   **Supabase:** Pentru baza de date.
-*   **Resend:** Pentru trimiterea de email-uri.
+*   **GitHub:** For code storage.
+*   **Vercel:** For hosting.
+*   **Supabase:** For the database.
+*   **Resend:** For sending emails.
 
-### Pasul 2.2: Instalare Locală
+### Step 2.2: Local Installation
 
-1.  Clonează repository-ul de pe GitHub pe calculatorul tău.
-2.  Navighează în directorul proiectului folosind un terminal.
-3.  Rulează comanda `npm install` pentru a instala toate pachetele necesare.
+1.  Clone the repository from GitHub to your computer.
+2.  Navigate into the project directory using a terminal.
+3.  Run the command `npm install` to install all necessary packages.
 
-## 3. Configurarea Cheilor Secrete (Environment Variables)
+## 3. Configuring Secret Keys (Environment Variables)
 
-Securitatea este esențială. Toate cheile și datele sensibile sunt gestionate prin variabile de mediu.
+Security is essential. All keys and sensitive data are managed through environment variables.
 
-1.  În directorul proiectului, găsește fișierul `.env.local.example`.
-2.  Creează o copie a acestui fișier și redenumește-o în `.env.local`.
-3.  Deschide `.env.local` și completează valorile corespunzătoare:
+1.  In the project directory, find the file `.env.local.example`.
+2.  Create a copy of this file and rename it to `.env.local`.
+3.  Open `.env.local` and fill in the corresponding values:
 
-    *   **`NEXT_PUBLIC_SUPABASE_URL`**: Mergi la Supabase -> Project Settings -> API -> Project URL.
-    *   **`NEXT_PUBLIC_SUPABASE_ANON_KEY`**: Mergi la Supabase -> Project Settings -> API -> Project API Keys -> `anon` (public).
-    *   **`RESEND_API_KEY`**: Mergi la Resend -> API Keys -> Create API Key. **Atenție:** Salvează cheia, va fi afișată o singură dată.
-    *   **`FROM_EMAIL`**: Adresa de email pe care ai verificat-o în Resend (ex: `noreply@domeniultau.com`).
-    *   **`ADMIN_EMAIL`**: Adresa ta de email unde vrei să primești notificările (ex: `contact@chefdechef.md`).
+    *   **`NEXT_PUBLIC_SUPABASE_URL`**: Go to Supabase -> Project Settings -> API -> Project URL.
+    *   **`NEXT_PUBLIC_SUPABASE_ANON_KEY`**: Go to Supabase -> Project Settings -> API -> Project API Keys -> `anon` (public).
+    *   **`RESEND_API_KEY`**: Go to Resend -> API Keys -> Create API Key. **Note:** Save this key, as it will only be shown once.
+    *   **`FROM_EMAIL`**: The email address you have verified in Resend (e.g., `noreply@yourdomain.com`).
+    *   **`ADMIN_EMAIL`**: Your email address where you want to receive notifications (e.g., `contact@chefdechef.md`).
 
-Fișierul `.env.local` este ignorat de Git și nu va fi niciodată publicat.
+The `.env.local` file is ignored by Git and will never be published.
 
-## 4. Configurarea Bazei de Date Supabase
+## 4. Setting Up the Supabase Database
 
-1.  Creează un proiect nou în Supabase.
-2.  După ce proiectul este gata, navighează la **SQL Editor**.
-3.  Deschide fișierul `supabase_schema.sql` din proiectul tău.
-4.  Copiază tot conținutul fișierului și lipește-l în SQL Editor din Supabase.
-5.  Apasă butonul **RUN**. Acest script va crea automat toate tabelele necesare (`bookings`, `contact_messages`, etc.).
+1.  Create a new project in Supabase.
+2.  Once the project is ready, navigate to the **SQL Editor**.
+3.  Open the `supabase_schema.sql` file from your project.
+4.  Copy the entire content of the file and paste it into the Supabase SQL Editor.
+5.  Click the **RUN** button. This script will automatically create all the necessary tables (`bookings`, `contact_messages`, etc.).
 
-## 5. Rularea Proiectului Local
+## 5. Running the Project Locally
 
-După ce ai configurat fișierul `.env.local`, poți porni site-ul pe calculatorul tău.
+After configuring the `.env.local` file, you can start the website on your computer.
 
-1.  Deschide un terminal în directorul proiectului.
-2.  Rulează comanda `npm run dev`.
-3.  Deschide browser-ul și accesează `http://localhost:3000`.
+1.  Open a terminal in the project directory.
+2.  Run the command `npm run dev`.
+3.  Open your browser and navigate to `http://localhost:3000`.
 
-Acum poți vedea site-ul și poți face modificări în cod, care se vor reflecta instantaneu.
+You can now view the site and make changes to the code, which will be reflected instantly.
 
-## 6. Publicarea Website-ului (Deployment)
+## 6. Publishing the Website (Deployment)
 
-Vom folosi Vercel pentru a publica site-ul live, deoarece se integrează perfect cu Next.js.
+We will use Vercel to publish the site live, as it integrates perfectly with Next.js.
 
-1.  Asigură-te că ai publicat codul tău pe un repository GitHub.
-2.  Mergi pe **Vercel** și apasă `Add New...` -> `Project`.
-3.  Selectează `Import Git Repository` și alege repository-ul tău de pe GitHub.
-4.  **Configurarea Environment Variables în Vercel:**
-    *   În timpul procesului de import, Vercel va avea o secțiune numită `Environment Variables`.
-    *   Aici trebuie să adaugi **toate** variabilele din fișierul tău `.env.local` (ex: `NEXT_PUBLIC_SUPABASE_URL`, `RESEND_API_KEY`, etc.) cu valorile lor corespunzătoare.
-    *   Acest pas este **crucial** pentru ca site-ul live să se poată conecta la Supabase și Resend.
-5.  Apasă butonul **Deploy**.
-6.  Așteaptă câteva minute. Vercel va construi și publica site-ul, oferindu-ți un link public.
+1.  Ensure you have pushed your code to a GitHub repository.
+2.  Go to **Vercel** and click `Add New...` -> `Project`.
+3.  Select `Import Git Repository` and choose your repository from GitHub.
+4.  **Configuring Environment Variables in Vercel:**
+    *   During the import process, Vercel will have a section called `Environment Variables`.
+    *   Here, you must add **all** the variables from your `.env.local` file (e.g., `NEXT_PUBLIC_SUPABASE_URL`, `RESEND_API_KEY`, etc.) with their corresponding values.
+    *   This step is **crucial** for the live site to be able to connect to Supabase and Resend.
+5.  Click the **Deploy** button.
+6.  Wait a few minutes. Vercel will build and publish the site, providing you with a public link.
 
-## 7. Administrarea Conținutului
+## 7. Content Management
 
-### Modificarea Textelor
+### Modifying Texts
 
-Majoritatea textelor (titluri, descrieri) se află direct în componentele React din directorul `/components`. De exemplu, pentru a schimba textul principal, editează `components/Hero.tsx`.
+Most of the texts (titles, descriptions) are located directly in the React components within the `/components` directory. For example, to change the main hero text, edit `components/Hero.tsx`.
 
-### Adăugarea de Testimoniale sau Imagini în Galerie
+### Adding Testimonials or Gallery Images
 
-Aceste date sunt stocate în Supabase.
+This data is stored in Supabase.
 
-1.  Mergi la proiectul tău **Supabase**.
-2.  În meniul din stânga, selectează **Table Editor**.
-3.  Alege tabelul pe care vrei să-l editezi (ex: `testimonials` sau `media_assets`).
-4.  Apasă `+ Insert row` pentru a adăuga o intrare nouă. Completează câmpurile și apasă `Save`. Modificările vor apărea pe site (poate fi necesar un refresh).
+1.  Go to your **Supabase** project.
+2.  In the left-hand menu, select **Table Editor**.
+3.  Choose the table you want to edit (e.g., `testimonials` or `media_assets`).
+4.  Click `+ Insert row` to add a new entry. Fill in the fields and click `Save`. The changes will appear on the site (a refresh might be necessary).
