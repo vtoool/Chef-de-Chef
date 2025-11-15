@@ -8,6 +8,7 @@ import Testimonials from '../components/Testimonials';
 import Booking from '../components/Booking';
 import Contact from '../components/Contact';
 import Footer from '../components/Footer';
+import AnimatedSection from '../components/AnimatedSection';
 
 export default function HomePage() {
   return (
@@ -15,12 +16,24 @@ export default function HomePage() {
       <Header />
       <main>
         <Hero />
-        <Services />
-        <Gallery />
-        <About />
-        <Testimonials />
-        <Booking />
-        <Contact />
+        <AnimatedSection>
+          <Services />
+        </AnimatedSection>
+        <AnimatedSection>
+          <Gallery />
+        </AnimatedSection>
+        <AnimatedSection>
+          <About />
+        </AnimatedSection>
+        <AnimatedSection>
+          <Testimonials />
+        </AnimatedSection>
+        <AnimatedSection>
+          <Booking />
+        </AnimatedSection>
+        <AnimatedSection>
+          <Contact />
+        </AnimatedSection>
       </main>
       <Footer />
     </div>
