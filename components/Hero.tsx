@@ -21,8 +21,8 @@ const Hero: React.FC = () => {
           <div className="relative">
             <div className="bg-white p-2 rounded-lg shadow-xl transform md:rotate-2">
                 <img 
-                  src="https://images.unsplash.com/photo-1587327397741-697be231901a?q=80&w=1887&auto=format&fit=crop" 
-                  alt="Dancer in a traditional red Moldovan dress" 
+                  src="https://scontent.fkiv7-1.fna.fbcdn.net/v/t39.30808-6/480324791_953081760294442_1783990944146547779_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=127cfc&_nc_ohc=E9Ugi3ich00Q7kNvwG24Ir0&_nc_oc=AdnVKu1X1lh40_nRoItDbZmqnVajD1kJR6notxKzQBanHFld1n4oMHTJrTVLl8hXxbW_fAfxHYVLIlxQPi6rXA8t&_nc_zt=23&_nc_ht=scontent.fkiv7-1.fna&_nc_gid=f47qOphwVxSDs_JdfrLd4A&oh=00_AfiznpsExseIWO4p392EUF_9LuwaL6wabziHToNGqkIWrw&oe=691DD445" 
+                  alt="Chef de Chef folk dance ensemble performing" 
                   className="rounded-md w-full h-auto object-cover"
                 />
             </div>
