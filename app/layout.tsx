@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter, Playfair_Display, Cormorant } from 'next/font/google'
 import './globals.css'
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -36,7 +37,10 @@ export default function RootLayout({
     <html lang="ro" className={`${inter.variable} ${playfairDisplay.variable} ${cormorant.variable}`}>
       <head>
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <SpeedInsights />
+      </body>
     </html>
   )
 }
