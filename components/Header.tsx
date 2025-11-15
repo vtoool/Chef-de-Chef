@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 const Logo = () => (
     <div className="flex items-center space-x-2">
@@ -69,8 +69,43 @@ const Header: React.FC = () => {
     { name: 'Contact', href: '#contact' },
   ];
 
+  const [isVisible, setIsVisible] = useState(true);
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const servicesSection = document.getElementById('servicii');
+      
+      const servicesTop = servicesSection ? servicesSection.offsetTop : Infinity;
+
+      if (currentScrollY < servicesTop) {
+        // Always show the header when above the "Servicii" section
+        setIsVisible(true);
+      } else {
+        // When past the "Servicii" section, hide on scroll down, show on scroll up
+        if (currentScrollY > lastScrollY.current) {
+          // Scrolling down
+          setIsVisible(false);
+        } else {
+          // Scrolling up
+          setIsVisible(true);
+        }
+      }
+      
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+
   return (
-    <header className="w-full bg-brand-cream/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+    <header className={`w-full bg-brand-cream/80 backdrop-blur-md sticky top-0 z-50 shadow-sm transition-transform duration-300 ease-in-out ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}>
       <div className="container mx-auto px-6 py-3 flex justify-between items-center">
         <a href="#" aria-label="Pagina principală"><Logo /></a>
         <nav className="hidden md:flex items-center space-x-8">
