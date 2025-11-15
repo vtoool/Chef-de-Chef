@@ -7,20 +7,20 @@ interface Service {
 
 const services: Service[] = [
   {
-    title: 'Weddings',
-    description: 'A complete artistic program to bring tradition and spectacle to your dream wedding.',
+    title: 'Nunți',
+    description: 'Un program artistic complet pentru a aduce tradiție și spectacol la nunta de vis.',
   },
   {
-    title: 'Folk Traditions',
-    description: 'We keep traditions alive, performing authentic customs for a memorable experience.',
+    title: 'Tradiții Populare',
+    description: 'Păstrăm tradițiile vii, interpretând obiceiuri autentice pentru o experiență memorabilă.',
   },
   {
-    title: 'Private Parties',
-    description: 'We bring energy and joy to any family celebration, from baptisms to birthdays.',
+    title: 'Petreceri Private',
+    description: 'Aducem energie și bucurie la orice sărbătoare de familie, de la cumetrii la zile de naștere.',
   },
   {
-    title: 'Corporate Events',
-    description: 'Add a touch of unique culture and tradition to your corporate events, festivals, or receptions.',
+    title: 'Evenimente Corporate',
+    description: 'Adăugați o notă de cultură și tradiție unică evenimentelor corporate, festivalurilor sau recepțiilor.',
   },
 ];
 
@@ -28,9 +28,9 @@ const Services: React.FC = () => {
   return (
     <section id="services" className="py-12 md:py-16 bg-white">
       <div className="container mx-auto max-w-6xl px-6 text-center">
-        <h2 className="font-serif text-2xl md:text-3xl font-bold text-brand-brown-dark mb-3">Our Services</h2>
+        <h2 className="font-serif text-2xl md:text-3xl font-bold text-brand-brown-dark mb-3">Serviciile Noastre</h2>
         <p className="text-brand-brown-light max-w-2xl mx-auto mb-10">
-          We offer tailored artistic programs to make any event an unforgettable celebration.
+          Oferim programe artistice personalizate pentru a transforma orice eveniment într-o sărbătoare de neuitat.
         </p>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {services.map((service, index) => (

@@ -7,24 +7,24 @@ const testimonials: Testimonial[] = [
     id: '1',
     created_at: new Date().toISOString(),
     name: 'Ana & Ion Popescu',
-    event_type: 'Wedding',
-    message: 'You were absolutely fantastic! You created a fairytale atmosphere and all the guests were impressed. We wholeheartedly recommend you!',
+    event_type: 'Nuntă',
+    message: 'Ați fost absolut fantastici! Ați creat o atmosferă de poveste și toți invitații au fost impresionați. Vă recomandăm cu toată inima!',
     rating: 5,
   },
   {
     id: '2',
     created_at: new Date().toISOString(),
-    name: 'The Cojocaru Family',
-    event_type: 'Baptism',
-    message: 'Professionalism and a lot of heart. You made our daughter\'s baptism an unforgettable event. Thank you!',
+    name: 'Familia Cojocaru',
+    event_type: 'Cumătrie',
+    message: 'Profesionalism și mult suflet. Ați făcut din cumătria fetiței noastre un eveniment de neuitat. Mulțumim!',
     rating: 5,
   },
   {
     id: '3',
     created_at: new Date().toISOString(),
-    name: 'Tech Solutions LLC',
-    event_type: 'Corporate Event',
-    message: 'Our international guests were fascinated by your performance. A wonderful touch of color and tradition at our corporate party.',
+    name: 'Tech Solutions SRL',
+    event_type: 'Eveniment Corporate',
+    message: 'Oaspeții noștri internaționali au fost fascinați de spectacolul vostru. O pată minunată de culoare și tradiție la petrecerea noastră corporate.',
     rating: 5,
   },
 ];
@@ -39,9 +39,9 @@ const Testimonials: React.FC = () => {
   return (
     <section id="testimonials" className="py-12 md:py-16 bg-brand-cream">
       <div className="container mx-auto max-w-6xl px-6 text-center">
-        <h2 className="font-serif text-2xl md:text-3xl font-bold text-brand-brown-dark mb-3">What Our Clients Say</h2>
+        <h2 className="font-serif text-2xl md:text-3xl font-bold text-brand-brown-dark mb-3">Ce Spun Clienții Noștri</h2>
         <p className="text-brand-brown-light max-w-2xl mx-auto mb-10">
-          Our pride is the joy of those who have chosen us to be with them in their special moments.
+          Mândria noastră este bucuria celor care ne-au ales să le fim alături în momentele speciale.
         </p>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {testimonials.map((testimonial) => (

@@ -9,7 +9,7 @@ const adminEmail = process.env.ADMIN_EMAIL;
 
 export async function POST(request: Request) {
   if (!supabase) {
-    return NextResponse.json({ message: 'Supabase client is not configured on the server.' }, { status: 500 });
+    return NextResponse.json({ message: 'Clientul Supabase nu este configurat pe server.' }, { status: 500 });
   }
   
   const booking: Booking = await request.json();
@@ -20,16 +20,16 @@ export async function POST(request: Request) {
     .insert([booking]);
 
   if (supabaseError) {
-    console.error('Supabase error:', supabaseError);
-    return NextResponse.json({ message: 'Database error', error: supabaseError.message }, { status: 500 });
+    console.error('Eroare Supabase:', supabaseError);
+    return NextResponse.json({ message: 'Eroare la baza de date', error: supabaseError.message }, { status: 500 });
   }
 
   // 2. Send emails via Resend
   if (!fromEmail || !adminEmail || !process.env.RESEND_API_KEY) {
-    console.error('Email configuration missing in environment variables.');
+    console.error('Configurația de email lipsește din variabilele de mediu.');
     // Still return success to the user as the booking was saved.
     // The admin will need to check the DB manually.
-    return NextResponse.json({ message: 'Booking successful, but email notification failed to configure.' }, { status: 201 });
+    return NextResponse.json({ message: 'Rezervare reușită, dar configurarea notificării prin email a eșuat.' }, { status: 201 });
   }
 
   try {
@@ -57,10 +57,10 @@ export async function POST(request: Request) {
     });
 
   } catch (emailError) {
-    console.error('Resend error:', emailError);
+    console.error('Eroare Resend:', emailError);
     // Again, don't fail the request if the booking was saved.
-    return NextResponse.json({ message: 'Booking successful, but email notification failed to send.' }, { status: 201 });
+    return NextResponse.json({ message: 'Rezervare reușită, dar trimiterea notificării prin email a eșuat.' }, { status: 201 });
   }
 
-  return NextResponse.json({ message: 'Booking successful!' }, { status: 201 });
+  return NextResponse.json({ message: 'Rezervare reușită!' }, { status: 201 });
 }

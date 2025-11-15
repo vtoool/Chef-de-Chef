@@ -9,7 +9,7 @@ const adminEmail = process.env.ADMIN_EMAIL;
 
 export async function POST(request: Request) {
   if (!supabase) {
-    return NextResponse.json({ message: 'Supabase client is not configured on the server.' }, { status: 500 });
+    return NextResponse.json({ message: 'Clientul Supabase nu este configurat pe server.' }, { status: 500 });
   }
   
   const message: ContactMessage = await request.json();
@@ -20,14 +20,14 @@ export async function POST(request: Request) {
     .insert([message]);
 
   if (supabaseError) {
-    console.error('Supabase error:', supabaseError);
-    return NextResponse.json({ message: 'Database error', error: supabaseError.message }, { status: 500 });
+    console.error('Eroare Supabase:', supabaseError);
+    return NextResponse.json({ message: 'Eroare la baza de date', error: supabaseError.message }, { status: 500 });
   }
 
   // 2. Send email via Resend
    if (!fromEmail || !adminEmail || !process.env.RESEND_API_KEY) {
-    console.error('Email configuration missing in environment variables.');
-    return NextResponse.json({ message: 'Message sent, but email notification failed to configure.' }, { status: 201 });
+    console.error('Configurația de email lipsește din variabilele de mediu.');
+    return NextResponse.json({ message: 'Mesaj trimis, dar configurarea notificării prin email a eșuat.' }, { status: 201 });
   }
 
   try {
@@ -43,9 +43,9 @@ export async function POST(request: Request) {
              <p>${message.message}</p>`,
     });
   } catch (emailError) {
-    console.error('Resend error:', emailError);
-    return NextResponse.json({ message: 'Message sent, but email notification failed to send.' }, { status: 201 });
+    console.error('Eroare Resend:', emailError);
+    return NextResponse.json({ message: 'Mesaj trimis, dar trimiterea notificării prin email a eșuat.' }, { status: 201 });
   }
 
-  return NextResponse.json({ message: 'Message sent successfully!' }, { status: 201 });
+  return NextResponse.json({ message: 'Mesaj trimis cu succes!' }, { status: 201 });
 }

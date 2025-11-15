@@ -7,14 +7,14 @@ const Hero: React.FC = () => {
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="text-center md:text-left">
             <h1 className="font-serif text-4xl md:text-5xl font-black text-brand-brown-dark leading-tight mb-4">
-              Elevate Your Events!
+              Elevați-vă Evenimentele!
             </h1>
             <p className="text-lg text-brand-brown-light max-w-xl mx-auto md:mx-0 mb-8">
-              Join us in celebrating Moldovan folk culture through vibrant performances.
+              Alăturați-vă nouă pentru a celebra cultura populară moldovenească prin spectacole vibrante.
             </p>
             <div className="flex justify-center md:justify-start">
               <a href="#book" className="bg-chef-gradient text-white font-bold py-3 px-8 rounded-full shadow-md hover:shadow-lg transition-all duration-300">
-                Reserve Now
+                Rezervă Acum
               </a>
             </div>
           </div>
@@ -22,7 +22,7 @@ const Hero: React.FC = () => {
             <div className="bg-white p-2 rounded-lg shadow-xl transform md:rotate-2">
                 <img 
                   src="https://scontent.fkiv7-1.fna.fbcdn.net/v/t39.30808-6/480324791_953081760294442_1783990944146547779_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=127cfc&_nc_ohc=E9Ugi3ich00Q7kNvwG24Ir0&_nc_oc=AdnVKu1X1lh40_nRoItDbZmqnVajD1kJR6notxKzQBanHFld1n4oMHTJrTVLl8hXxbW_fAfxHYVLIlxQPi6rXA8t&_nc_zt=23&_nc_ht=scontent.fkiv7-1.fna&_nc_gid=f47qOphwVxSDs_JdfrLd4A&oh=00_AfiznpsExseIWO4p392EUF_9LuwaL6wabziHToNGqkIWrw&oe=691DD445" 
-                  alt="Chef de Chef folk dance ensemble performing" 
+                  alt="Ansamblul de dansuri populare Chef de Chef în timpul unui spectacol" 
                   className="rounded-md w-full h-auto object-cover"
                 />
             </div>

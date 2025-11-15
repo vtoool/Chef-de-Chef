@@ -26,7 +26,7 @@ const cormorant = Cormorant({
 
 export const metadata: Metadata = {
   title: 'Ansamblul Chef de Chef | Dansuri Populare Moldovenești',
-  description: "Website for the Moldovan folk dance ensemble 'Ansamblul Chef de Chef', featuring services, gallery, testimonials, and a booking system.",
+  description: "Site-ul web al ansamblului de dansuri populare moldovenești 'Ansamblul Chef de Chef', care prezintă servicii, galerie, testimoniale și un sistem de rezervări.",
 }
 
 export default function RootLayout({
