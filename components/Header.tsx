@@ -7,14 +7,58 @@ const Logo = () => (
     </div>
 );
 
-const FolkBorder = () => (
-  <div 
-    className="h-1 bg-repeat-x" 
-    style={{
-      backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='4' viewBox='0 0 20 4' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 2h2V0h2v2h2V0h2v2h2V0h2v2h2V0h2v2h2V0h2v2h2V0h2v2h-2v2h-2v-2h-2v2h-2v-2h-2v2h-2v-2h-2v2H2v-2H0v2z' fill='%235A3A26' fill-opacity='0.2'/%3E%3C/svg%3E")`
-    }}
-  />
-);
+const FolkBorder = () => {
+    const colors = {
+        b: '#3B2414', // brand-brown-dark
+        g: '#FFC857', // brand-gold
+        o: '#F7931E', // brand-orange
+    };
+    
+    // ASCII art representation of the simplified folk pattern.
+    const patternMatrix = [
+        "..b..   g...g   ",
+        ".bgb.   .g.g.   ",
+        "bgobg   ..g..   ",
+        ".bgb.   .g.g.   ",
+        "..b..   g...g   ",
+    ];
+
+    const unit = 2; // Each 'pixel' will be a 2x2 square
+    const patternHeight = patternMatrix.length * unit;
+    const patternWidth = patternMatrix[0].length * unit;
+
+    const patternElements = patternMatrix.flatMap((row, y) => 
+        row.split('').map((char, x) => {
+            if (char === ' ' || char === '.') return null;
+            return (
+                <rect 
+                    key={`${y}-${x}`}
+                    x={x * unit} 
+                    y={y * unit} 
+                    width={unit} 
+                    height={unit} 
+                    fill={colors[char as keyof typeof colors]} 
+                />
+            );
+        })
+    );
+
+    return (
+        <div className="bg-brand-cream" aria-hidden="true">
+            <svg width="100%" height={patternHeight + (unit * 2)} preserveAspectRatio="none">
+                <defs>
+                    <pattern id="folk-pattern-simple" x="0" y="0" width={patternWidth} height={patternHeight} patternUnits="userSpaceOnUse">
+                        {patternElements}
+                    </pattern>
+                </defs>
+                <rect y="0" width="100%" height={unit} fill={colors.b} />
+                <rect y={unit} width="100%" height={patternHeight} fill="url(#folk-pattern-simple)" />
+                <rect y={patternHeight + unit} width="100%" height={unit} fill={colors.b} />
+            </svg>
+        </div>
+    );
+};
+
 
 const Header: React.FC = () => {
   const navLinks = [
@@ -26,7 +70,7 @@ const Header: React.FC = () => {
   ];
 
   return (
-    <header className="bg-brand-cream/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+    <header className="w-full bg-brand-cream/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
       <div className="container mx-auto px-6 py-3 flex justify-between items-center">
         <a href="#" aria-label="Pagina principală"><Logo /></a>
         <nav className="hidden md:flex items-center space-x-8">

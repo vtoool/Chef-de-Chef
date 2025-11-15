@@ -12,19 +12,21 @@ import Footer from './components/Footer';
 
 const App: React.FC = () => {
   return (
-    <div className="relative overflow-x-hidden">
+    <>
       <Header />
-      <main>
-        <Hero />
-        <Services />
-        <Gallery />
-        <About />
-        <Testimonials />
-        <Booking />
-        <Contact />
-      </main>
-      <Footer />
-    </div>
+      <div className="relative overflow-x-hidden">
+        <main>
+          <Hero />
+          <Services />
+          <Gallery />
+          <About />
+          <Testimonials />
+          <Booking />
+          <Contact />
+        </main>
+        <Footer />
+      </div>
+    </>
   );
 };
 
