@@ -108,7 +108,7 @@ const Header: React.FC = () => {
 
   return (
     <header className={`w-full bg-brand-cream/80 backdrop-blur-md sticky top-0 z-50 shadow-sm transition-transform duration-300 ease-in-out ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}>
-      <div className="container mx-auto px-6 py-3 flex justify-between items-center">
+      <div className="container mx-auto max-w-7xl px-6 py-2 flex justify-between items-center">
         <a href="#" aria-label="Pagina principală"><Logo /></a>
         <nav className="hidden md:flex items-center space-x-8">
           {navLinks.map((link) => (

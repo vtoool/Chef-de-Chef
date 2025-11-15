@@ -47,11 +47,11 @@ const Contact: React.FC = () => {
     };
 
   return (
-    <section id="contact" className="py-20 bg-brand-cream">
-      <div className="container mx-auto px-6">
+    <section id="contact" className="py-16 md:py-24 bg-brand-cream">
+      <div className="container mx-auto max-w-7xl px-6">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="font-serif text-4xl font-bold text-brand-brown-dark mb-4">Contactează-ne</h2>
+            <h2 className="font-serif text-3xl md:text-4xl font-bold text-brand-brown-dark mb-4">Contactează-ne</h2>
             <p className="text-brand-brown-light mb-6">
               Aveți întrebări sau doriți o ofertă personalizată? Completați formularul alăturat sau contactați-ne direct. Suntem aici pentru a vă ajuta să creați un eveniment de neuitat.
             </p>
@@ -60,7 +60,7 @@ const Contact: React.FC = () => {
                 <p><strong>Email:</strong> contact@chefdechef.md</p>
             </div>
           </div>
-          <div className="bg-white p-8 rounded-lg shadow-xl">
+          <div className="bg-white p-6 md:p-8 rounded-lg shadow-xl">
             <form onSubmit={handleSubmit}>
               <div className="grid sm:grid-cols-2 gap-4 mb-4">
                   <input type="text" name="name" placeholder="Nume" required value={formData.name} onChange={handleInputChange} className="w-full p-3 bg-white text-brand-brown-dark border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>

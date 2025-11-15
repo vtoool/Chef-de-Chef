@@ -26,17 +26,17 @@ const services: Service[] = [
 
 const Services: React.FC = () => {
   return (
-    <section id="servicii" className="py-20 bg-white">
-      <div className="container mx-auto px-6 text-center">
-        <h2 className="font-serif text-4xl font-bold text-brand-brown-dark mb-4">Serviciile Noastre</h2>
+    <section id="servicii" className="py-16 md:py-24 bg-white">
+      <div className="container mx-auto max-w-7xl px-6 text-center">
+        <h2 className="font-serif text-3xl md:text-4xl font-bold text-brand-brown-dark mb-4">Serviciile Noastre</h2>
         <p className="text-brand-brown-light max-w-2xl mx-auto mb-12">
           Oferim programe artistice personalizate pentru a transforma orice eveniment într-o sărbătoare memorabilă.
         </p>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {services.map((service, index) => (
-            <div key={index} className="bg-brand-cream p-8 rounded-lg shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+            <div key={index} className="bg-brand-cream p-6 rounded-lg shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
               <div className="text-brand-orange text-5xl mb-4 inline-block">
-                 <div className="w-12 h-12 bg-brand-orange/20 rounded-full mx-auto" />
+                 <div className="w-10 h-10 bg-brand-orange/20 rounded-full mx-auto" />
               </div>
               <h3 className="font-serif text-2xl font-bold text-brand-brown-dark mb-2">{service.title}</h3>
               <p className="text-brand-brown-light">{service.description}</p>

@@ -37,15 +37,15 @@ const RatingPlaceholder: React.FC<{ rating: number }> = ({ rating }) => (
 
 const Testimonials: React.FC = () => {
   return (
-    <section id="testimoniale" className="py-20 bg-brand-cream">
-      <div className="container mx-auto px-6 text-center">
-        <h2 className="font-serif text-4xl font-bold text-brand-brown-dark mb-4">Ce spun clienții</h2>
+    <section id="testimoniale" className="py-16 md:py-24 bg-brand-cream">
+      <div className="container mx-auto max-w-7xl px-6 text-center">
+        <h2 className="font-serif text-3xl md:text-4xl font-bold text-brand-brown-dark mb-4">Ce spun clienții</h2>
         <p className="text-brand-brown-light max-w-2xl mx-auto mb-12">
           Mândria noastră este bucuria celor care ne-au ales să le fim alături în momente speciale.
         </p>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {testimonials.map((testimonial) => (
-            <div key={testimonial.id} className="bg-white p-8 rounded-lg shadow-lg text-left">
+            <div key={testimonial.id} className="bg-white p-6 rounded-lg shadow-lg text-left">
               <div className="flex justify-between items-start mb-4">
                   <div>
                       <h4 className="font-bold text-lg text-brand-brown-dark">{testimonial.name}</h4>

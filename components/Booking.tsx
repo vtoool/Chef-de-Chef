@@ -110,13 +110,13 @@ const BookingComponent: React.FC = () => {
   const isDateBooked = selectedDate && unavailableDates.some(d => format(d, 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd'));
 
   return (
-    <section id="rezerva" className="py-20 bg-white">
-      <div className="container mx-auto px-6">
-        <h2 className="font-serif text-4xl font-bold text-brand-brown-dark mb-4 text-center">Rezervă Ansamblul</h2>
+    <section id="rezerva" className="py-16 md:py-24 bg-white">
+      <div className="container mx-auto max-w-7xl px-6">
+        <h2 className="font-serif text-3xl md:text-4xl font-bold text-brand-brown-dark mb-4 text-center">Rezervă Ansamblul</h2>
         <p className="text-brand-brown-light max-w-2xl mx-auto mb-12 text-center">
           Verifică disponibilitatea și trimite o cerere de rezervare. Vom reveni cu un răspuns în cel mai scurt timp.
         </p>
-        <div className="grid lg:grid-cols-2 gap-12 bg-brand-cream p-8 rounded-lg shadow-xl">
+        <div className="grid lg:grid-cols-2 gap-12 bg-brand-cream p-6 md:p-8 rounded-lg shadow-xl">
           <div className="flex flex-col items-center justify-center space-y-4">
               <label htmlFor="event-date" className="font-serif text-2xl font-bold text-brand-brown-dark">1. Alege data evenimentului</label>
               <input
@@ -144,7 +144,7 @@ const BookingComponent: React.FC = () => {
                  </div>
               ) : (
                 <form onSubmit={handleSubmit}>
-                  <h3 className="font-serif text-2xl font-bold mb-4">2. Completează detaliile: <span className="text-brand-orange">{format(selectedDate, 'd MMMM yyyy', { locale: ro })}</span></h3>
+                  <h3 className="font-serif text-xl font-bold mb-4">2. Completează detaliile: <span className="text-brand-orange">{format(selectedDate, 'd MMMM yyyy', { locale: ro })}</span></h3>
                   <div className="grid sm:grid-cols-2 gap-4 mb-4">
                     <input type="text" name="name" placeholder="Numele dvs." required value={formData.name} onChange={handleInputChange} disabled={!isSupabaseConfigured} className="w-full p-3 bg-white text-brand-brown-dark border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange disabled:opacity-50"/>
                     <input type="email" name="email" placeholder="Email" required value={formData.email} onChange={handleInputChange} disabled={!isSupabaseConfigured} className="w-full p-3 bg-white text-brand-brown-dark border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange disabled:opacity-50"/>

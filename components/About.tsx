@@ -2,11 +2,11 @@ import React from 'react';
 
 const About: React.FC = () => {
   return (
-    <section id="despre" className="py-20 bg-white">
-      <div className="container mx-auto px-6">
+    <section id="despre" className="py-16 md:py-24 bg-white">
+      <div className="container mx-auto max-w-7xl px-6">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="font-serif text-4xl font-bold text-brand-brown-dark mb-4">Despre Ansamblul Nostru</h2>
+            <h2 className="font-serif text-3xl md:text-4xl font-bold text-brand-brown-dark mb-4">Despre Ansamblul Nostru</h2>
             <p className="text-brand-brown-light mb-4">
               Născut din pasiune pentru folclorul autentic moldovenesc, "Chef de Chef" este mai mult decât un ansamblu de dansuri – suntem o familie unită de dragostea pentru tradiție. De peste un deceniu, aducem bucurie și energie la cele mai importante evenimente din viața oamenilor.
             </p>

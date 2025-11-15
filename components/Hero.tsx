@@ -2,11 +2,11 @@ import React from 'react';
 
 const Hero: React.FC = () => {
   return (
-    <section id="home" className="py-20 md:py-32 bg-brand-cream overflow-hidden">
-      <div className="container mx-auto px-6">
+    <section id="home" className="py-16 md:py-24 bg-brand-cream overflow-hidden">
+      <div className="container mx-auto max-w-7xl px-6">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="text-center md:text-left">
-            <h1 className="font-serif text-5xl md:text-7xl font-black text-brand-brown-dark leading-tight mb-4">
+            <h1 className="font-serif text-4xl md:text-6xl font-black text-brand-brown-dark leading-tight mb-4">
               Creăm momente de neuitat prin dans.
             </h1>
             <p className="text-lg text-brand-brown-light max-w-xl mx-auto md:mx-0 mb-8">
@@ -36,7 +36,7 @@ const Hero: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="mt-20 md:mt-32 grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
+        <div className="mt-16 md:mt-24 grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
             <div className="border-t-2 border-brand-gold/50 pt-4">
                 <p className="font-serif text-3xl font-bold text-brand-orange">10+</p>
                 <p className="text-brand-brown-light">ani de experiență</p>
