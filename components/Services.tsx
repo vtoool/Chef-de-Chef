@@ -37,8 +37,11 @@ const services = [
   },
   {
     icon: (
-         <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18M18.75 3v18M9 6.75h6.375M9 12h6.375M9 17.25h6.375" />
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}>
+            <path d="M8 21h8"></path>
+            <path d="M12 15v6"></path>
+            <path d="M5 5a7 2 0 1 0 14 0A7 2 0 1 0 5 5"></path>
+            <path d="M5 5v0.388c0 0.432 0.126 0.853 0.362 1.206l5 7.509c0.633 0.951 1.88 1.183 2.785 0.517 0.191 -0.141 0.358 -0.316 0.491 -0.517l5 -7.509c0.236 -0.353 0.362 -0.774 0.362 -1.206V5"></path>
         </svg>
     ),
     title: 'Evenimente Corporative',
