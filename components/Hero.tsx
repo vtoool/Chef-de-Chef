@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import BookingButton from './BookingButton';
 
 const Hero: React.FC = () => {
   const [offsetY, setOffsetY] = useState(0);
@@ -30,9 +31,9 @@ const Hero: React.FC = () => {
               Celebrați frumusețea culturii populare moldovenești prin spectacole pline de energie, culoare și emoție.
             </p>
             <div className="flex justify-center md:justify-start">
-              <a href="#book" className="bg-chef-gradient text-white font-bold py-3 px-8 rounded-full shadow-md hover:shadow-lg transition-all duration-300">
+              <BookingButton href="#book" className="!py-3 !px-8">
                 Rezervă Acum
-              </a>
+              </BookingButton>
             </div>
           </div>
           <div 

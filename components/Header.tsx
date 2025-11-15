@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import BookingButton from './BookingButton';
 
 const Logo = () => (
     <div className="flex items-center space-x-2">
@@ -67,9 +68,9 @@ const Header: React.FC = () => {
               </a>
             ))}
           </nav>
-          <a href="#book" className="hidden md:inline-block bg-chef-gradient text-white font-bold py-2 px-6 rounded-full shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <BookingButton href="#book" className="hidden md:inline-block">
             Rezervă Acum
-          </a>
+          </BookingButton>
           <button 
             className="md:hidden text-brand-brown-dark z-50" 
             onClick={() => setIsMenuOpen(!isMenuOpen)} 
@@ -103,9 +104,9 @@ const Header: React.FC = () => {
               {link.name}
             </a>
           ))}
-          <a href="#book" onClick={handleLinkClick} className="mt-8 bg-chef-gradient text-white font-bold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <BookingButton href="#book" onClick={handleLinkClick} className="mt-8 !py-3 !px-8">
             Rezervă Acum
-          </a>
+          </BookingButton>
         </nav>
       </div>
     </>

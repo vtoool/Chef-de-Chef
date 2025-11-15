@@ -1,3 +1,42 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .booking-button {
+    @apply relative inline-block overflow-hidden bg-chef-gradient text-white font-bold py-2 px-6 rounded-full shadow-lg transition-transform duration-300 ease-out;
+    /* Base transform state */
+    transform: scale(1);
+  }
+
+  /* The glowing light effect */
+  .booking-button::before {
+    content: '';
+    position: absolute;
+    top: var(--mouse-y, 50%);
+    left: var(--mouse-x, 50%);
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0) 60%);
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    pointer-events: none; /* Make sure it doesn't interfere with clicks */
+  }
+
+  /* Hover state */
+  .booking-button:hover {
+    @apply shadow-xl;
+    transform: scale(1.05);
+  }
+
+  .booking-button:hover::before {
+    opacity: 1;
+  }
+  
+  /* Active/Click state */
+  .booking-button:active {
+    transform: scale(0.95);
+    transition-duration: 150ms;
+  }
+}
