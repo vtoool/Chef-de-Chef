@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { DayPicker } from 'react-day-picker';
 import { format } from 'date-fns';
 import { ro } from 'date-fns/locale';
 import { supabase, isSupabaseConfigured } from '../lib/supabaseClient';
@@ -47,6 +46,15 @@ const BookingComponent: React.FC = () => {
       fetchUnavailableDates();
     }
   }, [fetchUnavailableDates]);
+  
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value) {
+        // Add T00:00:00 to avoid timezone issues where it might become the previous day
+        setSelectedDate(new Date(e.target.value + 'T00:00:00'));
+    } else {
+        setSelectedDate(undefined);
+    }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -101,24 +109,6 @@ const BookingComponent: React.FC = () => {
   
   const isDateBooked = selectedDate && unavailableDates.some(d => format(d, 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd'));
 
-  if (!isSupabaseConfigured) {
-    return (
-      <section id="rezerva" className="py-20 bg-white">
-        <div className="container mx-auto px-6">
-          <h2 className="font-serif text-4xl font-bold text-brand-brown-dark mb-4 text-center">Rezervă Ansamblul</h2>
-          <div className="bg-brand-cream p-8 rounded-lg shadow-xl text-center">
-            <p className="text-lg text-brand-brown-light">
-              Calendarul pentru rezervări este momentan indisponibil în acest mediu de previzualizare.
-            </p>
-            <p className="mt-2 text-sm text-brand-brown-light/80">
-              Funcționalitatea completă va fi activată după configurarea cheilor Supabase.
-            </p>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
   return (
     <section id="rezerva" className="py-20 bg-white">
       <div className="container mx-auto px-6">
@@ -127,36 +117,39 @@ const BookingComponent: React.FC = () => {
           Verifică disponibilitatea și trimite o cerere de rezervare. Vom reveni cu un răspuns în cel mai scurt timp.
         </p>
         <div className="grid lg:grid-cols-2 gap-12 bg-brand-cream p-8 rounded-lg shadow-xl">
-          <div className="flex justify-center">
-            <DayPicker
-              mode="single"
-              selected={selectedDate}
-              onSelect={setSelectedDate}
-              disabled={[{ before: new Date() }, ...unavailableDates]}
-              locale={ro}
-              className="m-0"
-              styles={{
-                caption: { color: '#3B2414', fontWeight: 'bold' },
-                selected: { backgroundColor: '#F7931E', color: 'white' },
-                today: { color: '#F7931E', fontWeight: 'bold' },
-              }}
-            />
+          <div className="flex flex-col items-center justify-center space-y-4">
+              <label htmlFor="event-date" className="font-serif text-2xl font-bold text-brand-brown-dark">1. Alege data evenimentului</label>
+              <input
+                id="event-date"
+                type="date"
+                value={selectedDate ? format(selectedDate, 'yyyy-MM-dd') : ''}
+                onChange={handleDateChange}
+                min={format(new Date(), 'yyyy-MM-dd')}
+                className="w-full max-w-xs p-3 border border-gray-300 rounded-md shadow-sm focus:ring-brand-orange focus:border-brand-orange text-brand-brown-dark disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label="Selectează data evenimentului"
+                disabled={!isSupabaseConfigured}
+              />
+              {!isSupabaseConfigured && (
+                  <p className="mt-2 text-sm text-center text-brand-brown-light/80">
+                      Calendarul este inactiv în modul de previzualizare.
+                  </p>
+              )}
           </div>
           <div>
             {selectedDate ? (
               isDateBooked ? (
-                 <div className="text-center p-8 bg-red-100 text-red-800 rounded-lg">
+                 <div className="text-center p-8 bg-red-100 text-red-800 rounded-lg h-full flex flex-col justify-center items-center">
                     <h3 className="font-bold text-lg">Data este indisponibilă</h3>
                     <p>Ne pare rău, data de {format(selectedDate, 'd MMMM yyyy', { locale: ro })} este deja rezervată.</p>
                  </div>
               ) : (
                 <form onSubmit={handleSubmit}>
-                  <h3 className="font-serif text-2xl font-bold mb-4">Cerere pentru: <span className="text-brand-orange">{format(selectedDate, 'd MMMM yyyy', { locale: ro })}</span></h3>
+                  <h3 className="font-serif text-2xl font-bold mb-4">2. Completează detaliile: <span className="text-brand-orange">{format(selectedDate, 'd MMMM yyyy', { locale: ro })}</span></h3>
                   <div className="grid sm:grid-cols-2 gap-4 mb-4">
-                    <input type="text" name="name" placeholder="Numele dvs." required value={formData.name} onChange={handleInputChange} className="w-full p-3 bg-white text-brand-brown-dark border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
-                    <input type="email" name="email" placeholder="Email" required value={formData.email} onChange={handleInputChange} className="w-full p-3 bg-white text-brand-brown-dark border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
-                    <input type="tel" name="phone" placeholder="Telefon" required value={formData.phone} onChange={handleInputChange} className="w-full p-3 bg-white text-brand-brown-dark border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
-                    <select name="eventType" value={formData.eventType} onChange={handleInputChange} className="w-full p-3 bg-white text-brand-brown-dark border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange">
+                    <input type="text" name="name" placeholder="Numele dvs." required value={formData.name} onChange={handleInputChange} disabled={!isSupabaseConfigured} className="w-full p-3 bg-white text-brand-brown-dark border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange disabled:opacity-50"/>
+                    <input type="email" name="email" placeholder="Email" required value={formData.email} onChange={handleInputChange} disabled={!isSupabaseConfigured} className="w-full p-3 bg-white text-brand-brown-dark border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange disabled:opacity-50"/>
+                    <input type="tel" name="phone" placeholder="Telefon" required value={formData.phone} onChange={handleInputChange} disabled={!isSupabaseConfigured} className="w-full p-3 bg-white text-brand-brown-dark border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange disabled:opacity-50"/>
+                    <select name="eventType" value={formData.eventType} onChange={handleInputChange} disabled={!isSupabaseConfigured} className="w-full p-3 bg-white text-brand-brown-dark border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange disabled:opacity-50">
                         <option>Nuntă</option>
                         <option>Cumătrie</option>
                         <option>Petrecere</option>
@@ -164,9 +157,9 @@ const BookingComponent: React.FC = () => {
                         <option>Altceva</option>
                     </select>
                   </div>
-                  <input type="text" name="location" placeholder="Locația evenimentului (oraș)" required value={formData.location} onChange={handleInputChange} className="w-full p-3 bg-white text-brand-brown-dark border border-gray-300 rounded-md mb-4 focus:ring-brand-orange focus:border-brand-orange"/>
-                  <textarea name="notes" placeholder="Detalii suplimentare" rows={3} value={formData.notes} onChange={handleInputChange} className="w-full p-3 bg-white text-brand-brown-dark border border-gray-300 rounded-md mb-4 focus:ring-brand-orange focus:border-brand-orange"></textarea>
-                  <button type="submit" disabled={isLoading} className="w-full bg-chef-gradient text-white font-bold py-3 px-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50">
+                  <input type="text" name="location" placeholder="Locația evenimentului (oraș)" required value={formData.location} onChange={handleInputChange} disabled={!isSupabaseConfigured} className="w-full p-3 bg-white text-brand-brown-dark border border-gray-300 rounded-md mb-4 focus:ring-brand-orange focus:border-brand-orange disabled:opacity-50"/>
+                  <textarea name="notes" placeholder="Detalii suplimentare" rows={3} value={formData.notes} onChange={handleInputChange} disabled={!isSupabaseConfigured} className="w-full p-3 bg-white text-brand-brown-dark border border-gray-300 rounded-md mb-4 focus:ring-brand-orange focus:border-brand-orange disabled:opacity-50"></textarea>
+                  <button type="submit" disabled={isLoading || !isSupabaseConfigured} className="w-full bg-chef-gradient text-white font-bold py-3 px-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
                     {isLoading ? 'Se trimite...' : 'Trimite Cererea'}
                   </button>
                 </form>
