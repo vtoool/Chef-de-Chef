@@ -8,7 +8,7 @@ const testimonials: Testimonial[] = [
     created_at: new Date().toISOString(),
     name: 'Ana & Ion Popescu',
     event_type: 'Nuntă',
-    message: 'Ați fost absolut fantastici! Ați creat o atmosferă de poveste și toți invitații au fost impresionați. Vă recomandăm cu toată inima!',
+    message: 'Ați fost extraordinari! Atmosfera creată a fost exact ce ne-am dorit, iar invitații au fost încântați. Vă recomandăm din toată inima!',
     rating: 5,
   },
   {
@@ -16,24 +16,18 @@ const testimonials: Testimonial[] = [
     created_at: new Date().toISOString(),
     name: 'Familia Cojocaru',
     event_type: 'Cumătrie',
-    message: 'Profesionalism și mult suflet. Ați făcut din cumătria fetiței noastre un eveniment de neuitat. Mulțumim!',
+    message: 'Mult profesionalism și mult suflet. Ați făcut ca ziua fetiței noastre să fie cu adevărat specială. Mulțumim pentru tot!',
     rating: 5,
   },
   {
     id: '3',
     created_at: new Date().toISOString(),
     name: 'Tech Solutions SRL',
-    event_type: 'Eveniment Corporate',
-    message: 'Oaspeții noștri internaționali au fost fascinați de spectacolul vostru. O pată minunată de culoare și tradiție la petrecerea noastră corporate.',
+    event_type: 'Eveniment Corporativ',
+    message: 'Oaspeții noștri internaționali au fost fascinați de programul vostru. A fost exact elementul de tradiție și energie de care evenimentul nostru corporativ avea nevoie.',
     rating: 5,
   },
 ];
-
-const RatingPlaceholder: React.FC<{ rating: number }> = ({ rating }) => (
-  <div className="flex items-center">
-    <span className="text-brand-gold font-bold text-sm">{rating} / 5</span>
-  </div>
-);
 
 const Testimonials: React.FC = () => {
   return (
@@ -41,7 +35,7 @@ const Testimonials: React.FC = () => {
       <div className="container mx-auto max-w-6xl px-6 text-center">
         <h2 className="font-serif text-2xl md:text-3xl font-bold text-brand-brown-dark mb-3">Ce Spun Clienții Noștri</h2>
         <p className="text-brand-brown-light max-w-2xl mx-auto mb-10">
-          Mândria noastră este bucuria celor care ne-au ales să le fim alături în momentele speciale.
+          Ne mândrim cu bucuria și recunoștința celor care ne aleg să le fim alături în momentele speciale.
         </p>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {testimonials.map((testimonial) => (
@@ -51,7 +45,9 @@ const Testimonials: React.FC = () => {
                       <h4 className="font-bold text-md text-brand-brown-dark">{testimonial.name}</h4>
                       <p className="text-xs text-brand-orange font-semibold">{testimonial.event_type}</p>
                   </div>
-                  <RatingPlaceholder rating={testimonial.rating} />
+                  <div className="text-brand-gold text-sm">
+                    {'★★★★★'.slice(5 - testimonial.rating)}
+                  </div>
               </div>
               <p className="text-brand-brown-light italic text-sm">"{testimonial.message}"</p>
             </div>

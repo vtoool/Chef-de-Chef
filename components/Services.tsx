@@ -8,19 +8,19 @@ interface Service {
 const services: Service[] = [
   {
     title: 'Nunți',
-    description: 'Un program artistic complet pentru a aduce tradiție și spectacol la nunta de vis.',
+    description: 'Un program artistic complet, special gândit pentru a aduce tradiție, eleganță și atmosferă de sărbătoare în ziua cea mare.',
   },
   {
     title: 'Tradiții Populare',
-    description: 'Păstrăm tradițiile vii, interpretând obiceiuri autentice pentru o experiență memorabilă.',
+    description: 'Aducem în scenă obiceiuri autentice, dansuri tradiționale și momente simbolice ce păstrează vie moștenirea folclorică.',
   },
   {
     title: 'Petreceri Private',
-    description: 'Aducem energie și bucurie la orice sărbătoare de familie, de la cumetrii la zile de naștere.',
+    description: 'Energie, voie bună și dansuri spectaculoase pentru cumetrii, aniversări și alte momente importante ale familiei.',
   },
   {
-    title: 'Evenimente Corporate',
-    description: 'Adăugați o notă de cultură și tradiție unică evenimentelor corporate, festivalurilor sau recepțiilor.',
+    title: 'Evenimente Corporative',
+    description: 'Adăugați un strop de tradiție și autenticitate evenimentelor corporative, recepțiilor sau festivalurilor pe care le organizați.',
   },
 ];
 
@@ -30,7 +30,7 @@ const Services: React.FC = () => {
       <div className="container mx-auto max-w-6xl px-6 text-center">
         <h2 className="font-serif text-2xl md:text-3xl font-bold text-brand-brown-dark mb-3">Serviciile Noastre</h2>
         <p className="text-brand-brown-light max-w-2xl mx-auto mb-10">
-          Oferim programe artistice personalizate pentru a transforma orice eveniment într-o sărbătoare de neuitat.
+          Oferim programe artistice adaptate fiecărui tip de eveniment, astfel încât să transformăm orice moment într-o adevărată sărbătoare.
         </p>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {services.map((service, index) => (

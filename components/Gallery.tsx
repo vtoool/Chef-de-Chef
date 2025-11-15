@@ -10,7 +10,7 @@ const galleryItems: MediaAsset[] = Array.from({ length: 8 }).map((_, i) => ({
   type: 'image',
   url: `https://picsum.photos/seed/${i + 1}/600/400`,
   thumbnail_url: `https://picsum.photos/seed/${i + 1}/300/200`,
-  description: `Eveniment ${i + 1}`,
+  description: `Imagine din galerie ${i + 1}`,
 }));
 
 const GalleryModal: React.FC<{ asset: MediaAsset | null; onClose: () => void }> = ({ asset, onClose }) => {
@@ -34,14 +34,14 @@ const Gallery: React.FC = () => {
       <div className="container mx-auto max-w-6xl px-6 text-center">
         <h2 className="font-serif text-2xl md:text-3xl font-bold text-brand-brown-dark mb-3">Galerie Foto & Video</h2>
         <p className="text-brand-brown-light max-w-2xl mx-auto mb-10">
-          Momente de neuitat surprinse în cadrul evenimentelor noastre.
+          Momente pline de emoție, surprinse la evenimentele unde am avut bucuria să fim prezenți.
         </p>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
           {galleryItems.map((item) => (
             <div key={item.id} className="group relative overflow-hidden rounded-lg cursor-pointer" onClick={() => setSelectedAsset(item)}>
               <img src={item.thumbnail_url} alt={item.description || 'Imagine din galerie'} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
               <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <span className="text-white font-bold text-sm">{item.description}</span>
+                {/* Placeholder text removed as per user request */}
               </div>
             </div>
           ))}

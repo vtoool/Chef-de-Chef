@@ -51,11 +51,11 @@ const Contact: React.FC = () => {
           <div>
             <h2 className="font-serif text-2xl md:text-3xl font-bold text-brand-brown-dark mb-3">Contactați-ne</h2>
             <p className="text-brand-brown-light mb-6">
-              Aveți întrebări sau doriți o ofertă personalizată? Completați formularul sau contactați-ne direct. Suntem aici pentru a vă ajuta să creați un eveniment de neuitat.
+              Aveți întrebări sau doriți o ofertă personalizată? Completați formularul sau contactați-ne direct — suntem aici să vă ajutăm.
             </p>
             <div className="space-y-3 text-brand-brown-light">
-                <p><strong>Telefon:</strong> +373 12 345 678</p>
-                <p><strong>Email:</strong> contact@chefdechef.md</p>
+                <p><strong>📞 Telefon:</strong> +373 12 345 678</p>
+                <p><strong>✉️ Email:</strong> contact@chefdechef.md</p>
             </div>
           </div>
           <div className="bg-white p-6 rounded-lg shadow-lg">

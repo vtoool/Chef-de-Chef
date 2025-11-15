@@ -8,10 +8,13 @@ const About: React.FC = () => {
           <div>
             <h2 className="font-serif text-2xl md:text-3xl font-bold text-brand-brown-dark mb-3">Povestea Noastră</h2>
             <p className="text-brand-brown-light mb-4">
-              Născut dintr-o pasiune pentru folclorul autentic moldovenesc, "Chef de Chef" este mai mult decât un ansamblu de dansuri – suntem o familie unită de dragostea pentru tradiție. De peste un deceniu, aducem bucurie și energie la cele mai importante evenimente din viața oamenilor.
+              Născut din dragoste pentru folclorul autentic moldovenesc, Chef de Chef nu este doar un ansamblu de dansuri — este o familie unită de aceeași pasiune pentru tradiție.
+            </p>
+            <p className="text-brand-brown-light mb-4">
+              De peste un deceniu, aducem bucurie, ritm și culoare la cele mai importante evenimente din viața oamenilor. Misiunea noastră este să promovăm și să păstrăm moștenirea culturală a Moldovei, transformând fiecare nuntă, cumătrie sau petrecere într-un spectacol memorabil.
             </p>
             <p className="text-brand-brown-light mb-6">
-              Misiunea noastră este să păstrăm și să promovăm bogata moștenire culturală a Moldovei, transformând fiecare nuntă, cumătrie sau petrecere într-un spectacol de neuitat. Ne punem sufletul în fiecare dans, fiecare obicei și fiecare zâmbet pe care îl oferim.
+              Ne punem sufletul în fiecare pas de dans, în fiecare obicei și în fiecare zâmbet dăruit publicului.
             </p>
             <a href="#contact" className="font-bold text-brand-orange hover:underline">Contactați-ne pentru detalii →</a>
           </div>

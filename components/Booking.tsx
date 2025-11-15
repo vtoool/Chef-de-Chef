@@ -112,7 +112,7 @@ const BookingComponent: React.FC = () => {
       <div className="container mx-auto max-w-6xl px-6">
         <h2 className="font-serif text-2xl md:text-3xl font-bold text-brand-brown-dark mb-3 text-center">Rezervă Ansamblul</h2>
         <p className="text-brand-brown-light max-w-2xl mx-auto mb-10 text-center">
-          Verificați disponibilitatea noastră și trimiteți o cerere de rezervare. Vă vom contacta în cel mai scurt timp.
+          Verificați disponibilitatea și trimiteți o cerere. Vă contactăm rapid pentru confirmare și detalii.
         </p>
         <div className="grid lg:grid-cols-2 gap-10 bg-brand-cream p-6 md:p-8 rounded-lg shadow-lg">
           <div className="flex flex-col items-center">

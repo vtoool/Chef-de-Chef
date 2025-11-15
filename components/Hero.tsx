@@ -10,7 +10,7 @@ const Hero: React.FC = () => {
               Elevați-vă Evenimentele!
             </h1>
             <p className="text-lg text-brand-brown-light max-w-xl mx-auto md:mx-0 mb-8">
-              Alăturați-vă nouă pentru a celebra cultura populară moldovenească prin spectacole vibrante.
+              Celebrați frumusețea culturii populare moldovenești prin spectacole pline de energie, culoare și emoție.
             </p>
             <div className="flex justify-center md:justify-start">
               <a href="#book" className="bg-chef-gradient text-white font-bold py-3 px-8 rounded-full shadow-md hover:shadow-lg transition-all duration-300">
