@@ -87,7 +87,13 @@ const BookingDetailsModal: React.FC<{
                                 </div>
                                 <div>
                                     <label htmlFor="event_type" className="text-sm font-bold text-gray-600 block mb-1">Tip Eveniment</label>
-                                    <input type="text" id="event_type" name="event_type" value={editedBooking.event_type} onChange={handleInputChange} required placeholder="ex: Nuntă" className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
+                                    <select id="event_type" name="event_type" value={editedBooking.event_type} onChange={handleInputChange} required className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange">
+                                        <option>Nuntă</option>
+                                        <option>Cumătrie</option>
+                                        <option>Petrecere</option>
+                                        <option>Corporate</option>
+                                        <option>Altul</option>
+                                    </select>
                                 </div>
                                 <div>
                                     <label htmlFor="location" className="text-sm font-bold text-gray-600 block mb-1">Locație</label>
@@ -407,7 +413,7 @@ export default function AdminDashboardPage() {
                                                 <th scope="col" className="px-6 py-3">Status</th>
                                                 <th scope="col" className="px-6 py-3 text-right">Preț Total</th>
                                                 <th scope="col" className="px-6 py-3 text-right">Avans Plătit</th>
-                                                <th scope="col" className="px-6 py-3 text-right">Rest Plată</th>
+                                                <th scope="col" className="px-6 py-3 text-right">De Plătit</th>
                                                 <th scope="col" className="px-6 py-3"><span className="sr-only">Actions</span></th>
                                             </tr>
                                         </thead>
@@ -452,7 +458,7 @@ export default function AdminDashboardPage() {
                                                     <p className="font-semibold text-gray-800">{formatNumber(booking.prepayment)}</p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-xs text-gray-500">Rest Plată</p>
+                                                    <p className="text-xs text-gray-500">De Plătit</p>
                                                     <p className="font-bold text-gray-900">{formatNumber((booking.price || 0) - (booking.prepayment || 0))}</p>
                                                 </div>
                                             </div>
