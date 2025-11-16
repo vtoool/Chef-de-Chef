@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, 'useState' from 'react';
 import {
   format,
   addMonths,
@@ -84,7 +84,18 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({
           const isDayInCurrentMonth = isSameMonth(day, monthStart);
           const isFilterActive = filterDate && isSameDay(day, filterDate);
           
-          const bookingsOnDay = bookings.filter(b => isSameDay(new Date(b.event_date + 'T00:00:00Z'), day));
+          // FIX: Correctly parse date string to avoid timezone issues.
+          // The browser can interpret 'YYYY-MM-DD' as UTC, which can shift the day
+          // back by one in timezones west of GMT. This ensures the date is
+          // treated as a local date, matching the calendar's behavior.
+          const bookingsOnDay = bookings.filter(b => {
+              if (!b.event_date) return false;
+              // b.event_date is 'YYYY-MM-DD'
+              const [year, month, dayOfMonth] = b.event_date.split('-').map(Number);
+              // new Date(year, month - 1, day) creates a date in the local timezone.
+              const eventDate = new Date(year, month - 1, dayOfMonth);
+              return isSameDay(eventDate, day);
+          });
           
           let statusClass = '';
           if (bookingsOnDay.length > 0) {

@@ -8,6 +8,7 @@ import { ro } from 'date-fns/locale';
 import { supabase } from '../../../../lib/supabaseClient';
 import { Booking } from '../../../../types';
 import { getExchangeRates, ExchangeRates } from '../../../../lib/exchangeRates';
+import PieChart from '../../../../components/PieChart';
 
 interface Stats {
     totalRevenueInMDL: number;
@@ -65,32 +66,36 @@ export default function RezumatPage() {
                     }
                     if (rates) {
                         if (currency === 'EUR') {
-                            // FIX: Explicitly convert exchange rate to number to satisfy TypeScript compiler.
                             return total + (price * Number(rates.rates.MDL));
                         }
                         if (currency === 'USD') {
-                            // FIX: Explicitly convert exchange rates to numbers to satisfy TypeScript compiler.
                             const priceInEUR = price / Number(rates.rates.USD);
                             return total + (priceInEUR * Number(rates.rates.MDL));
                         }
                     }
-                    // Fallback: If rates fail, add original currency value but we will handle the display
                     return total;
                 }, 0);
 
-            const eventTypeCounts = bookingsData.reduce(
+            const eventTypeCounts = bookingsData.reduce<Record<string, number>>(
                 (acc, b) => {
-                    // FIX: Correctly type the accumulator's initial value to prevent type inference issues.
                     acc[b.event_type] = (acc[b.event_type] ?? 0) + 1;
                     return acc;
                 },
-                {} as Record<string, number>
+                {}
             );
+            
+            // FIX: Correctly parse event_date to avoid timezone issues when comparing with today's date.
+            const upcomingEventsCount = bookingsData.filter(b => {
+                if (b.status !== 'confirmed' || !b.event_date) return false;
+                const [year, month, day] = b.event_date.split('-').map(Number);
+                const eventDate = new Date(year, month - 1, day);
+                return eventDate >= today;
+            }).length;
 
             const calculatedStats: Stats = {
                 totalRevenueInMDL,
                 completedEvents: bookingsData.filter(b => b.status === 'completed').length,
-                upcomingEvents: bookingsData.filter(b => b.status === 'confirmed' && new Date(b.event_date + 'T00:00:00Z') >= today).length,
+                upcomingEvents: upcomingEventsCount,
                 pendingRequests: bookingsData.filter(b => b.status === 'pending').length,
                 eventTypeCounts,
             };
@@ -130,9 +135,6 @@ export default function RezumatPage() {
     }
     
     const formattedRevenue = new Intl.NumberFormat('ro-RO', { style: 'currency', currency: 'MDL', minimumFractionDigits: 0 }).format(stats.totalRevenueInMDL);
-    
-    // FIX: Correctly typed `eventTypeCounts` ensures `totalBookings` is a number.
-    const totalBookings = Object.values(stats.eventTypeCounts).reduce((sum, count) => sum + count, 0);
 
     return (
         <>
@@ -167,24 +169,8 @@ export default function RezumatPage() {
 
             <div className="mt-8">
                 <div className="bg-white p-6 rounded-lg shadow-md">
-                    <h2 className="text-xl font-bold text-gray-900 mb-4">Repartizare Evenimente</h2>
-                    {sortedEventTypes.length > 0 ? (
-                        <div className="space-y-4">
-                            {sortedEventTypes.map(([type, count]) => (
-                                <div key={type}>
-                                    <div className="flex justify-between items-center mb-1 text-sm">
-                                        <span className="font-semibold text-gray-600">{type}</span>
-                                        <span className="text-gray-500">{count} evenimente</span>
-                                    </div>
-                                    <div className="w-full bg-gray-200 rounded-full h-2.5">
-                                        <div className="bg-chef-gradient h-2.5 rounded-full" style={{ width: `${totalBookings > 0 ? (count / totalBookings) * 100 : 0}%` }}></div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <p className="text-gray-500">Nu există date despre evenimente.</p>
-                    )}
+                    <h2 className="text-xl font-bold text-gray-900 mb-4 text-center md:text-left">Repartizare Evenimente</h2>
+                    <PieChart data={sortedEventTypes} />
                 </div>
             </div>
 
