@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { format } from 'date-fns';
+// FIX: Module '"date-fns"' has no exported member 'format'. Import from submodule instead.
+import format from 'date-fns/format';
 import { ro } from 'date-fns/locale';
 import { supabase } from '../../../lib/supabaseClient';
 import { Booking } from '../../../types';

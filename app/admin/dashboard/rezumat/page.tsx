@@ -3,7 +3,8 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { format } from 'date-fns';
+// FIX: Module '"date-fns"' has no exported member 'format'. Import from submodule instead.
+import format from 'date-fns/format';
 import { ro } from 'date-fns/locale';
 import { supabase } from '../../../../lib/supabaseClient';
 import { Booking } from '../../../../types';
@@ -89,7 +90,8 @@ export default function RezumatPage() {
                 if (b.status !== 'confirmed' || !b.event_date) return false;
                 const [year, month, day] = b.event_date.split('-').map(Number);
                 const eventDate = new Date(year, month - 1, day);
-                return eventDate >= today;
+                // FIX: Use getTime() for date comparison to avoid TypeScript errors.
+                return eventDate.getTime() >= today.getTime();
             }).length;
 
             const calculatedStats: Stats = {
