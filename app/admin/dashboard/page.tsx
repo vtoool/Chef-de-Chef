@@ -9,12 +9,21 @@ import { Booking } from '../../../types';
 import AdminCalendar from './AdminCalendar';
 
 // Helper function to format numbers as currency
-const formatNumber = (value: number | null | undefined): string => {
+const formatNumber = (value: number | null | undefined, currency: string | null | undefined): string => {
+    const displayCurrency = currency || 'MDL';
     if (value === null || value === undefined || isNaN(value)) {
         return '—';
     }
-    // Using toLocaleString for basic formatting with thousand separators.
-    return `${value.toLocaleString('ro-RO')} MDL`;
+    try {
+        return new Intl.NumberFormat('ro-RO', {
+            style: 'currency',
+            currency: displayCurrency,
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2,
+        }).format(value);
+    } catch (e) {
+        return `${value.toLocaleString('ro-RO')} ${displayCurrency}`;
+    }
 };
 
 // Helper components
@@ -126,11 +135,18 @@ const BookingDetailsModal: React.FC<{
                             </select>
                         </div>
                          <div>
-                            <label htmlFor="price" className="text-sm font-bold text-gray-600 block mb-1">Preț Total (MDL)</label>
-                            <input type="number" id="price" name="price" value={editedBooking.price ?? ''} onChange={handleInputChange} placeholder="ex: 5000" className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
+                            <label htmlFor="price" className="text-sm font-bold text-gray-600 block mb-1">Preț și Monedă</label>
+                            <div className="flex items-center gap-2">
+                                <input type="number" id="price" name="price" value={editedBooking.price ?? ''} onChange={handleInputChange} placeholder="ex: 5000" className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
+                                <select id="currency" name="currency" value={editedBooking.currency || 'MDL'} onChange={handleInputChange} className="p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange">
+                                    <option value="MDL">MDL</option>
+                                    <option value="EUR">EUR</option>
+                                    <option value="USD">USD</option>
+                                </select>
+                            </div>
                         </div>
                          <div>
-                            <label htmlFor="prepayment" className="text-sm font-bold text-gray-600 block mb-1">Avans Plătit (MDL)</label>
+                            <label htmlFor="prepayment" className="text-sm font-bold text-gray-600 block mb-1">Avans Plătit</label>
                             <input type="number" id="prepayment" name="prepayment" value={editedBooking.prepayment ?? ''} onChange={handleInputChange} placeholder="ex: 1000" className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
                         </div>
                          <div>
@@ -237,6 +253,7 @@ export default function AdminDashboardPage() {
             price: null,
             prepayment: null,
             notes_interne: null,
+            currency: 'MDL',
         };
         setSelectedBooking(newBooking);
     };
@@ -271,7 +288,7 @@ export default function AdminDashboardPage() {
 
             const { id, created_at, ...insertData } = updatedBooking;
             
-            const { error } = await supabase.from('bookings').insert([{ ...insertData, price, prepayment }]);
+            const { error } = await supabase.from('bookings').insert([{ ...insertData, price, prepayment, currency: updatedBooking.currency || 'MDL' }]);
             
             if (error) {
                 console.error("Error inserting booking:", error);
@@ -297,6 +314,7 @@ export default function AdminDashboardPage() {
             prepayment: prepayment,
             payment_status: updatedBooking.payment_status || 'neplatit',
             notes_interne: updatedBooking.notes_interne || null,
+            currency: updatedBooking.currency || 'MDL',
         };
         
         const { data, error } = await supabase
@@ -424,9 +442,9 @@ export default function AdminDashboardPage() {
                                                     <td className="px-6 py-4">{booking.name}</td>
                                                     <td className="px-6 py-4">{booking.event_type}</td>
                                                     <td className="px-6 py-4"><StatusBadge status={booking.status} /></td>
-                                                    <td className="px-6 py-4 text-right font-mono">{formatNumber(booking.price)}</td>
-                                                    <td className="px-6 py-4 text-right font-mono">{formatNumber(booking.prepayment)}</td>
-                                                    <td className="px-6 py-4 text-right font-mono font-bold">{formatNumber((booking.price || 0) - (booking.prepayment || 0))}</td>
+                                                    <td className="px-6 py-4 text-right font-mono">{formatNumber(booking.price, booking.currency)}</td>
+                                                    <td className="px-6 py-4 text-right font-mono">{formatNumber(booking.prepayment, booking.currency)}</td>
+                                                    <td className="px-6 py-4 text-right font-mono font-bold">{formatNumber((booking.price || 0) - (booking.prepayment || 0), booking.currency)}</td>
                                                     <td className="px-6 py-4 text-right">
                                                         <button onClick={() => setSelectedBooking(booking)} className="font-medium text-brand-orange hover:underline">Detalii</button>
                                                     </td>
@@ -451,15 +469,15 @@ export default function AdminDashboardPage() {
                                             <div className="mt-4 pt-4 border-t border-gray-200 grid grid-cols-3 gap-2 text-center text-sm">
                                                 <div>
                                                     <p className="text-xs text-gray-500">Preț Total</p>
-                                                    <p className="font-semibold text-gray-800">{formatNumber(booking.price)}</p>
+                                                    <p className="font-semibold text-gray-800">{formatNumber(booking.price, booking.currency)}</p>
                                                 </div>
                                                 <div>
                                                     <p className="text-xs text-gray-500">Avans</p>
-                                                    <p className="font-semibold text-gray-800">{formatNumber(booking.prepayment)}</p>
+                                                    <p className="font-semibold text-gray-800">{formatNumber(booking.prepayment, booking.currency)}</p>
                                                 </div>
                                                 <div>
                                                     <p className="text-xs text-gray-500">De Plătit</p>
-                                                    <p className="font-bold text-gray-900">{formatNumber((booking.price || 0) - (booking.prepayment || 0))}</p>
+                                                    <p className="font-bold text-gray-900">{formatNumber((booking.price || 0) - (booking.prepayment || 0), booking.currency)}</p>
                                                 </div>
                                             </div>
                                             <div className="mt-4 text-right">

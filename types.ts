@@ -14,6 +14,7 @@ export interface Booking {
   price?: number | null;
   prepayment?: number | null;
   payment_status?: 'neplatit' | 'avans platit' | 'platit integral' | null;
+  currency?: 'MDL' | 'EUR' | 'USD' | null;
 }
 
 export interface ContactMessage {

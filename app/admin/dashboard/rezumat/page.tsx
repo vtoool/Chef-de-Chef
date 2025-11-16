@@ -6,7 +6,7 @@ import { supabase } from '../../../../lib/supabaseClient';
 import { Booking } from '../../../../types';
 
 interface Stats {
-    totalRevenue: number;
+    totalRevenue: Record<string, number>;
     completedEvents: number;
     upcomingEvents: number;
     pendingRequests: number;
@@ -37,7 +37,7 @@ export default function RezumatPage() {
 
         const { data, error } = await supabase
             .from('bookings')
-            .select('status, price, event_type, event_date');
+            .select('status, price, event_type, event_date, currency');
 
         if (error) {
             console.error("Error fetching stats data:", error);
@@ -46,19 +46,22 @@ export default function RezumatPage() {
         }
 
         if (data) {
-            const bookingsData = data as (Pick<Booking, 'status' | 'price' | 'event_type' | 'event_date'>)[];
+            const bookingsData = data as (Pick<Booking, 'status' | 'price' | 'event_type' | 'event_date' | 'currency'>)[];
             const today = new Date();
             today.setHours(0, 0, 0, 0);
 
             const calculatedStats: Stats = {
                 totalRevenue: bookingsData
                     .filter(b => b.status === 'completed' && b.price)
-                    // FIX: Explicitly type the accumulator `sum` to ensure it is treated as a number.
-                    .reduce((sum: number, b) => sum + (b.price || 0), 0),
+                    .reduce((acc: Record<string, number>, b) => {
+                        const currency = b.currency || 'MDL';
+                        // FIX: Ensure correct type for arithmetic operation
+                        acc[currency] = (acc[currency] || 0) + (b.price || 0);
+                        return acc;
+                    }, {} as Record<string, number>),
                 completedEvents: bookingsData.filter(b => b.status === 'completed').length,
                 upcomingEvents: bookingsData.filter(b => b.status === 'confirmed' && new Date(b.event_date + 'T00:00:00Z') >= today).length,
                 pendingRequests: bookingsData.filter(b => b.status === 'pending').length,
-                // FIX: Explicitly type the accumulator `acc` to ensure correct type inference.
                 eventTypeCounts: bookingsData.reduce((acc: Record<string, number>, b) => {
                     acc[b.event_type] = (acc[b.event_type] || 0) + 1;
                     return acc;
@@ -84,7 +87,8 @@ export default function RezumatPage() {
 
     const sortedEventTypes = useMemo(() => {
         if (!stats) return [];
-        return Object.entries(stats.eventTypeCounts).sort(([, a], [, b]) => b - a);
+        // FIX: Cast values to number for sorting to prevent type errors.
+        return Object.entries(stats.eventTypeCounts).sort(([, a], [, b]) => Number(b) - Number(a));
     }, [stats]);
     
     if (isLoading) {
@@ -95,11 +99,13 @@ export default function RezumatPage() {
         return <div className="text-center text-red-500">Nu s-au putut încărca datele.</div>;
     }
     
-    const formattedRevenue = new Intl.NumberFormat('ro-RO', { style: 'currency', currency: 'MDL', minimumFractionDigits: 0 }).format(stats.totalRevenue);
+    const formattedRevenue = Object.entries(stats.totalRevenue)
+        // FIX: Cast total to number to satisfy Intl.NumberFormat.
+        .map(([currency, total]) => new Intl.NumberFormat('ro-RO', { style: 'currency', currency, minimumFractionDigits: 0 }).format(total as number))
+        .join(' + ') || '0 MDL';
     
-    // FIX: Calculate total bookings directly from stats to avoid state redundancy and fix type errors.
-    // Explicitly type accumulators to prevent type inference issues.
-    const totalBookings = Object.values(stats.eventTypeCounts).reduce((sum: number, count: number) => sum + count, 0);
+    // FIX: Ensure count is treated as a number in the reduce function.
+    const totalBookings = Object.values(stats.eventTypeCounts).reduce((sum: number, count) => sum + Number(count), 0);
 
     return (
         <>
@@ -143,7 +149,6 @@ export default function RezumatPage() {
                                     <span className="text-gray-500">{count} evenimente</span>
                                 </div>
                                 <div className="w-full bg-gray-200 rounded-full h-2.5">
-                                    {/* FIX: Use totalBookings calculated from stats for a reliable percentage calculation. */}
                                     <div className="bg-chef-gradient h-2.5 rounded-full" style={{ width: `${totalBookings > 0 ? (count / totalBookings) * 100 : 0}%` }}></div>
                                 </div>
                             </div>

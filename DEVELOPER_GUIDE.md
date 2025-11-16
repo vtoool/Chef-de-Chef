@@ -58,19 +58,22 @@ These instructions are for setting up the database for the first time.
 
 If you have a previously working version of the site and are updating the code, your database schema might be out of date. If you encounter errors (e.g., `Could not find the 'notes_interne' column`), it means your `bookings` table is missing a column.
 
-Run the following SQL command in your Supabase SQL Editor to add the missing column:
+Run the following SQL commands in your Supabase SQL Editor to add the missing columns:
 
 ```sql
 -- This command adds the 'notes_interne' column needed for internal admin notes on bookings.
 -- It is safe to run even if the column already exists.
 ALTER TABLE public.bookings ADD COLUMN IF NOT EXISTS notes_interne text NULL;
+
+-- This command adds the 'currency' column for multi-currency support.
+ALTER TABLE public.bookings ADD COLUMN IF NOT EXISTS currency text NULL DEFAULT 'MDL'::text;
 ```
 
 ### 4.3 Full SQL Script for Setup
 
 ```sql
 -- Chef de Chef Supabase Schema
--- Version 1.4 - Security & RLS Update
+-- Version 1.5 - Multi-currency Update
 
 -- 1. Create bookings table
 CREATE TABLE IF NOT EXISTS public.bookings (
@@ -88,9 +91,11 @@ CREATE TABLE IF NOT EXISTS public.bookings (
     price numeric NULL,
     prepayment numeric NULL,
     payment_status text NULL DEFAULT 'neplatit'::text,
+    currency text NULL DEFAULT 'MDL'::text,
     CONSTRAINT bookings_pkey PRIMARY KEY (id),
     CONSTRAINT bookings_payment_status_check CHECK (payment_status IN ('neplatit', 'avans platit', 'platit integral')),
-    CONSTRAINT bookings_status_check CHECK (status IN ('pending', 'confirmed', 'rejected', 'completed'))
+    CONSTRAINT bookings_status_check CHECK (status IN ('pending', 'confirmed', 'rejected', 'completed')),
+    CONSTRAINT bookings_currency_check CHECK (currency IN ('MDL', 'EUR', 'USD'))
 );
 COMMENT ON TABLE public.bookings IS 'Stores booking requests from the website.';
 
