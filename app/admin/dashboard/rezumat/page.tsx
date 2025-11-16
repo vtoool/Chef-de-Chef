@@ -15,12 +15,12 @@ interface Stats {
 
 const StatCard: React.FC<{ title: string; value: string | number; description: string; icon: React.ReactNode }> = ({ title, value, description, icon }) => (
     <div className="bg-white p-6 rounded-lg shadow-md flex items-start space-x-4">
-        <div className="bg-brand-orange/10 text-brand-orange p-3 rounded-full">
+        <div className="bg-brand-orange/10 text-brand-orange p-3 rounded-full flex-shrink-0">
             {icon}
         </div>
-        <div>
-            <p className="text-sm font-semibold text-gray-500">{title}</p>
-            <p className="text-3xl font-bold text-gray-900">{value}</p>
+        <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-gray-500 truncate">{title}</p>
+            <p className="text-3xl font-bold text-gray-900 break-words">{value}</p>
             <p className="text-xs text-gray-400 mt-1">{description}</p>
         </div>
     </div>
@@ -28,8 +28,6 @@ const StatCard: React.FC<{ title: string; value: string | number; description: s
 
 export default function RezumatPage() {
     const [stats, setStats] = useState<Stats | null>(null);
-    // FIX: Add state for bookings to use in render logic.
-    const [bookings, setBookings] = useState<(Pick<Booking, 'status' | 'price' | 'event_type' | 'event_date'>)[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
 
@@ -49,7 +47,6 @@ export default function RezumatPage() {
 
         if (data) {
             const bookingsData = data as (Pick<Booking, 'status' | 'price' | 'event_type' | 'event_date'>)[];
-            setBookings(bookingsData);
             const today = new Date();
             today.setHours(0, 0, 0, 0);
 
@@ -58,7 +55,6 @@ export default function RezumatPage() {
                     .filter(b => b.status === 'completed' && b.price)
                     .reduce((sum, b) => sum + (b.price || 0), 0),
                 completedEvents: bookingsData.filter(b => b.status === 'completed').length,
-                // FIX: Use explicit UTC date parsing to prevent timezone issues and resolve type errors.
                 upcomingEvents: bookingsData.filter(b => b.status === 'confirmed' && new Date(b.event_date + 'T00:00:00Z') >= today).length,
                 pendingRequests: bookingsData.filter(b => b.status === 'pending').length,
                 eventTypeCounts: bookingsData.reduce((acc, b) => {
@@ -98,6 +94,9 @@ export default function RezumatPage() {
     }
     
     const formattedRevenue = new Intl.NumberFormat('ro-RO', { style: 'currency', currency: 'MDL', minimumFractionDigits: 0 }).format(stats.totalRevenue);
+    
+    // FIX: Calculate total bookings directly from stats to avoid state redundancy and fix type errors.
+    const totalBookings = Object.values(stats.eventTypeCounts).reduce((sum, count) => sum + count, 0);
 
     return (
         <>
@@ -141,8 +140,8 @@ export default function RezumatPage() {
                                     <span className="text-gray-500">{count} evenimente</span>
                                 </div>
                                 <div className="w-full bg-gray-200 rounded-full h-2.5">
-                                    {/* FIX: Use `bookings` state which is now available in the render scope. */}
-                                    <div className="bg-chef-gradient h-2.5 rounded-full" style={{ width: `${(count / bookings.length) * 100}%` }}></div>
+                                    {/* FIX: Use totalBookings calculated from stats for a reliable percentage calculation. */}
+                                    <div className="bg-chef-gradient h-2.5 rounded-full" style={{ width: `${totalBookings > 0 ? (count / totalBookings) * 100 : 0}%` }}></div>
                                 </div>
                             </div>
                         ))}
