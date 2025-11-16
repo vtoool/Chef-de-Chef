@@ -25,51 +25,79 @@ const BookingDetailsModal: React.FC<{
     booking: Booking;
     onClose: () => void;
     onSave: (updatedBooking: Booking) => Promise<void>;
-}> = ({ booking, onClose, onSave }) => {
+    onDelete: (bookingId: string) => Promise<void>;
+}> = ({ booking, onClose, onSave, onDelete }) => {
     const [editedBooking, setEditedBooking] = useState<Booking>(booking);
     const [isSaving, setIsSaving] = useState(false);
+    const isAddMode = !booking.id;
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setEditedBooking(prev => ({ ...prev, [name]: value }));
     };
-
+    
     const handleSaveClick = async () => {
         setIsSaving(true);
         await onSave(editedBooking);
         setIsSaving(false);
     };
 
+    const handleDeleteClick = async () => {
+        if (window.confirm('Sunteți sigur că doriți să ștergeți această rezervare? Acțiunea este ireversibilă.')) {
+            await onDelete(booking.id!);
+        }
+    };
+
     return (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={onClose}>
             <div className="bg-white rounded-lg shadow-2xl w-full max-w-2xl text-gray-800" onClick={e => e.stopPropagation()}>
                 <div className="p-6 border-b border-gray-200">
-                    <h3 className="text-xl font-bold">Detalii Rezervare: {booking.name}</h3>
-                    <p className="text-sm text-gray-500">Data eveniment: {booking.event_date}</p>
+                    <h3 className="text-xl font-bold">{isAddMode ? 'Adaugă Rezervare Manuală' : `Detalii Rezervare: ${booking.name}`}</h3>
+                    {!isAddMode && <p className="text-sm text-gray-500">Data eveniment: {booking.event_date}</p>}
                 </div>
                 <div className="p-6 grid md:grid-cols-2 gap-6 max-h-[70vh] overflow-y-auto">
-                    {/* Details Column */}
+                    {/* Details Column (Inputs for Add Mode) */}
                     <div className="space-y-4">
-                        <div>
-                            <label className="text-xs font-bold text-gray-500 block">Nume Client</label>
-                            <p>{booking.name}</p>
-                        </div>
-                        <div>
-                            <label className="text-xs font-bold text-gray-500 block">Contact</label>
-                            <p>{booking.phone} / {booking.email}</p>
-                        </div>
-                        <div>
-                            <label className="text-xs font-bold text-gray-500 block">Tip Eveniment</label>
-                            <p>{booking.event_type}</p>
-                        </div>
-                        <div>
-                            <label className="text-xs font-bold text-gray-500 block">Locație</label>
-                            <p>{booking.location}</p>
-                        </div>
-                         <div>
-                            <label className="text-xs font-bold text-gray-500 block">Detalii Suplimentare (Client)</label>
-                            <p className="text-sm whitespace-pre-wrap">{booking.notes || 'N/A'}</p>
-                        </div>
+                        {isAddMode ? (
+                            <>
+                                <div>
+                                    <label htmlFor="event_date" className="text-sm font-bold text-gray-600 block mb-1">Data Eveniment</label>
+                                    <input type="date" id="event_date" name="event_date" value={editedBooking.event_date} onChange={handleInputChange} required className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
+                                </div>
+                                <div>
+                                    <label htmlFor="name" className="text-sm font-bold text-gray-600 block mb-1">Nume Client</label>
+                                    <input type="text" id="name" name="name" value={editedBooking.name} onChange={handleInputChange} required placeholder="ex: Ion Popescu" className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
+                                </div>
+                                <div>
+                                    <label htmlFor="phone" className="text-sm font-bold text-gray-600 block mb-1">Telefon</label>
+                                    <input type="tel" id="phone" name="phone" value={editedBooking.phone} onChange={handleInputChange} required placeholder="ex: 069123456" className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
+                                </div>
+                                <div>
+                                    <label htmlFor="email" className="text-sm font-bold text-gray-600 block mb-1">Email (Opțional)</label>
+                                    <input type="email" id="email" name="email" value={editedBooking.email} onChange={handleInputChange} placeholder="ex: client@email.com" className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
+                                </div>
+                                <div>
+                                    <label htmlFor="event_type" className="text-sm font-bold text-gray-600 block mb-1">Tip Eveniment</label>
+                                    <input type="text" id="event_type" name="event_type" value={editedBooking.event_type} onChange={handleInputChange} required placeholder="ex: Nuntă" className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
+                                </div>
+                                <div>
+                                    <label htmlFor="location" className="text-sm font-bold text-gray-600 block mb-1">Locație</label>
+                                    <input type="text" id="location" name="location" value={editedBooking.location} onChange={handleInputChange} required placeholder="ex: Restaurant, Chișinău" className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
+                                </div>
+                                 <div>
+                                    <label htmlFor="notes" className="text-sm font-bold text-gray-600 block mb-1">Detalii Suplimentare (Client)</label>
+                                    <textarea id="notes" name="notes" value={editedBooking.notes || ''} onChange={handleInputChange} rows={2} className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"></textarea>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <div><label className="text-xs font-bold text-gray-500 block">Nume Client</label><p>{booking.name}</p></div>
+                                <div><label className="text-xs font-bold text-gray-500 block">Contact</label><p>{booking.phone} / {booking.email}</p></div>
+                                <div><label className="text-xs font-bold text-gray-500 block">Tip Eveniment</label><p>{booking.event_type}</p></div>
+                                <div><label className="text-xs font-bold text-gray-500 block">Locație</label><p>{booking.location}</p></div>
+                                <div><label className="text-xs font-bold text-gray-500 block">Detalii Suplimentare (Client)</label><p className="text-sm whitespace-pre-wrap">{booking.notes || 'N/A'}</p></div>
+                            </>
+                        )}
                     </div>
                     {/* Editable Form Column */}
                     <div className="space-y-4">
@@ -100,17 +128,26 @@ const BookingDetailsModal: React.FC<{
                         </div>
                         <div>
                             <label htmlFor="notes_interne" className="text-sm font-bold text-gray-600 block mb-1">Notițe Interne</label>
-                            <textarea id="notes_interne" name="notes_interne" value={editedBooking.notes_interne || ''} onChange={handleInputChange} rows={3} placeholder="Detalii confidențiale, planificări..." className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"></textarea>
+                            <textarea id="notes_interne" name="notes_interne" value={editedBooking.notes_interne || ''} onChange={handleInputChange} rows={isAddMode ? 4 : 3} placeholder="Detalii confidențiale, planificări..." className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"></textarea>
                         </div>
                     </div>
                 </div>
-                <div className="p-4 bg-gray-50 flex justify-end space-x-3">
-                    <button onClick={onClose} className="bg-white text-gray-700 font-semibold py-2 px-4 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors">
-                        Anulează
-                    </button>
-                    <button onClick={handleSaveClick} disabled={isSaving} className="bg-chef-gradient text-white font-bold py-2 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-50">
-                        {isSaving ? 'Se salvează...' : 'Salvează Modificările'}
-                    </button>
+                <div className="p-4 bg-gray-50 flex justify-between items-center">
+                    <div>
+                        {!isAddMode && (
+                             <button onClick={handleDeleteClick} className="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50">
+                                Șterge Rezervarea
+                            </button>
+                        )}
+                    </div>
+                    <div className="flex justify-end space-x-3">
+                        <button onClick={onClose} className="bg-white text-gray-700 font-semibold py-2 px-4 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors">
+                            Anulează
+                        </button>
+                        <button onClick={handleSaveClick} disabled={isSaving} className="bg-chef-gradient text-white font-bold py-2 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-50">
+                            {isSaving ? 'Se salvează...' : (isAddMode ? 'Adaugă Rezervarea' : 'Salvează Modificările')}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -171,11 +208,68 @@ export default function AdminDashboardPage() {
         setToast({ message, type, visible: true });
     };
 
-    const handleSaveBooking = async (updatedBooking: Booking) => {
-        if (!supabase || !updatedBooking.id) return;
+    const handleOpenAddModal = () => {
+        const newBooking: Booking = {
+            event_date: '',
+            name: '',
+            email: '',
+            phone: '',
+            event_type: 'Nuntă',
+            location: '',
+            notes: '',
+            status: 'confirmed', // Default to confirmed for manual entry
+            payment_status: 'neplatit',
+            price: null,
+            prepayment: null,
+            notes_interne: null,
+        };
+        setSelectedBooking(newBooking);
+    };
 
-        // The state from the form will have string values for number inputs.
-        // We must correctly parse them to number or null for the database.
+    const handleDeleteBooking = async (bookingId: string) => {
+        if (!supabase) return;
+
+        const { error } = await supabase.from('bookings').delete().eq('id', bookingId);
+        
+        if (error) {
+            console.error("Error deleting booking:", error);
+            showToast(`Eroare la ștergere: ${error.message}`, 'error');
+        } else {
+            showToast('Rezervare ștearsă cu succes!', 'success');
+            setBookings(prev => prev.filter(b => b.id !== bookingId));
+            setSelectedBooking(null);
+        }
+    };
+    
+    const handleSaveBooking = async (updatedBooking: Booking) => {
+        if (!supabase) return;
+
+        // INSERT (Add new booking)
+        if (!updatedBooking.id) {
+            if (!updatedBooking.event_date || !updatedBooking.name || !updatedBooking.phone) {
+                showToast('Data evenimentului, numele și telefonul sunt obligatorii.', 'error');
+                return;
+            }
+             // Supabase can't handle empty strings for number fields, convert to null
+            const price = (updatedBooking.price as any) === '' ? null : Number(updatedBooking.price);
+            const prepayment = (updatedBooking.prepayment as any) === '' ? null : Number(updatedBooking.prepayment);
+
+            const { id, created_at, ...insertData } = updatedBooking;
+            
+            const { error } = await supabase.from('bookings').insert([{ ...insertData, price, prepayment }]);
+            
+            if (error) {
+                console.error("Error inserting booking:", error);
+                showToast(`Eroare la adăugare: ${error.message}`, 'error');
+            } else {
+                showToast('Rezervare adăugată cu succes!', 'success');
+                setSelectedBooking(null);
+                fetchBookings(); // Refresh the list
+            }
+            return;
+        }
+
+        // UPDATE (Edit existing booking)
         const priceAsAny = updatedBooking.price as any;
         const price = (priceAsAny === '' || priceAsAny === null) ? null : Number(priceAsAny);
 
@@ -201,17 +295,12 @@ export default function AdminDashboardPage() {
             showToast(`Eroare la salvare: ${error.message}`, 'error');
         } else if (data && data.length > 0) {
             showToast('Modificări salvate cu succes!', 'success');
-            
-            // Use the data returned from the database as the source of truth
             const savedBooking = data[0] as Booking;
-
             setBookings(prevBookings =>
                 prevBookings.map(b => (b.id === savedBooking.id ? savedBooking : b))
             );
             setSelectedBooking(null); // Close modal on success
         } else {
-            // This is the crucial part: if Supabase returns success (no error) but no data,
-            // it means the update didn't affect any rows. We treat this as an error.
             console.error("Update returned no data. Check RLS policies or if the row exists.", { id: updatedBooking.id });
             showToast('Salvarea nu a putut fi confirmată. Vă rugăm reîncărcați pagina și încercați din nou.', 'error');
         }
@@ -250,13 +339,18 @@ export default function AdminDashboardPage() {
 
     return (
         <>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">Dashboard Rezervări</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">Rezervări</h1>
 
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
                 {/* Left & Main Column: Filters and Bookings List */}
                 <div className="xl:col-span-2 flex flex-col gap-8">
                     <div>
-                        <h2 className="text-xl font-bold text-gray-900 mb-4">Filtre & Sortare</h2>
+                        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-4">
+                            <h2 className="text-xl font-bold text-gray-900">Filtre & Sortare</h2>
+                             <button onClick={handleOpenAddModal} className="bg-chef-gradient text-white font-bold py-2 px-5 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
+                                Adaugă Rezervare Nouă
+                            </button>
+                        </div>
                         <div className="flex flex-col sm:flex-row gap-4 p-4 bg-white rounded-lg shadow">
                             <input
                                 type="text"
@@ -361,6 +455,7 @@ export default function AdminDashboardPage() {
                     booking={selectedBooking} 
                     onClose={() => setSelectedBooking(null)} 
                     onSave={handleSaveBooking}
+                    onDelete={handleDeleteBooking}
                 />
             )}
             {toast.visible && <Toast message={toast.message} type={toast.type} onClose={() => setToast(prev => ({...prev, visible: false}))} />}
