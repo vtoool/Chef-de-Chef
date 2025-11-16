@@ -18,12 +18,12 @@ const Logo = () => (
 
 const StatusBadge: React.FC<{ status: Booking['status'] }> = ({ status }) => {
     const statusMap: Record<Booking['status'], { text: string; classes: string; }> = {
-        pending: { text: 'În așteptare', classes: 'bg-yellow-500/20 text-yellow-300' },
-        confirmed: { text: 'Confirmat', classes: 'bg-green-500/20 text-green-300' },
-        completed: { text: 'Completat', classes: 'bg-blue-500/20 text-blue-300' },
-        rejected: { text: 'Refuzat', classes: 'bg-red-500/20 text-red-300' },
+        pending: { text: 'În așteptare', classes: 'bg-yellow-100 text-yellow-800' },
+        confirmed: { text: 'Confirmat', classes: 'bg-green-100 text-green-800' },
+        completed: { text: 'Completat', classes: 'bg-blue-100 text-blue-800' },
+        rejected: { text: 'Refuzat', classes: 'bg-red-100 text-red-800' },
     };
-    const { text, classes } = statusMap[status] || { text: status, classes: 'bg-gray-500/20 text-gray-300' };
+    const { text, classes } = statusMap[status] || { text: status, classes: 'bg-gray-100 text-gray-800' };
     return <span className={`px-2 py-1 text-xs font-bold rounded-full capitalize ${classes}`}>{text}</span>;
 };
 
@@ -49,40 +49,40 @@ const BookingDetailsModal: React.FC<{
 
     return (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={onClose}>
-            <div className="bg-brand-brown-light rounded-lg shadow-2xl w-full max-w-2xl text-white" onClick={e => e.stopPropagation()}>
-                <div className="p-6 border-b border-brand-brown-dark/50">
+            <div className="bg-white rounded-lg shadow-2xl w-full max-w-2xl text-gray-800" onClick={e => e.stopPropagation()}>
+                <div className="p-6 border-b border-gray-200">
                     <h3 className="text-xl font-bold">Detalii Rezervare: {booking.name}</h3>
-                    <p className="text-sm text-brand-cream/70">Data eveniment: {booking.event_date}</p>
+                    <p className="text-sm text-gray-500">Data eveniment: {booking.event_date}</p>
                 </div>
                 <div className="p-6 grid md:grid-cols-2 gap-6 max-h-[70vh] overflow-y-auto">
                     {/* Details Column */}
                     <div className="space-y-4">
                         <div>
-                            <label className="text-xs font-bold text-brand-cream/60 block">Nume Client</label>
+                            <label className="text-xs font-bold text-gray-500 block">Nume Client</label>
                             <p>{booking.name}</p>
                         </div>
                         <div>
-                            <label className="text-xs font-bold text-brand-cream/60 block">Contact</label>
+                            <label className="text-xs font-bold text-gray-500 block">Contact</label>
                             <p>{booking.phone} / {booking.email}</p>
                         </div>
                         <div>
-                            <label className="text-xs font-bold text-brand-cream/60 block">Tip Eveniment</label>
+                            <label className="text-xs font-bold text-gray-500 block">Tip Eveniment</label>
                             <p>{booking.event_type}</p>
                         </div>
                         <div>
-                            <label className="text-xs font-bold text-brand-cream/60 block">Locație</label>
+                            <label className="text-xs font-bold text-gray-500 block">Locație</label>
                             <p>{booking.location}</p>
                         </div>
                          <div>
-                            <label className="text-xs font-bold text-brand-cream/60 block">Detalii Suplimentare (Client)</label>
+                            <label className="text-xs font-bold text-gray-500 block">Detalii Suplimentare (Client)</label>
                             <p className="text-sm whitespace-pre-wrap">{booking.notes || 'N/A'}</p>
                         </div>
                     </div>
                     {/* Editable Form Column */}
                     <div className="space-y-4">
                         <div>
-                            <label htmlFor="status" className="text-sm font-bold text-brand-cream/80 block mb-1">Status Rezervare</label>
-                            <select id="status" name="status" value={editedBooking.status} onChange={handleInputChange} className="w-full p-2 bg-brand-brown-dark/50 text-white border border-brand-brown-dark/80 rounded-md focus:ring-brand-orange focus:border-brand-orange">
+                            <label htmlFor="status" className="text-sm font-bold text-gray-600 block mb-1">Status Rezervare</label>
+                            <select id="status" name="status" value={editedBooking.status} onChange={handleInputChange} className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange">
                                 <option value="pending">În așteptare</option>
                                 <option value="confirmed">Confirmat</option>
                                 <option value="completed">Completat</option>
@@ -90,29 +90,29 @@ const BookingDetailsModal: React.FC<{
                             </select>
                         </div>
                          <div>
-                            <label htmlFor="price" className="text-sm font-bold text-brand-cream/80 block mb-1">Preț Total (MDL)</label>
-                            <input type="number" id="price" name="price" value={editedBooking.price || ''} onChange={handleInputChange} placeholder="ex: 5000" className="w-full p-2 bg-brand-brown-dark/50 text-white border border-brand-brown-dark/80 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
+                            <label htmlFor="price" className="text-sm font-bold text-gray-600 block mb-1">Preț Total (MDL)</label>
+                            <input type="number" id="price" name="price" value={editedBooking.price || ''} onChange={handleInputChange} placeholder="ex: 5000" className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
                         </div>
                          <div>
-                            <label htmlFor="prepayment" className="text-sm font-bold text-brand-cream/80 block mb-1">Avans Plătit (MDL)</label>
-                            <input type="number" id="prepayment" name="prepayment" value={editedBooking.prepayment || ''} onChange={handleInputChange} placeholder="ex: 1000" className="w-full p-2 bg-brand-brown-dark/50 text-white border border-brand-brown-dark/80 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
+                            <label htmlFor="prepayment" className="text-sm font-bold text-gray-600 block mb-1">Avans Plătit (MDL)</label>
+                            <input type="number" id="prepayment" name="prepayment" value={editedBooking.prepayment || ''} onChange={handleInputChange} placeholder="ex: 1000" className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
                         </div>
                          <div>
-                            <label htmlFor="payment_status" className="text-sm font-bold text-brand-cream/80 block mb-1">Status Plată</label>
-                            <select id="payment_status" name="payment_status" value={editedBooking.payment_status || 'neplatit'} onChange={handleInputChange} className="w-full p-2 bg-brand-brown-dark/50 text-white border border-brand-brown-dark/80 rounded-md focus:ring-brand-orange focus:border-brand-orange">
+                            <label htmlFor="payment_status" className="text-sm font-bold text-gray-600 block mb-1">Status Plată</label>
+                            <select id="payment_status" name="payment_status" value={editedBooking.payment_status || 'neplatit'} onChange={handleInputChange} className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange">
                                 <option value="neplatit">Neplătit</option>
                                 <option value="avans platit">Avans Plătit</option>
                                 <option value="platit integral">Plătit Integral</option>
                             </select>
                         </div>
                         <div>
-                            <label htmlFor="notes_interne" className="text-sm font-bold text-brand-cream/80 block mb-1">Notițe Interne</label>
-                            <textarea id="notes_interne" name="notes_interne" value={editedBooking.notes_interne || ''} onChange={handleInputChange} rows={3} placeholder="Detalii confidențiale, planificări..." className="w-full p-2 bg-brand-brown-dark/50 text-white border border-brand-brown-dark/80 rounded-md focus:ring-brand-orange focus:border-brand-orange"></textarea>
+                            <label htmlFor="notes_interne" className="text-sm font-bold text-gray-600 block mb-1">Notițe Interne</label>
+                            <textarea id="notes_interne" name="notes_interne" value={editedBooking.notes_interne || ''} onChange={handleInputChange} rows={3} placeholder="Detalii confidențiale, planificări..." className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"></textarea>
                         </div>
                     </div>
                 </div>
-                <div className="p-4 bg-brand-brown-dark/30 flex justify-end space-x-3">
-                    <button onClick={onClose} className="bg-gray-500/20 text-gray-200 font-semibold py-2 px-4 rounded-lg hover:bg-gray-500/40 transition-colors">
+                <div className="p-4 bg-gray-50 flex justify-end space-x-3">
+                    <button onClick={onClose} className="bg-white text-gray-700 font-semibold py-2 px-4 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors">
                         Anulează
                     </button>
                     <button onClick={handleSaveClick} disabled={isSaving} className="bg-chef-gradient text-white font-bold py-2 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-50">
@@ -186,8 +186,7 @@ export default function AdminDashboardPage() {
 
     const handleSaveBooking = async (updatedBooking: Booking) => {
         if (!supabase || !updatedBooking.id) return;
-        
-        // Prepare data for Supabase, ensuring numeric fields are numbers or null
+
         const updateData = {
             status: updatedBooking.status,
             price: updatedBooking.price ? Number(updatedBooking.price) : null,
@@ -196,20 +195,19 @@ export default function AdminDashboardPage() {
             notes_interne: updatedBooking.notes_interne || null,
         };
 
-        const { data: savedBooking, error } = await supabase
+        const { data: savedBookings, error } = await supabase
             .from('bookings')
             .update(updateData)
             .eq('id', updatedBooking.id)
-            .select()
-            .single();
+            .select();
 
         if (error) {
             console.error("Error updating booking:", error);
             showToast(`Eroare la salvare: ${error.message}`, 'error');
-        } else if (savedBooking) {
+        } else if (savedBookings && savedBookings.length > 0) {
+            const savedBooking = savedBookings[0];
             showToast('Modificări salvate cu succes!', 'success');
-            // Update local state with the confirmed data from the database
-            setBookings(prevBookings => 
+            setBookings(prevBookings =>
                 prevBookings.map(b => b.id === savedBooking.id ? savedBooking as Booking : b)
             );
             setSelectedBooking(null);
@@ -247,37 +245,37 @@ export default function AdminDashboardPage() {
     };
 
     return (
-        <div className="min-h-screen text-white p-4 sm:p-6 lg:p-8">
-            <header className="flex justify-between items-center mb-8 pb-4 border-b border-brand-brown-light/30">
+        <div className="min-h-screen text-gray-800 p-4 sm:p-6 lg:p-8">
+            <header className="flex justify-between items-center mb-8 pb-4 border-b border-gray-200">
                 <Logo />
                 <button
                     onClick={handleLogout}
-                    className="bg-brand-orange/20 text-brand-orange font-semibold py-2 px-4 rounded-lg hover:bg-brand-orange/40 transition-colors"
+                    className="bg-brand-orange/10 text-brand-orange font-semibold py-2 px-4 rounded-lg hover:bg-brand-orange/20 transition-colors"
                 >
                     Deconectare
                 </button>
             </header>
 
             <main>
-                <h1 className="text-2xl md:text-3xl font-bold text-brand-cream mb-6">Dashboard Rezervări</h1>
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">Dashboard Rezervări</h1>
 
                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
                     {/* Left & Main Column: Filters and Bookings List */}
                     <div className="xl:col-span-2 flex flex-col gap-8">
                         <div>
-                            <h2 className="text-xl font-bold text-brand-cream mb-4">Filtre & Sortare</h2>
-                            <div className="flex flex-col sm:flex-row gap-4 p-4 bg-brand-brown-light/30 rounded-lg">
+                            <h2 className="text-xl font-bold text-gray-900 mb-4">Filtre & Sortare</h2>
+                            <div className="flex flex-col sm:flex-row gap-4 p-4 bg-white rounded-lg shadow">
                                 <input
                                     type="text"
                                     placeholder="Caută după nume, email, telefon..."
                                     value={searchQuery}
                                     onChange={e => setSearchQuery(e.target.value)}
-                                    className="w-full sm:flex-1 p-2 bg-brand-brown-light/50 text-white border border-brand-brown-dark/80 rounded-md focus:ring-brand-orange focus:border-brand-orange"
+                                    className="w-full sm:flex-1 p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"
                                 />
                                 <select
                                     onChange={handleSortChange}
                                     value={`${sortConfig.key}-${sortConfig.direction}`}
-                                    className="w-full sm:w-60 p-2 bg-brand-brown-light/50 text-white border border-brand-brown-dark/80 rounded-md focus:ring-brand-orange focus:border-brand-orange"
+                                    className="w-full sm:w-60 p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"
                                 >
                                     <option value="event_date-asc">Data Eveniment (Crescător)</option>
                                     <option value="event_date-desc">Data Eveniment (Descrescător)</option>
@@ -286,8 +284,8 @@ export default function AdminDashboardPage() {
                                 </select>
                             </div>
                             {filterDate && (
-                                <div className="bg-brand-brown-light/50 p-3 rounded-md text-center mt-4">
-                                    <p className="text-sm">Afișez rezervări pentru: <span className="font-bold">{format(filterDate, 'd MMMM yyyy', { locale: ro })}</span></p>
+                                <div className="bg-gray-200 p-3 rounded-md text-center mt-4">
+                                    <p className="text-sm text-gray-700">Afișez rezervări pentru: <span className="font-bold">{format(filterDate, 'd MMMM yyyy', { locale: ro })}</span></p>
                                     <button onClick={() => setFilterDate(null)} className="text-xs text-brand-orange hover:underline mt-1">Șterge filtru</button>
                                 </div>
                             )}
@@ -295,17 +293,17 @@ export default function AdminDashboardPage() {
 
                         <div>
                             {isLoading ? (
-                                <div className="text-center text-brand-cream/80 py-10">Se încarcă rezervările...</div>
+                                <div className="text-center text-gray-500 py-10">Se încarcă rezervările...</div>
                             ) : filteredAndSortedBookings.length === 0 ? (
-                                <div className="text-center text-brand-cream/80 bg-brand-brown-light/50 p-6 rounded-lg">
+                                <div className="text-center text-gray-500 bg-white p-6 rounded-lg shadow">
                                     {searchQuery || filterDate ? 'Nu am găsit nicio rezervare conform filtrelor.' : 'Nu există nicio rezervare înregistrată.'}
                                 </div>
                             ) : (
                                 <>
                                     {/* Desktop Table View */}
-                                    <div className="hidden md:block overflow-x-auto bg-brand-brown-light/30 rounded-lg shadow-lg">
-                                        <table className="w-full text-sm text-left text-brand-cream/90">
-                                            <thead className="text-xs text-brand-cream uppercase bg-brand-brown-light/50">
+                                    <div className="hidden md:block overflow-x-auto bg-white rounded-lg shadow-lg">
+                                        <table className="w-full text-sm text-left text-gray-700">
+                                            <thead className="text-xs text-gray-500 uppercase bg-gray-50">
                                                 <tr>
                                                     <th scope="col" className="px-6 py-3">Data Evenimentului</th>
                                                     <th scope="col" className="px-6 py-3">Nume Client</th>
@@ -316,7 +314,7 @@ export default function AdminDashboardPage() {
                                             </thead>
                                             <tbody>
                                                 {filteredAndSortedBookings.map((booking) => (
-                                                    <tr key={booking.id} className="border-b border-brand-brown-light/30 hover:bg-brand-brown-light/50">
+                                                    <tr key={booking.id} className="border-b border-gray-200 hover:bg-gray-50">
                                                         <td className="px-6 py-4 font-medium">{booking.event_date}</td>
                                                         <td className="px-6 py-4">{booking.name}</td>
                                                         <td className="px-6 py-4">{booking.event_type}</td>
@@ -333,11 +331,11 @@ export default function AdminDashboardPage() {
                                     {/* Mobile Card View */}
                                     <div className="block md:hidden space-y-4">
                                         {filteredAndSortedBookings.map((booking) => (
-                                            <div key={booking.id} className="bg-brand-brown-light/50 p-4 rounded-lg shadow">
+                                            <div key={booking.id} className="bg-white p-4 rounded-lg shadow">
                                                 <div className="flex justify-between items-start">
                                                     <div>
-                                                        <p className="font-bold text-lg text-white">{booking.name}</p>
-                                                        <p className="text-sm text-brand-cream/80">{booking.event_date}</p>
+                                                        <p className="font-bold text-lg text-gray-900">{booking.name}</p>
+                                                        <p className="text-sm text-gray-500">{booking.event_date}</p>
                                                     </div>
                                                     <StatusBadge status={booking.status} />
                                                 </div>
@@ -356,7 +354,7 @@ export default function AdminDashboardPage() {
 
                     {/* Right Column: Calendar */}
                     <div className="xl:col-span-1">
-                        <h2 className="text-xl font-bold text-brand-cream mb-4">Calendar Evenimente</h2>
+                        <h2 className="text-xl font-bold text-gray-900 mb-4">Calendar Evenimente</h2>
                         <AdminCalendar
                             bookings={bookings}
                             filterDate={filterDate}

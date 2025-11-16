@@ -44,15 +44,15 @@ export default function AdminLoginPage() {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen text-white p-4">
-            <div className="w-full max-w-sm p-8 space-y-6 bg-brand-brown-light rounded-xl shadow-2xl">
+        <div className="flex items-center justify-center min-h-screen text-gray-800 p-4">
+            <div className="w-full max-w-sm p-8 space-y-6 bg-white rounded-xl shadow-2xl">
                 <Logo />
-                <h1 className="text-xl font-bold text-center text-brand-cream">
+                <h1 className="text-xl font-bold text-center text-gray-900">
                     Panou de Administrare
                 </h1>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label htmlFor="email" className="text-sm font-bold text-brand-cream/80 block mb-1">Email</label>
+                        <label htmlFor="email" className="text-sm font-bold text-gray-600 block mb-1">Email</label>
                         <input
                             id="email"
                             name="email"
@@ -61,11 +61,11 @@ export default function AdminLoginPage() {
                             required
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full p-2 bg-brand-brown-dark/50 text-white border border-brand-brown-dark/80 rounded-md focus:ring-brand-orange focus:border-brand-orange transition-colors"
+                            className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange transition-colors"
                         />
                     </div>
                     <div>
-                        <label htmlFor="password" className="text-sm font-bold text-brand-cream/80 block mb-1">Parolă</label>
+                        <label htmlFor="password" className="text-sm font-bold text-gray-600 block mb-1">Parolă</label>
                         <input
                             id="password"
                             name="password"
@@ -74,11 +74,11 @@ export default function AdminLoginPage() {
                             required
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full p-2 bg-brand-brown-dark/50 text-white border border-brand-brown-dark/80 rounded-md focus:ring-brand-orange focus:border-brand-orange transition-colors"
+                            className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange transition-colors"
                         />
                     </div>
                     {error && (
-                        <p className="text-sm text-center text-red-400">{error}</p>
+                        <p className="text-sm text-center text-red-600">{error}</p>
                     )}
                     <div>
                         <button
@@ -91,7 +91,7 @@ export default function AdminLoginPage() {
                     </div>
                 </form>
                 <div className="text-center">
-                    <a href="/" className="text-xs text-brand-cream/50 hover:text-brand-cream/80 transition-colors">
+                    <a href="/" className="text-xs text-gray-500 hover:text-gray-700 transition-colors">
                         ← Înapoi la site
                     </a>
                 </div>

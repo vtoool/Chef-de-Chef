@@ -10,7 +10,7 @@ export default function AdminLayout({
   return (
     // We use the main <html> and <body> from the root layout,
     // but this section allows us to apply a different background and style scope.
-    <section className="bg-brand-brown-dark min-h-screen font-sans">
+    <section className="bg-gray-100 min-h-screen font-sans">
       {children}
     </section>
   )

@@ -5,15 +5,17 @@ import React, { useState, useEffect, useRef } from 'react';
 // A helper component to handle the count-up animation
 const CountUpNumber: React.FC<{ target: number; duration?: number }> = ({ target, duration = 2000 }) => {
   const [count, setCount] = useState(0);
-  const frameRef = useRef<number>();
-  const startTimeRef = useRef<number>();
+  // FIX: Initialize useRef with an initial value of `undefined` and update type.
+  const frameRef = useRef<number | undefined>(undefined);
+  // FIX: Initialize useRef with an initial value of `undefined` and update type.
+  const startTimeRef = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     const animate = (timestamp: number) => {
       if (startTimeRef.current === undefined) {
         startTimeRef.current = timestamp;
       }
-      const elapsedTime = timestamp - startTimeRef.current;
+      const elapsedTime = timestamp - startTimeRef.current!;
       const progress = Math.min(elapsedTime / duration, 1);
       const currentCount = Math.floor(progress * target);
       setCount(currentCount);
