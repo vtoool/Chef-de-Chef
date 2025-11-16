@@ -19,7 +19,7 @@ const StatCard: React.FC<{ title: string; value: string | number; description: s
             {icon}
         </div>
         <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-gray-500 truncate">{title}</p>
+            <p className="text-sm font-semibold text-gray-500">{title}</p>
             <p className="text-3xl font-bold text-gray-900 break-words">{value}</p>
             <p className="text-xs text-gray-400 mt-1">{description}</p>
         </div>
@@ -53,11 +53,13 @@ export default function RezumatPage() {
             const calculatedStats: Stats = {
                 totalRevenue: bookingsData
                     .filter(b => b.status === 'completed' && b.price)
-                    .reduce((sum, b) => sum + (b.price || 0), 0),
+                    // FIX: Explicitly type the accumulator `sum` to ensure it is treated as a number.
+                    .reduce((sum: number, b) => sum + (b.price || 0), 0),
                 completedEvents: bookingsData.filter(b => b.status === 'completed').length,
                 upcomingEvents: bookingsData.filter(b => b.status === 'confirmed' && new Date(b.event_date + 'T00:00:00Z') >= today).length,
                 pendingRequests: bookingsData.filter(b => b.status === 'pending').length,
-                eventTypeCounts: bookingsData.reduce((acc, b) => {
+                eventTypeCounts: bookingsData.reduce((acc: Record<string, number>, b) => {
+                    // FIX: Explicitly type the accumulator `acc` to ensure correct type inference.
                     acc[b.event_type] = (acc[b.event_type] || 0) + 1;
                     return acc;
                 }, {} as Record<string, number>),
@@ -96,7 +98,8 @@ export default function RezumatPage() {
     const formattedRevenue = new Intl.NumberFormat('ro-RO', { style: 'currency', currency: 'MDL', minimumFractionDigits: 0 }).format(stats.totalRevenue);
     
     // FIX: Calculate total bookings directly from stats to avoid state redundancy and fix type errors.
-    const totalBookings = Object.values(stats.eventTypeCounts).reduce((sum, count) => sum + count, 0);
+    // FIX: Explicitly type accumulators to prevent type inference issues.
+    const totalBookings = Object.values(stats.eventTypeCounts).reduce((sum: number, count: number) => sum + count, 0);
 
     return (
         <>

@@ -8,6 +8,15 @@ import { supabase } from '../../../lib/supabaseClient';
 import { Booking } from '../../../types';
 import AdminCalendar from './AdminCalendar';
 
+// Helper function to format numbers as currency
+const formatNumber = (value: number | null | undefined): string => {
+    if (value === null || value === undefined || isNaN(value)) {
+        return '—';
+    }
+    // Using toLocaleString for basic formatting with thousand separators.
+    return `${value.toLocaleString('ro-RO')} MDL`;
+};
+
 // Helper components
 const StatusBadge: React.FC<{ status: Booking['status'] }> = ({ status }) => {
     const statusMap: Record<Booking['status'], { text: string; classes: string; }> = {
@@ -396,6 +405,9 @@ export default function AdminDashboardPage() {
                                                 <th scope="col" className="px-6 py-3">Nume Client</th>
                                                 <th scope="col" className="px-6 py-3">Tip Eveniment</th>
                                                 <th scope="col" className="px-6 py-3">Status</th>
+                                                <th scope="col" className="px-6 py-3 text-right">Preț Total</th>
+                                                <th scope="col" className="px-6 py-3 text-right">Avans Plătit</th>
+                                                <th scope="col" className="px-6 py-3 text-right">Rest Plată</th>
                                                 <th scope="col" className="px-6 py-3"><span className="sr-only">Actions</span></th>
                                             </tr>
                                         </thead>
@@ -406,6 +418,9 @@ export default function AdminDashboardPage() {
                                                     <td className="px-6 py-4">{booking.name}</td>
                                                     <td className="px-6 py-4">{booking.event_type}</td>
                                                     <td className="px-6 py-4"><StatusBadge status={booking.status} /></td>
+                                                    <td className="px-6 py-4 text-right font-mono">{formatNumber(booking.price)}</td>
+                                                    <td className="px-6 py-4 text-right font-mono">{formatNumber(booking.prepayment)}</td>
+                                                    <td className="px-6 py-4 text-right font-mono font-bold">{formatNumber((booking.price || 0) - (booking.prepayment || 0))}</td>
                                                     <td className="px-6 py-4 text-right">
                                                         <button onClick={() => setSelectedBooking(booking)} className="font-medium text-brand-orange hover:underline">Detalii</button>
                                                     </td>
@@ -423,8 +438,23 @@ export default function AdminDashboardPage() {
                                                 <div>
                                                     <p className="font-bold text-lg text-gray-900">{booking.name}</p>
                                                     <p className="text-sm text-gray-500">{booking.event_date}</p>
+                                                    <p className="text-sm text-gray-500">{booking.event_type}</p>
                                                 </div>
                                                 <StatusBadge status={booking.status} />
+                                            </div>
+                                            <div className="mt-4 pt-4 border-t border-gray-200 grid grid-cols-3 gap-2 text-center text-sm">
+                                                <div>
+                                                    <p className="text-xs text-gray-500">Preț Total</p>
+                                                    <p className="font-semibold text-gray-800">{formatNumber(booking.price)}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-xs text-gray-500">Avans</p>
+                                                    <p className="font-semibold text-gray-800">{formatNumber(booking.prepayment)}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-xs text-gray-500">Rest Plată</p>
+                                                    <p className="font-bold text-gray-900">{formatNumber((booking.price || 0) - (booking.prepayment || 0))}</p>
+                                                </div>
                                             </div>
                                             <div className="mt-4 text-right">
                                                 <button onClick={() => setSelectedBooking(booking)} className="font-medium text-brand-orange hover:underline">
