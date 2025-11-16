@@ -63,25 +63,30 @@ const Header: React.FC = () => {
         ...navLinks.map(link => document.querySelector(link.href))
       ].filter(Boolean) as HTMLElement[];
 
+      if (sections.length === 0) return;
+
       const scrollY = window.scrollY;
-      // Define a trigger point on the screen (e.g., 100px from the top)
-      // to determine which section is considered "active".
-      const scrollTriggerPoint = scrollY + 100;
+      const viewportCenter = scrollY + window.innerHeight / 2;
 
-      let newActiveLink = '#home'; // Default to home
+      // Find the section whose center is closest to the viewport's center
+      const closestSection = sections.reduce(
+        (closest, section) => {
+          const sectionCenter = section.offsetTop + section.offsetHeight / 2;
+          const distance = Math.abs(viewportCenter - sectionCenter);
 
-      // Iterate backwards from the last section to the first.
-      // The first section whose top is above the trigger point is the active one.
-      for (let i = sections.length - 1; i >= 0; i--) {
-        const section = sections[i];
-        if (section.offsetTop <= scrollTriggerPoint) {
-          newActiveLink = `#${section.id}`;
-          break; // Found the active section, no need to check further
-        }
-      }
+          if (distance < closest.distance) {
+            return { distance, id: section.id };
+          }
+          return closest;
+        },
+        { distance: Infinity, id: sections[0].id }
+      );
 
-      // Edge case: If scrolled to the very bottom, ensure the last link is active.
-      const isAtBottom = (window.innerHeight + scrollY) >= document.body.offsetHeight - 2;
+      let newActiveLink = `#${closestSection.id}`;
+
+      // Edge case: If scrolled to the very bottom, forcefully activate the last link.
+      // This is helpful for short final sections.
+      const isAtBottom = (window.innerHeight + scrollY) >= document.body.offsetHeight - 5;
       if (isAtBottom) {
         newActiveLink = navLinks[navLinks.length - 1].href;
       }
