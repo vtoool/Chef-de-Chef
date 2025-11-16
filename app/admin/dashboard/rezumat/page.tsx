@@ -65,26 +65,34 @@ export default function RezumatPage() {
                     }
                     if (rates) {
                         if (currency === 'EUR') {
-                            return total + (price * rates.rates.MDL);
+                            // FIX: Explicitly convert exchange rate to number to satisfy TypeScript compiler.
+                            return total + (price * Number(rates.rates.MDL));
                         }
                         if (currency === 'USD') {
-                            const priceInEUR = price / rates.rates.USD;
-                            return total + (priceInEUR * rates.rates.MDL);
+                            // FIX: Explicitly convert exchange rates to numbers to satisfy TypeScript compiler.
+                            const priceInEUR = price / Number(rates.rates.USD);
+                            return total + (priceInEUR * Number(rates.rates.MDL));
                         }
                     }
                     // Fallback: If rates fail, add original currency value but we will handle the display
                     return total;
                 }, 0);
 
+            const eventTypeCounts = bookingsData.reduce(
+                (acc, b) => {
+                    // FIX: Correctly type the accumulator's initial value to prevent type inference issues.
+                    acc[b.event_type] = (acc[b.event_type] ?? 0) + 1;
+                    return acc;
+                },
+                {} as Record<string, number>
+            );
+
             const calculatedStats: Stats = {
                 totalRevenueInMDL,
                 completedEvents: bookingsData.filter(b => b.status === 'completed').length,
                 upcomingEvents: bookingsData.filter(b => b.status === 'confirmed' && new Date(b.event_date + 'T00:00:00Z') >= today).length,
                 pendingRequests: bookingsData.filter(b => b.status === 'pending').length,
-                eventTypeCounts: bookingsData.reduce((acc: Record<string, number>, b) => {
-                    acc[b.event_type] = (acc[b.event_type] || 0) + 1;
-                    return acc;
-                }, {} as Record<string, number>),
+                eventTypeCounts,
             };
             setStats(calculatedStats);
         }
@@ -106,10 +114,11 @@ export default function RezumatPage() {
         checkUserAndFetchData();
     }, [router, fetchAndCalculateStats]);
 
-    const sortedEventTypes = useMemo(() => {
+    const sortedEventTypes = useMemo<[string, number][]>(() => {
         if (!stats) return [];
-        // FIX: Explicitly cast `a` and `b` to number to ensure correct sorting and type inference.
-        return Object.entries(stats.eventTypeCounts).sort(([, a], [, b]) => (b as number) - (a as number));
+        return Object.entries(stats.eventTypeCounts).sort(
+            ([_typeA, countA], [_typeB, countB]) => countB - countA
+        );
     }, [stats]);
     
     if (isLoading) {
@@ -122,8 +131,8 @@ export default function RezumatPage() {
     
     const formattedRevenue = new Intl.NumberFormat('ro-RO', { style: 'currency', currency: 'MDL', minimumFractionDigits: 0 }).format(stats.totalRevenueInMDL);
     
-    // FIX: Explicitly cast `count` to number to ensure `totalBookings` is inferred as a number.
-    const totalBookings = Object.values(stats.eventTypeCounts).reduce((sum: number, count) => sum + (count as number), 0);
+    // FIX: Correctly typed `eventTypeCounts` ensures `totalBookings` is a number.
+    const totalBookings = Object.values(stats.eventTypeCounts).reduce((sum, count) => sum + count, 0);
 
     return (
         <>
@@ -165,10 +174,10 @@ export default function RezumatPage() {
                                 <div key={type}>
                                     <div className="flex justify-between items-center mb-1 text-sm">
                                         <span className="font-semibold text-gray-600">{type}</span>
-                                        <span className="text-gray-500">{count as number} evenimente</span>
+                                        <span className="text-gray-500">{count} evenimente</span>
                                     </div>
                                     <div className="w-full bg-gray-200 rounded-full h-2.5">
-                                        <div className="bg-chef-gradient h-2.5 rounded-full" style={{ width: `${totalBookings > 0 ? (Number(count) / totalBookings) * 100 : 0}%` }}></div>
+                                        <div className="bg-chef-gradient h-2.5 rounded-full" style={{ width: `${totalBookings > 0 ? (count / totalBookings) * 100 : 0}%` }}></div>
                                     </div>
                                 </div>
                             ))}
