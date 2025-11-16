@@ -149,7 +149,8 @@ export default function RezumatPage() {
                                     <span className="text-gray-500">{count} evenimente</span>
                                 </div>
                                 <div className="w-full bg-gray-200 rounded-full h-2.5">
-                                    <div className="bg-chef-gradient h-2.5 rounded-full" style={{ width: `${totalBookings > 0 ? (count / totalBookings) * 100 : 0}%` }}></div>
+                                    {/* FIX: Cast `count` to a number to ensure correct arithmetic operation. */}
+                                    <div className="bg-chef-gradient h-2.5 rounded-full" style={{ width: `${totalBookings > 0 ? (Number(count) / totalBookings) * 100 : 0}%` }}></div>
                                 </div>
                             </div>
                         ))}

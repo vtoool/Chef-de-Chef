@@ -188,7 +188,7 @@ const BookingDetailsModal: React.FC<{
 // Toast Notification Component
 const Toast: React.FC<{ message: string; type: 'success' | 'error'; onClose: () => void; }> = ({ message, type, onClose }) => {
     useEffect(() => {
-        const timer = setTimeout(onClose, 3000);
+        const timer = setTimeout(onClose, 5000); // Increased duration for important messages
         return () => clearTimeout(timer);
     }, [onClose]);
 
@@ -239,6 +239,15 @@ export default function AdminDashboardPage() {
         setToast({ message, type, visible: true });
     };
 
+    const handleDbError = (error: { message: string }, action: 'adăugare' | 'salvare' | 'ștergere') => {
+        console.error(`Error on ${action}:`, error);
+        if (error.message.includes('column') && (error.message.includes('does not exist') || error.message.includes('Could not find'))) {
+            showToast('Eroare: Schema bazei de date nu este actualizată. Rulați scriptul de migrare din DEVELOPER_GUIDE.md.', 'error');
+        } else {
+            showToast(`Eroare la ${action}: ${error.message}`, 'error');
+        }
+    };
+
     const handleOpenAddModal = () => {
         const newBooking: Booking = {
             event_date: '',
@@ -264,8 +273,7 @@ export default function AdminDashboardPage() {
         const { error } = await supabase.from('bookings').delete().eq('id', bookingId);
         
         if (error) {
-            console.error("Error deleting booking:", error);
-            showToast(`Eroare la ștergere: ${error.message}`, 'error');
+            handleDbError(error, 'ștergere');
         } else {
             showToast('Rezervare ștearsă cu succes!', 'success');
             setBookings(prev => prev.filter(b => b.id !== bookingId));
@@ -291,8 +299,7 @@ export default function AdminDashboardPage() {
             const { error } = await supabase.from('bookings').insert([{ ...insertData, price, prepayment, currency: updatedBooking.currency || 'MDL' }]);
             
             if (error) {
-                console.error("Error inserting booking:", error);
-                showToast(`Eroare la adăugare: ${error.message}`, 'error');
+                handleDbError(error, 'adăugare');
             } else {
                 showToast('Rezervare adăugată cu succes!', 'success');
                 setSelectedBooking(null);
@@ -315,6 +322,14 @@ export default function AdminDashboardPage() {
             payment_status: updatedBooking.payment_status || 'neplatit',
             notes_interne: updatedBooking.notes_interne || null,
             currency: updatedBooking.currency || 'MDL',
+            // More fields can be made editable here if needed
+            name: updatedBooking.name,
+            email: updatedBooking.email,
+            phone: updatedBooking.phone,
+            event_date: updatedBooking.event_date,
+            event_type: updatedBooking.event_type,
+            location: updatedBooking.location,
+            notes: updatedBooking.notes,
         };
         
         const { data, error } = await supabase
@@ -324,8 +339,7 @@ export default function AdminDashboardPage() {
             .select();
 
         if (error) {
-            console.error("Error updating booking:", error);
-            showToast(`Eroare la salvare: ${error.message}`, 'error');
+            handleDbError(error, 'salvare');
         } else if (data && data.length > 0) {
             showToast('Modificări salvate cu succes!', 'success');
             const savedBooking = data[0] as Booking;
