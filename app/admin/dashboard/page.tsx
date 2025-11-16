@@ -84,11 +84,11 @@ const BookingDetailsModal: React.FC<{
                         </div>
                          <div>
                             <label htmlFor="price" className="text-sm font-bold text-gray-600 block mb-1">Preț Total (MDL)</label>
-                            <input type="number" id="price" name="price" value={editedBooking.price || ''} onChange={handleInputChange} placeholder="ex: 5000" className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
+                            <input type="number" id="price" name="price" value={editedBooking.price ?? ''} onChange={handleInputChange} placeholder="ex: 5000" className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
                         </div>
                          <div>
                             <label htmlFor="prepayment" className="text-sm font-bold text-gray-600 block mb-1">Avans Plătit (MDL)</label>
-                            <input type="number" id="prepayment" name="prepayment" value={editedBooking.prepayment || ''} onChange={handleInputChange} placeholder="ex: 1000" className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
+                            <input type="number" id="prepayment" name="prepayment" value={editedBooking.prepayment ?? ''} onChange={handleInputChange} placeholder="ex: 1000" className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
                         </div>
                          <div>
                             <label htmlFor="payment_status" className="text-sm font-bold text-gray-600 block mb-1">Status Plată</label>
@@ -174,28 +174,42 @@ export default function AdminDashboardPage() {
     const handleSaveBooking = async (updatedBooking: Booking) => {
         if (!supabase || !updatedBooking.id) return;
 
+        // FIX: The value from the form input can be an empty string, which is not in the `number | null` type.
+        // Cast to `any` to allow checking for an empty string before converting to a number.
+        const priceVal = updatedBooking.price;
+        const price = ((priceVal as any) === '' || priceVal === null || priceVal === undefined) ? null : Number(priceVal);
+
+        // FIX: The value from the form input can be an empty string, which is not in the `number | null` type.
+        // Cast to `any` to allow checking for an empty string before converting to a number.
+        const prepaymentVal = updatedBooking.prepayment;
+        const prepayment = ((prepaymentVal as any) === '' || prepaymentVal === null || prepaymentVal === undefined) ? null : Number(prepaymentVal);
+
         const updateData = {
             status: updatedBooking.status,
-            price: updatedBooking.price ? Number(updatedBooking.price) : null,
-            prepayment: updatedBooking.prepayment ? Number(updatedBooking.prepayment) : null,
+            price: price,
+            prepayment: prepayment,
             payment_status: updatedBooking.payment_status || 'neplatit',
             notes_interne: updatedBooking.notes_interne || null,
         };
 
-        const { data: savedBookings, error } = await supabase
+        const { error } = await supabase
             .from('bookings')
             .update(updateData)
-            .eq('id', updatedBooking.id)
-            .select();
+            .eq('id', updatedBooking.id);
 
         if (error) {
             console.error("Error updating booking:", error);
             showToast(`Eroare la salvare: ${error.message}`, 'error');
-        } else if (savedBookings && savedBookings.length > 0) {
-            const savedBooking = savedBookings[0];
+        } else {
             showToast('Modificări salvate cu succes!', 'success');
+            
+            const newBookingForState: Booking = {
+                ...updatedBooking,
+                ...updateData
+            };
+
             setBookings(prevBookings =>
-                prevBookings.map(b => b.id === savedBooking.id ? savedBooking as Booking : b)
+                prevBookings.map(b => (b.id === newBookingForState.id ? newBookingForState : b))
             );
             setSelectedBooking(null);
         }
