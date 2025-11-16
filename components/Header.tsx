@@ -10,10 +10,19 @@ const Logo = () => (
     </div>
 );
 
+const navLinks = [
+  { name: 'Servicii', href: '#services' },
+  { name: 'Galerie', href: '#gallery' },
+  { name: 'Despre Noi', href: '#about' },
+  { name: 'Contact', href: '#contact' },
+];
+
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSticky, setIsSticky] = useState(true);
+  const [activeLink, setActiveLink] = useState('#home');
 
+  // Effect to handle body scroll lock for mobile menu
   useEffect(() => {
     if (isMenuOpen) {
       document.body.classList.add('overflow-hidden');
@@ -25,6 +34,7 @@ const Header: React.FC = () => {
     };
   }, [isMenuOpen]);
 
+  // Effect to handle the sticky behavior of the header
   useEffect(() => {
     const servicesSection = document.getElementById('services');
     if (!servicesSection) return;
@@ -44,13 +54,35 @@ const Header: React.FC = () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+  
+  // Effect to track active section on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+        const sections = [
+            document.querySelector('#home'),
+            ...navLinks.map(link => document.querySelector(link.href))
+        ].filter(Boolean); // Filter out nulls if a section is not found
 
-  const navLinks = [
-    { name: 'Servicii', href: '#services' },
-    { name: 'Galerie', href: '#gallery' },
-    { name: 'Despre Noi', href: '#about' },
-    { name: 'Contact', href: '#contact' },
-  ];
+        let currentActive = '';
+        const scrollY = window.scrollY;
+
+        sections.forEach(section => {
+            const element = section as HTMLElement; // Type assertion
+            const sectionTop = element.offsetTop - 150; // 150px offset for header height
+            if (scrollY >= sectionTop) {
+                currentActive = `#${element.id}`;
+            }
+        });
+        
+        setActiveLink(currentActive || '#home');
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // Call once on mount to set the initial state
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
 
   const handleLinkClick = () => {
     setIsMenuOpen(false);
@@ -60,13 +92,24 @@ const Header: React.FC = () => {
     <>
       <header className={`w-full bg-brand-cream z-50 ${isSticky ? 'sticky top-0' : ''}`}>
         <div className="container mx-auto max-w-6xl px-6 py-3 flex justify-between items-center">
-          <a href="#home" aria-label="Pagina principală"><Logo /></a>
-          <nav className="hidden md:flex items-center space-x-8">
-            {navLinks.map((link) => (
-              <a key={link.name} href={link.href} className="text-brand-brown-light hover:text-brand-orange transition-colors duration-300 font-medium">
-                {link.name}
-              </a>
-            ))}
+          <a href="#home" onClick={() => setActiveLink('#home')} aria-label="Pagina principală"><Logo /></a>
+          <nav className="hidden md:flex items-center space-x-2">
+            {navLinks.map((link) => {
+              const isActive = activeLink === link.href;
+              return (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  className={`px-4 py-2 rounded-full font-medium transition-all duration-300 ${
+                    isActive
+                      ? 'bg-brand-orange/10 text-brand-orange'
+                      : 'text-brand-brown-light hover:bg-brand-orange/10 hover:text-brand-orange'
+                  }`}
+                >
+                  {link.name}
+                </a>
+              );
+            })}
           </nav>
           <BookingButton href="#book" className="hidden md:inline-block">
             Rezervă Acum

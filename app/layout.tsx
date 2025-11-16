@@ -31,11 +31,37 @@ const yesteryear = Yesteryear({
   weight: '400',
 });
 
+const heroImageUrl = 'https://scontent.fkiv7-1.fna.fbcdn.net/v/t39.30808-6/480324791_953081760294442_1783990944146547779_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=127cfc&_nc_ohc=E9Ugi3ich00Q7kNvwG24Ir0&_nc_oc=AdnVKu1X1lh40_nRoItDbZmqnVajD1kJR6notxKzQBanHFld1n4oMHTJrTVLl8hXxbW_fAfxHYVLIlxQPi6rXA8t&_nc_zt=23&_nc_ht=scontent.fkiv7-1.fna&_nc_gid=f47qOphwVxSDs_JdfrLd4A&oh=00_AfiznpsExseIWO4p392EUF_9LuwaL6wabziHToNGqkIWrw&oe=691DD445';
+const siteTitle = 'Ansamblul Chef de Chef | Dansuri Populare Moldovenești';
+const siteDescription = "Site-ul web al ansamblului de dansuri populare moldovenești 'Ansamblul Chef de Chef', care prezintă servicii, galerie, testimoniale și un sistem de rezervări.";
+const ogDescription = 'Tradiție și eleganță pentru un eveniment memorabil.';
+
 
 export const metadata: Metadata = {
-  title: 'Ansamblul Chef de Chef | Dansuri Populare Moldovenești',
-  description: "Site-ul web al ansamblului de dansuri populare moldovenești 'Ansamblul Chef de Chef', care prezintă servicii, galerie, testimoniale și un sistem de rezervări.",
-}
+  title: siteTitle,
+  description: siteDescription,
+  openGraph: {
+    title: siteTitle,
+    description: ogDescription,
+    images: [
+      {
+        url: heroImageUrl,
+        width: 1200,
+        height: 630,
+        alt: 'Ansamblul Chef de Chef în timpul unui spectacol',
+      },
+    ],
+    locale: 'ro_RO',
+    type: 'website',
+    siteName: 'Ansamblul Chef de Chef',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: siteTitle,
+    description: ogDescription,
+    images: [heroImageUrl],
+  },
+};
 
 export default function RootLayout({
   children,
