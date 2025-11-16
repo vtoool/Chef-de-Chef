@@ -1,20 +1,20 @@
 'use client';
 
 import React, { useState } from 'react';
-// FIX: Module '"date-fns"' has no exported members. Import from submodules instead.
-import format from 'date-fns/format';
-import addMonths from 'date-fns/addMonths';
-import subMonths from 'date-fns/subMonths';
-import startOfMonth from 'date-fns/startOfMonth';
-import endOfMonth from 'date-fns/endOfMonth';
-import startOfWeek from 'date-fns/startOfWeek';
-import endOfWeek from 'date-fns/endOfWeek';
-import eachDayOfInterval from 'date-fns/eachDayOfInterval';
-import isSameMonth from 'date-fns/isSameMonth';
-import isSameDay from 'date-fns/isSameDay';
-import isBefore from 'date-fns/isBefore';
-import isToday from 'date-fns/isToday';
-import { ro } from 'date-fns/locale';
+// FIX: Changed date-fns imports to submodule paths.
+import { format } from 'date-fns/format';
+import { addMonths } from 'date-fns/addMonths';
+import { subMonths } from 'date-fns/subMonths';
+import { startOfMonth } from 'date-fns/startOfMonth';
+import { endOfMonth } from 'date-fns/endOfMonth';
+import { startOfWeek } from 'date-fns/startOfWeek';
+import { endOfWeek } from 'date-fns/endOfWeek';
+import { eachDayOfInterval } from 'date-fns/eachDayOfInterval';
+import { isSameMonth } from 'date-fns/isSameMonth';
+import { isSameDay } from 'date-fns/isSameDay';
+import { isBefore } from 'date-fns/isBefore';
+import { isToday } from 'date-fns/isToday';
+import { ro } from 'date-fns/locale/ro';
 
 interface CalendarProps {
   selectedDate?: Date;

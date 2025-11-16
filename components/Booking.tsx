@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-// FIX: Module '"date-fns"' has no exported member 'format'. Import from submodule instead.
-import format from 'date-fns/format';
-import { ro } from 'date-fns/locale';
+// FIX: Changed date-fns import to submodule path.
+import { format } from 'date-fns/format';
+import { ro } from 'date-fns/locale/ro';
 import { supabase, isSupabaseConfigured } from '../lib/supabaseClient';
 import { Booking } from '../types';
 import Calendar from './Calendar'; // Import the new component
