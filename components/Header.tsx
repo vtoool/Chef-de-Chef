@@ -58,23 +58,35 @@ const Header: React.FC = () => {
   // Effect to track active section on scroll
   useEffect(() => {
     const handleScroll = () => {
-        const sections = [
-            document.querySelector('#home'),
-            ...navLinks.map(link => document.querySelector(link.href))
-        ].filter(Boolean); // Filter out nulls if a section is not found
+      const sections = [
+        document.querySelector('#home'),
+        ...navLinks.map(link => document.querySelector(link.href))
+      ].filter(Boolean) as HTMLElement[];
 
-        let currentActive = '';
-        const scrollY = window.scrollY;
+      const scrollY = window.scrollY;
+      // Define a trigger point on the screen (e.g., 100px from the top)
+      // to determine which section is considered "active".
+      const scrollTriggerPoint = scrollY + 100;
 
-        sections.forEach(section => {
-            const element = section as HTMLElement; // Type assertion
-            const sectionTop = element.offsetTop - 150; // 150px offset for header height
-            if (scrollY >= sectionTop) {
-                currentActive = `#${element.id}`;
-            }
-        });
-        
-        setActiveLink(currentActive || '#home');
+      let newActiveLink = '#home'; // Default to home
+
+      // Iterate backwards from the last section to the first.
+      // The first section whose top is above the trigger point is the active one.
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = sections[i];
+        if (section.offsetTop <= scrollTriggerPoint) {
+          newActiveLink = `#${section.id}`;
+          break; // Found the active section, no need to check further
+        }
+      }
+
+      // Edge case: If scrolled to the very bottom, ensure the last link is active.
+      const isAtBottom = (window.innerHeight + scrollY) >= document.body.offsetHeight - 2;
+      if (isAtBottom) {
+        newActiveLink = navLinks[navLinks.length - 1].href;
+      }
+
+      setActiveLink(newActiveLink);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
