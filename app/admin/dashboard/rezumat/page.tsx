@@ -123,7 +123,7 @@ export default function RezumatPage() {
     const formattedRevenue = new Intl.NumberFormat('ro-RO', { style: 'currency', currency: 'MDL', minimumFractionDigits: 0 }).format(stats.totalRevenueInMDL);
     
     // FIX: Explicitly cast `count` to number to ensure `totalBookings` is inferred as a number.
-    const totalBookings = Object.values(stats.eventTypeCounts).reduce((sum, count) => sum + (count as number), 0);
+    const totalBookings = Object.values(stats.eventTypeCounts).reduce((sum: number, count) => sum + (count as number), 0);
 
     return (
         <>
@@ -156,8 +156,8 @@ export default function RezumatPage() {
                 />
             </div>
 
-            <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
+            <div className="mt-8">
+                <div className="bg-white p-6 rounded-lg shadow-md">
                     <h2 className="text-xl font-bold text-gray-900 mb-4">Repartizare Evenimente</h2>
                     {sortedEventTypes.length > 0 ? (
                         <div className="space-y-4">
@@ -165,7 +165,7 @@ export default function RezumatPage() {
                                 <div key={type}>
                                     <div className="flex justify-between items-center mb-1 text-sm">
                                         <span className="font-semibold text-gray-600">{type}</span>
-                                        <span className="text-gray-500">{count} evenimente</span>
+                                        <span className="text-gray-500">{count as number} evenimente</span>
                                     </div>
                                     <div className="w-full bg-gray-200 rounded-full h-2.5">
                                         <div className="bg-chef-gradient h-2.5 rounded-full" style={{ width: `${totalBookings > 0 ? (Number(count) / totalBookings) * 100 : 0}%` }}></div>
@@ -177,18 +177,17 @@ export default function RezumatPage() {
                         <p className="text-gray-500">Nu există date despre evenimente.</p>
                     )}
                 </div>
-
-                {exchangeRates && (
-                    <div className="bg-white p-6 rounded-lg shadow-md text-sm text-gray-600">
-                        <h3 className="text-lg font-bold text-gray-800 mb-3">Curs Valutar Aplicat</h3>
-                        <p className="mb-3">Sumele au fost convertite în MDL folosind ratele de schimb de la data de {format(new Date(exchangeRates.date), 'd MMMM yyyy', { locale: ro })}.</p>
-                        <ul className="space-y-2">
-                            <li className="font-mono">1 EUR = {exchangeRates.rates.MDL.toFixed(4)} MDL</li>
-                            <li className="font-mono">1 USD = {((1 / exchangeRates.rates.USD) * exchangeRates.rates.MDL).toFixed(4)} MDL</li>
-                        </ul>
-                    </div>
-                )}
             </div>
+
+            {exchangeRates && (
+                <div className="mt-6 text-center text-xs text-gray-500">
+                    <p>
+                        * Conversia valutară este calculată cu ratele din {format(new Date(exchangeRates.date), 'd MMMM yyyy', { locale: ro })}:
+                        <span className="font-mono ml-2">1 EUR = {exchangeRates.rates.MDL.toFixed(4)} MDL</span>;
+                        <span className="font-mono ml-2">1 USD = {((1 / exchangeRates.rates.USD) * exchangeRates.rates.MDL).toFixed(4)} MDL</span>.
+                    </p>
+                </div>
+            )}
         </>
     );
 }

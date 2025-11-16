@@ -7,7 +7,6 @@ import { ro } from 'date-fns/locale';
 import { supabase } from '../../../lib/supabaseClient';
 import { Booking } from '../../../types';
 import AdminCalendar from './AdminCalendar';
-import { getExchangeRates, ExchangeRates } from '../../../lib/exchangeRates';
 
 // Helper function to format numbers as currency
 const formatNumber = (value: number | null | undefined, currency: string | null | undefined): string => {
@@ -202,7 +201,6 @@ const Toast: React.FC<{ message: string; type: 'success' | 'error'; onClose: () 
 export default function AdminDashboardPage() {
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [exchangeRates, setExchangeRates] = useState<ExchangeRates | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [sortConfig, setSortConfig] = useState<{ key: keyof Booking; direction: 'asc' | 'desc' }>({ key: 'event_date', direction: 'asc' });
     const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
@@ -231,12 +229,6 @@ export default function AdminDashboardPage() {
             if (!user) {
                 router.push('/admin');
             } else {
-                getExchangeRates().then(rates => {
-                    if (!rates) {
-                        showToast('Nu s-a putut prelua cursul valutar. Sumele sunt afișate în moneda originală.', 'error');
-                    }
-                    setExchangeRates(rates);
-                });
                 fetchBookings();
             }
         };
@@ -387,22 +379,6 @@ export default function AdminDashboardPage() {
         });
     }, [bookings, searchQuery, sortConfig, filterDate]);
     
-    const convertToMdl = useCallback((value: number | null | undefined, currency: string | null | undefined): number | null => {
-        if (!value || !exchangeRates) return value ?? null;
-        const originalCurrency = currency || 'MDL';
-        if (originalCurrency === 'MDL') return value;
-
-        if (originalCurrency === 'EUR') {
-            return value * exchangeRates.rates.MDL;
-        }
-        if (originalCurrency === 'USD') {
-            const priceInEur = value / exchangeRates.rates.USD;
-            return priceInEur * exchangeRates.rates.MDL;
-        }
-        return value;
-    }, [exchangeRates]);
-
-
     const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const [key, direction] = e.target.value.split('-');
         setSortConfig({ key: key as keyof Booking, direction: direction as 'asc' | 'desc' });
@@ -467,17 +443,15 @@ export default function AdminDashboardPage() {
                                                 <th scope="col" className="px-6 py-3">Nume Client</th>
                                                 <th scope="col" className="px-6 py-3">Tip Eveniment</th>
                                                 <th scope="col" className="px-6 py-3">Status</th>
-                                                <th scope="col" className="px-6 py-3 text-right">Preț Total (MDL)</th>
-                                                <th scope="col" className="px-6 py-3 text-right">Avans Plătit (MDL)</th>
-                                                <th scope="col" className="px-6 py-3 text-right">De Plătit (MDL)</th>
+                                                <th scope="col" className="px-6 py-3 text-right">Preț Total</th>
+                                                <th scope="col" className="px-6 py-3 text-right">Avans Plătit</th>
+                                                <th scope="col" className="px-6 py-3 text-right">De Plătit</th>
                                                 <th scope="col" className="px-6 py-3"><span className="sr-only">Actions</span></th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {filteredAndSortedBookings.map((booking) => {
-                                                const priceInMdl = convertToMdl(booking.price, booking.currency);
-                                                const prepaymentInMdl = convertToMdl(booking.prepayment, booking.currency);
-                                                const remainingInMdl = (priceInMdl || 0) - (prepaymentInMdl || 0);
+                                                const remaining = (booking.price || 0) - (booking.prepayment || 0);
 
                                                 return (
                                                 <tr key={booking.id} className="border-b border-gray-200 hover:bg-gray-50">
@@ -485,9 +459,9 @@ export default function AdminDashboardPage() {
                                                     <td className="px-6 py-4">{booking.name}</td>
                                                     <td className="px-6 py-4">{booking.event_type}</td>
                                                     <td className="px-6 py-4"><StatusBadge status={booking.status} /></td>
-                                                    <td className="px-6 py-4 text-right font-mono" title={`Original: ${formatNumber(booking.price, booking.currency)}`}>{formatNumber(priceInMdl, 'MDL')}</td>
-                                                    <td className="px-6 py-4 text-right font-mono" title={`Original: ${formatNumber(booking.prepayment, booking.currency)}`}>{formatNumber(prepaymentInMdl, 'MDL')}</td>
-                                                    <td className="px-6 py-4 text-right font-mono font-bold">{formatNumber(remainingInMdl, 'MDL')}</td>
+                                                    <td className="px-6 py-4 text-right font-mono">{formatNumber(booking.price, booking.currency)}</td>
+                                                    <td className="px-6 py-4 text-right font-mono">{formatNumber(booking.prepayment, booking.currency)}</td>
+                                                    <td className="px-6 py-4 text-right font-mono font-bold">{formatNumber(remaining, booking.currency)}</td>
                                                     <td className="px-6 py-4 text-right">
                                                         <button onClick={() => setSelectedBooking(booking)} className="font-medium text-brand-orange hover:underline">Detalii</button>
                                                     </td>
@@ -500,9 +474,7 @@ export default function AdminDashboardPage() {
                                 {/* Mobile Card View */}
                                 <div className="block md:hidden space-y-4">
                                     {filteredAndSortedBookings.map((booking) => {
-                                        const priceInMdl = convertToMdl(booking.price, booking.currency);
-                                        const prepaymentInMdl = convertToMdl(booking.prepayment, booking.currency);
-                                        const remainingInMdl = (priceInMdl || 0) - (prepaymentInMdl || 0);
+                                        const remaining = (booking.price || 0) - (booking.prepayment || 0);
                                         
                                         return (
                                         <div key={booking.id} className="bg-white p-4 rounded-lg shadow">
@@ -515,17 +487,17 @@ export default function AdminDashboardPage() {
                                                 <StatusBadge status={booking.status} />
                                             </div>
                                             <div className="mt-4 pt-4 border-t border-gray-200 grid grid-cols-3 gap-2 text-center text-sm">
-                                                <div title={`Original: ${formatNumber(booking.price, booking.currency)}`}>
-                                                    <p className="text-xs text-gray-500">Preț Total (MDL)</p>
-                                                    <p className="font-semibold text-gray-800">{formatNumber(priceInMdl, 'MDL')}</p>
-                                                </div>
-                                                <div title={`Original: ${formatNumber(booking.prepayment, booking.currency)}`}>
-                                                    <p className="text-xs text-gray-500">Avans (MDL)</p>
-                                                    <p className="font-semibold text-gray-800">{formatNumber(prepaymentInMdl, 'MDL')}</p>
+                                                <div>
+                                                    <p className="text-xs text-gray-500">Preț Total</p>
+                                                    <p className="font-semibold text-gray-800">{formatNumber(booking.price, booking.currency)}</p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-xs text-gray-500">De Plătit (MDL)</p>
-                                                    <p className="font-bold text-gray-900">{formatNumber(remainingInMdl, 'MDL')}</p>
+                                                    <p className="text-xs text-gray-500">Avans</p>
+                                                    <p className="font-semibold text-gray-800">{formatNumber(booking.prepayment, booking.currency)}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-xs text-gray-500">De Plătit</p>
+                                                    <p className="font-bold text-gray-900">{formatNumber(remaining, booking.currency)}</p>
                                                 </div>
                                             </div>
                                             <div className="mt-4 text-right">
