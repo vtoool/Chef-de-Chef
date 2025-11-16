@@ -143,7 +143,7 @@ export default function AdminDashboardPage() {
     const fetchBookings = useCallback(async () => {
         if (!supabase) return;
         setIsLoading(true);
-        const { data, error } = await supabase.from('bookings').select('*');
+        const { data, error } = await supabase.from('bookings').select('*').order('event_date', { ascending: true });
 
         if (data) setBookings(data as Booking[]);
         if (error) {
@@ -174,15 +174,13 @@ export default function AdminDashboardPage() {
     const handleSaveBooking = async (updatedBooking: Booking) => {
         if (!supabase || !updatedBooking.id) return;
 
-        // FIX: The value from the form input can be an empty string, which is not in the `number | null` type.
-        // Cast to `any` to allow checking for an empty string before converting to a number.
-        const priceVal = updatedBooking.price;
-        const price = ((priceVal as any) === '' || priceVal === null || priceVal === undefined) ? null : Number(priceVal);
+        // The state from the form will have string values for number inputs.
+        // We must correctly parse them to number or null for the database.
+        const priceAsAny = updatedBooking.price as any;
+        const price = (priceAsAny === '' || priceAsAny === null) ? null : Number(priceAsAny);
 
-        // FIX: The value from the form input can be an empty string, which is not in the `number | null` type.
-        // Cast to `any` to allow checking for an empty string before converting to a number.
-        const prepaymentVal = updatedBooking.prepayment;
-        const prepayment = ((prepaymentVal as any) === '' || prepaymentVal === null || prepaymentVal === undefined) ? null : Number(prepaymentVal);
+        const prepaymentAsAny = updatedBooking.prepayment as any;
+        const prepayment = (prepaymentAsAny === '' || prepaymentAsAny === null) ? null : Number(prepaymentAsAny);
 
         const updateData = {
             status: updatedBooking.status,
@@ -191,29 +189,34 @@ export default function AdminDashboardPage() {
             payment_status: updatedBooking.payment_status || 'neplatit',
             notes_interne: updatedBooking.notes_interne || null,
         };
-
-        const { error } = await supabase
+        
+        const { data, error } = await supabase
             .from('bookings')
             .update(updateData)
-            .eq('id', updatedBooking.id);
+            .eq('id', updatedBooking.id)
+            .select();
 
         if (error) {
             console.error("Error updating booking:", error);
             showToast(`Eroare la salvare: ${error.message}`, 'error');
-        } else {
+        } else if (data && data.length > 0) {
             showToast('Modificări salvate cu succes!', 'success');
             
-            const newBookingForState: Booking = {
-                ...updatedBooking,
-                ...updateData
-            };
+            // Use the data returned from the database as the source of truth
+            const savedBooking = data[0] as Booking;
 
             setBookings(prevBookings =>
-                prevBookings.map(b => (b.id === newBookingForState.id ? newBookingForState : b))
+                prevBookings.map(b => (b.id === savedBooking.id ? savedBooking : b))
             );
-            setSelectedBooking(null);
+            setSelectedBooking(null); // Close modal on success
+        } else {
+            // This is the crucial part: if Supabase returns success (no error) but no data,
+            // it means the update didn't affect any rows. We treat this as an error.
+            console.error("Update returned no data. Check RLS policies or if the row exists.", { id: updatedBooking.id });
+            showToast('Salvarea nu a putut fi confirmată. Vă rugăm reîncărcați pagina și încercați din nou.', 'error');
         }
     };
+
 
     const filteredAndSortedBookings = useMemo(() => {
         let filtered = bookings.filter(b =>
