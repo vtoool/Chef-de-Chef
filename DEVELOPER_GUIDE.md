@@ -70,10 +70,10 @@ ALTER TABLE public.bookings ADD COLUMN IF NOT EXISTS notes_interne text NULL;
 
 ```sql
 -- Chef de Chef Supabase Schema
--- Version 1.3
+-- Version 1.4 - Security & RLS Update
 
 -- 1. Create bookings table
-CREATE TABLE public.bookings (
+CREATE TABLE IF NOT EXISTS public.bookings (
     id uuid NOT NULL DEFAULT gen_random_uuid(),
     created_at timestamp with time zone NOT NULL DEFAULT now(),
     event_date date NOT NULL,
@@ -95,7 +95,7 @@ CREATE TABLE public.bookings (
 COMMENT ON TABLE public.bookings IS 'Stores booking requests from the website.';
 
 -- 2. Create contact_messages table
-CREATE TABLE public.contact_messages (
+CREATE TABLE IF NOT EXISTS public.contact_messages (
     id uuid NOT NULL DEFAULT gen_random_uuid(),
     created_at timestamp with time zone NOT NULL DEFAULT now(),
     name text NOT NULL,
@@ -107,7 +107,7 @@ CREATE TABLE public.contact_messages (
 COMMENT ON TABLE public.contact_messages IS 'Stores messages sent through the contact form.';
 
 -- 3. Create testimonials table
-CREATE TABLE public.testimonials (
+CREATE TABLE IF NOT EXISTS public.testimonials (
     id uuid NOT NULL DEFAULT gen_random_uuid(),
     created_at timestamp with time zone NOT NULL DEFAULT now(),
     name text NOT NULL,
@@ -120,7 +120,7 @@ CREATE TABLE public.testimonials (
 COMMENT ON TABLE public.testimonials IS 'Stores customer testimonials.';
 
 -- 4. Create media_assets table for gallery
-CREATE TABLE public.media_assets (
+CREATE TABLE IF NOT EXISTS public.media_assets (
     id uuid NOT NULL DEFAULT gen_random_uuid(),
     created_at timestamp with time zone NOT NULL DEFAULT now(),
     type text NOT NULL DEFAULT 'image'::text,
@@ -131,23 +131,45 @@ CREATE TABLE public.media_assets (
 );
 COMMENT ON TABLE public.media_assets IS 'Stores images and videos for the gallery.';
 
+-- 5. Create a secure VIEW for public calendar data
+-- This view exposes only the necessary event dates, protecting client PII.
+CREATE OR REPLACE VIEW public.public_booking_dates AS
+  SELECT event_date
+  FROM public.bookings
+  WHERE (status = 'pending'::text OR status = 'confirmed'::text);
 
--- 5. Set up Row Level Security (RLS) for all tables
+
+-- 6. Set up Row Level Security (RLS) for all tables
 ALTER TABLE public.bookings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.contact_messages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.testimonials ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.media_assets ENABLE ROW LEVEL SECURITY;
 
--- 6. Create RLS policies
+-- 7. Clean up old policies before creating new ones
+DROP POLICY IF EXISTS "Allow public read access to all bookings" ON public.bookings;
+DROP POLICY IF EXISTS "Allow admin read access" ON public.bookings;
+DROP POLICY IF EXISTS "Allow admin update access" ON public.bookings;
+DROP POLICY IF EXISTS "Allow public insert for bookings" ON public.bookings;
+DROP POLICY IF EXISTS "Allow admin full access for bookings" ON public.bookings;
+DROP POLICY IF EXISTS "Allow public insert for contact messages" ON public.contact_messages;
+DROP POLICY IF EXISTS "Allow admin read access for contact" ON public.contact_messages;
+DROP POLICY IF EXISTS "Allow public read access to testimonials" ON public.testimonials;
+DROP POLICY IF EXISTS "Allow admin full access for testimonials" ON public.testimonials;
+DROP POLICY IF EXISTS "Allow public read access to media assets" ON public.media_assets;
+DROP POLICY IF EXISTS "Allow admin full access for media" ON public.media_assets;
+
+-- 8. Create new RLS policies
 -- Bookings:
--- Allow public to create new bookings.
-CREATE POLICY "Allow public insert for bookings" ON public.bookings FOR INSERT WITH CHECK (true);
--- Allow public read access to all bookings for the calendar.
-CREATE POLICY "Allow public read access to all bookings" ON public.bookings FOR SELECT USING (true);
--- Allow authenticated users (admins) to read all columns.
-CREATE POLICY "Allow admin read access" ON public.bookings FOR SELECT USING (auth.role() = 'authenticated');
--- Allow authenticated users (admins) to update bookings.
-CREATE POLICY "Allow admin update access" ON public.bookings FOR UPDATE USING (auth.role() = 'authenticated');
+-- Allow public to create new bookings via the website form.
+CREATE POLICY "Allow public insert for bookings" ON public.bookings
+  FOR INSERT WITH CHECK (true);
+
+-- Allow authenticated users (admins) full access to manage bookings.
+CREATE POLICY "Allow admin full access for bookings" ON public.bookings
+  FOR ALL USING (auth.role() = 'authenticated')
+  WITH CHECK (auth.role() = 'authenticated');
+  
+-- NOTE: The insecure public read policy has been REMOVED. Public access is now handled by the 'public_booking_dates' view.
 
 
 -- Contact Messages:
@@ -169,23 +191,53 @@ CREATE POLICY "Allow public read access to media assets" ON public.media_assets 
 CREATE POLICY "Allow admin full access for media" ON public.media_assets FOR ALL USING (auth.role() = 'authenticated');
 
 
--- 7. Insert sample data
+-- 9. Insert sample data (if tables are empty)
 -- Sample Testimonials
-INSERT INTO public.testimonials (name, event_type, message, rating) VALUES
-('Ana & Ion Popescu', 'Nuntă', 'Ați fost absolut fantastici! Ați creat o atmosferă de poveste și toți invitații au fost impresionați. Recomandăm cu toată inima!', 5),
-('Familia Cojocaru', 'Cumătrie', 'Profesionalism și mult suflet. Ați făcut din cumătria fetiței noastre un eveniment de neuitat. Mulțumim!', 5),
-('Tech Solutions SRL', 'Eveniment Corporate', 'Oaspeții noștri din străinătate au fost fascinați de programul vostru. O pată de culoare și tradiție la petrecerea noastră corporate.', 5);
+INSERT INTO public.testimonials (name, event_type, message, rating)
+SELECT 'Ana & Ion Popescu', 'Nuntă', 'Ați fost absolut fantastici! Ați creat o atmosferă de poveste și toți invitații au fost impresionați. Recomandăm cu toată inima!', 5
+WHERE NOT EXISTS (SELECT 1 FROM public.testimonials WHERE name = 'Ana & Ion Popescu');
+
+INSERT INTO public.testimonials (name, event_type, message, rating)
+SELECT 'Familia Cojocaru', 'Cumătrie', 'Profesionalism și mult suflet. Ați făcut din cumătria fetiței noastre un eveniment de neuitat. Mulțumim!', 5
+WHERE NOT EXISTS (SELECT 1 FROM public.testimonials WHERE name = 'Familia Cojocaru');
+
+INSERT INTO public.testimonials (name, event_type, message, rating)
+SELECT 'Tech Solutions SRL', 'Eveniment Corporate', 'Oaspeții noștri din străinătate au fost fascinați de programul vostru. O pată de culoare și tradiție la petrecerea noastră corporate.', 5
+WHERE NOT EXISTS (SELECT 1 FROM public.testimonials WHERE name = 'Tech Solutions SRL');
 
 -- Sample Media Assets for Gallery
-INSERT INTO public.media_assets (type, url, thumbnail_url, description) VALUES
-('image', 'https://picsum.photos/seed/1/600/400', 'https://picsum.photos/seed/1/300/200', 'Eveniment 1'),
-('image', 'https://picsum.photos/seed/2/600/400', 'https://picsum.photos/seed/2/300/200', 'Eveniment 2'),
-('image', 'https://picsum.photos/seed/3/600/400', 'https://picsum.photos/seed/3/300/200', 'Eveniment 3'),
-('image', 'https://picsum.photos/seed/4/600/400', 'https://picsum.photos/seed/4/300/200', 'Eveniment 4'),
-('image', 'https://picsum.photos/seed/5/600/400', 'https://picsum.photos/seed/5/300/200', 'Eveniment 5'),
-('image', 'https://picsum.photos/seed/6/600/400', 'https://picsum.photos/seed/6/300/200', 'Eveniment 6'),
-('image', 'https://picsum.photos/seed/7/600/400', 'https://picsum.photos/seed/7/300/200', 'Eveniment 7'),
-('image', 'https://picsum.photos/seed/8/600/400', 'https://picsum.photos/seed/8/300/200', 'Eveniment 8');
+INSERT INTO public.media_assets (type, url, thumbnail_url, description)
+SELECT 'image', 'https://picsum.photos/seed/1/600/400', 'https://picsum.photos/seed/1/300/200', 'Eveniment 1'
+WHERE NOT EXISTS (SELECT 1 FROM public.media_assets WHERE url = 'https://picsum.photos/seed/1/600/400');
+
+INSERT INTO public.media_assets (type, url, thumbnail_url, description)
+SELECT 'image', 'https://picsum.photos/seed/2/600/400', 'https://picsum.photos/seed/2/300/200', 'Eveniment 2'
+WHERE NOT EXISTS (SELECT 1 FROM public.media_assets WHERE url = 'https://picsum.photos/seed/2/600/400');
+
+INSERT INTO public.media_assets (type, url, thumbnail_url, description)
+SELECT 'image', 'https://picsum.photos/seed/3/600/400', 'https://picsum.photos/seed/3/300/200', 'Eveniment 3'
+WHERE NOT EXISTS (SELECT 1 FROM public.media_assets WHERE url = 'https://picsum.photos/seed/3/600/400');
+
+INSERT INTO public.media_assets (type, url, thumbnail_url, description)
+SELECT 'image', 'https://picsum.photos/seed/4/600/400', 'https://picsum.photos/seed/4/300/200', 'Eveniment 4'
+WHERE NOT EXISTS (SELECT 1 FROM public.media_assets WHERE url = 'https://picsum.photos/seed/4/600/400');
+
+INSERT INTO public.media_assets (type, url, thumbnail_url, description)
+SELECT 'image', 'https://picsum.photos/seed/5/600/400', 'https://picsum.photos/seed/5/300/200', 'Eveniment 5'
+WHERE NOT EXISTS (SELECT 1 FROM public.media_assets WHERE url = 'https://picsum.photos/seed/5/600/400');
+
+INSERT INTO public.media_assets (type, url, thumbnail_url, description)
+SELECT 'image', 'https://picsum.photos/seed/6/600/400', 'https://picsum.photos/seed/6/300/200', 'Eveniment 6'
+WHERE NOT EXISTS (SELECT 1 FROM public.media_assets WHERE url = 'https://picsum.photos/seed/6/600/400');
+
+INSERT INTO public.media_assets (type, url, thumbnail_url, description)
+SELECT 'image', 'https://picsum.photos/seed/7/600/400', 'https://picsum.photos/seed/7/300/200', 'Eveniment 7'
+WHERE NOT EXISTS (SELECT 1 FROM public.media_assets WHERE url = 'https://picsum.photos/seed/7/600/400');
+
+INSERT INTO public.media_assets (type, url, thumbnail_url, description)
+SELECT 'image', 'https://picsum.photos/seed/8/600/400', 'https://picsum.photos/seed/8/300/200', 'Eveniment 8'
+WHERE NOT EXISTS (SELECT 1 FROM public.media_assets WHERE url = 'https://picsum.photos/seed/8/600/400');
+
 ```
 
 ## 5. Running the Project Locally

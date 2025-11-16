@@ -28,10 +28,11 @@ const BookingComponent: React.FC = () => {
       return;
     }
 
+    // Query the secure view 'public_booking_dates' instead of the main table
+    // to protect sensitive customer information.
     const { data, error } = await supabase
-      .from('bookings')
-      .select('event_date')
-      .in('status', ['pending', 'confirmed']);
+      .from('public_booking_dates')
+      .select('event_date');
 
     if (error) {
       console.error('Error fetching unavailable dates:', error);
