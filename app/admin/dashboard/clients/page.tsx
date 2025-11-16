@@ -1,0 +1,165 @@
+'use client';
+
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { supabase } from '../../../../lib/supabaseClient';
+import { Booking, ContactMessage } from '../../../../types';
+
+interface Client {
+    name: string;
+    email: string;
+    phone: string;
+    source: 'Booking' | 'Contact';
+    createdAt: string;
+}
+
+export default function ClientsPage() {
+    const [clients, setClients] = useState<Client[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [sortConfig, setSortConfig] = useState<{ key: keyof Client; direction: 'asc' | 'desc' }>({ key: 'name', direction: 'asc' });
+    const router = useRouter();
+
+    const fetchClients = useCallback(async () => {
+        if (!supabase) return;
+        setIsLoading(true);
+
+        const { data: bookingsData, error: bookingsError } = await supabase
+            .from('bookings')
+            .select('name, email, phone, created_at');
+
+        const { data: contactsData, error: contactsError } = await supabase
+            .from('contact_messages')
+            .select('name, email, phone, created_at');
+            
+        if (bookingsError || contactsError) {
+            console.error("Error fetching client data:", bookingsError || contactsError);
+            setIsLoading(false);
+            return;
+        }
+
+        const clientMap = new Map<string, Client>();
+
+        const processData = (items: (Partial<Booking> | Partial<ContactMessage>)[], source: 'Booking' | 'Contact') => {
+            items.forEach(item => {
+                if (!item.email || !item.created_at || !item.name || !item.phone) return;
+
+                const existingClient = clientMap.get(item.email);
+                const newClient: Client = {
+                    name: item.name,
+                    email: item.email,
+                    phone: item.phone,
+                    source,
+                    createdAt: item.created_at
+                };
+
+                // If client doesn't exist or the new record is more recent, add/update it
+                if (!existingClient || new Date(newClient.createdAt) > new Date(existingClient.createdAt)) {
+                    clientMap.set(item.email, newClient);
+                }
+            });
+        };
+
+        if (bookingsData) processData(bookingsData, 'Booking');
+        if (contactsData) processData(contactsData, 'Contact');
+        
+        setClients(Array.from(clientMap.values()));
+        setIsLoading(false);
+    }, []);
+
+    useEffect(() => {
+        const checkUser = async () => {
+            if (!supabase) return;
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                router.push('/admin');
+            } else {
+                fetchClients();
+            }
+        };
+        checkUser();
+    }, [router, fetchClients]);
+
+    const filteredAndSortedClients = useMemo(() => {
+        const filtered = clients.filter(c =>
+            c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            c.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            c.phone.includes(searchQuery)
+        );
+
+        return filtered.sort((a, b) => {
+            const aValue = a[sortConfig.key];
+            const bValue = b[sortConfig.key];
+            
+            if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+            if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+            return 0;
+        });
+    }, [clients, searchQuery, sortConfig]);
+
+    const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const [key, direction] = e.target.value.split('-');
+        setSortConfig({ key: key as keyof Client, direction: direction as 'asc' | 'desc' });
+    };
+
+    return (
+        <>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">Lista Clienților</h1>
+
+            <div className="mb-6">
+                <div className="flex flex-col sm:flex-row gap-4 p-4 bg-white rounded-lg shadow">
+                    <input
+                        type="text"
+                        placeholder="Caută după nume, email, telefon..."
+                        value={searchQuery}
+                        onChange={e => setSearchQuery(e.target.value)}
+                        className="w-full sm:flex-1 p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"
+                    />
+                    <select
+                        onChange={handleSortChange}
+                        value={`${sortConfig.key}-${sortConfig.direction}`}
+                        className="w-full sm:w-60 p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"
+                    >
+                        <option value="name-asc">Nume (A-Z)</option>
+                        <option value="name-desc">Nume (Z-A)</option>
+                        <option value="createdAt-desc">Cei mai recenți</option>
+                        <option value="createdAt-asc">Cei mai vechi</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                {isLoading ? (
+                    <div className="text-center text-gray-500 py-10">Se încarcă clienții...</div>
+                ) : filteredAndSortedClients.length === 0 ? (
+                    <div className="text-center text-gray-500 bg-white p-6 rounded-lg shadow">
+                        {searchQuery ? 'Nu am găsit niciun client.' : 'Nu există niciun client înregistrat.'}
+                    </div>
+                ) : (
+                    <div className="overflow-x-auto bg-white rounded-lg shadow-lg">
+                        <table className="w-full text-sm text-left text-gray-700">
+                            <thead className="text-xs text-gray-500 uppercase bg-gray-50">
+                                <tr>
+                                    <th scope="col" className="px-6 py-3">Nume</th>
+                                    <th scope="col" className="px-6 py-3">Email</th>
+                                    <th scope="col" className="px-6 py-3">Telefon</th>
+                                    <th scope="col" className="px-6 py-3">Sursă Contact</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredAndSortedClients.map((client) => (
+                                    <tr key={client.email} className="border-b border-gray-200 hover:bg-gray-50">
+                                        <td className="px-6 py-4 font-medium">{client.name}</td>
+                                        <td className="px-6 py-4">{client.email}</td>
+                                        <td className="px-6 py-4">{client.phone}</td>
+                                        <td className="px-6 py-4">{client.source}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </div>
+        </>
+    );
+}

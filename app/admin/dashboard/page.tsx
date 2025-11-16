@@ -9,13 +9,6 @@ import { Booking } from '../../../types';
 import AdminCalendar from './AdminCalendar';
 
 // Helper components
-const Logo = () => (
-    <div className="flex items-center space-x-2">
-        <img src="https://scontent.fkiv7-1.fna.fbcdn.net/v/t39.30808-6/456236959_829273562675263_5934463475455699464_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=-FwFg2FB9XoQ7kNvwE_khUg&_nc_oc=AdksXFMIZCuyZ_qiRyTobtMYjXbrpMRUTfB_UxWQviL9dwKY2JSbGc9mZ4fG0Jd1PDDofFzdHDXrwb4BgViofAG8&_nc_zt=23&_nc_ht=scontent.fkiv7-1.fna&_nc_gid=M9t8gcOoEteEPolC2SuR9Q&oh=00_AfhhmmqUYoveeMuTaQdkbvqE973TIqDyPsIaCJ4E-mYWAQ&oe=691DA8FB" alt="Chef de Chef Logo" className="h-10 w-10 rounded-full object-cover" />
-        <span className="font-cursive text-3xl font-normal bg-chef-gradient bg-clip-text text-transparent pr-1">Chef de Chef</span>
-    </div>
-);
-
 const StatusBadge: React.FC<{ status: Booking['status'] }> = ({ status }) => {
     const statusMap: Record<Booking['status'], { text: string; classes: string; }> = {
         pending: { text: 'În așteptare', classes: 'bg-yellow-100 text-yellow-800' },
@@ -178,12 +171,6 @@ export default function AdminDashboardPage() {
         setToast({ message, type, visible: true });
     };
 
-    const handleLogout = async () => {
-        if (!supabase) return;
-        await supabase.auth.signOut();
-        router.push('/admin');
-    };
-
     const handleSaveBooking = async (updatedBooking: Booking) => {
         if (!supabase || !updatedBooking.id) return;
 
@@ -245,124 +232,112 @@ export default function AdminDashboardPage() {
     };
 
     return (
-        <div className="min-h-screen text-gray-800 p-4 sm:p-6 lg:p-8">
-            <header className="flex justify-between items-center mb-8 pb-4 border-b border-gray-200">
-                <Logo />
-                <button
-                    onClick={handleLogout}
-                    className="bg-brand-orange/10 text-brand-orange font-semibold py-2 px-4 rounded-lg hover:bg-brand-orange/20 transition-colors"
-                >
-                    Deconectare
-                </button>
-            </header>
+        <>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">Dashboard Rezervări</h1>
 
-            <main>
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">Dashboard Rezervări</h1>
-
-                <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                    {/* Left & Main Column: Filters and Bookings List */}
-                    <div className="xl:col-span-2 flex flex-col gap-8">
-                        <div>
-                            <h2 className="text-xl font-bold text-gray-900 mb-4">Filtre & Sortare</h2>
-                            <div className="flex flex-col sm:flex-row gap-4 p-4 bg-white rounded-lg shadow">
-                                <input
-                                    type="text"
-                                    placeholder="Caută după nume, email, telefon..."
-                                    value={searchQuery}
-                                    onChange={e => setSearchQuery(e.target.value)}
-                                    className="w-full sm:flex-1 p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"
-                                />
-                                <select
-                                    onChange={handleSortChange}
-                                    value={`${sortConfig.key}-${sortConfig.direction}`}
-                                    className="w-full sm:w-60 p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"
-                                >
-                                    <option value="event_date-asc">Data Eveniment (Crescător)</option>
-                                    <option value="event_date-desc">Data Eveniment (Descrescător)</option>
-                                    <option value="status-asc">Status (A-Z)</option>
-                                    <option value="status-desc">Status (Z-A)</option>
-                                </select>
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                {/* Left & Main Column: Filters and Bookings List */}
+                <div className="xl:col-span-2 flex flex-col gap-8">
+                    <div>
+                        <h2 className="text-xl font-bold text-gray-900 mb-4">Filtre & Sortare</h2>
+                        <div className="flex flex-col sm:flex-row gap-4 p-4 bg-white rounded-lg shadow">
+                            <input
+                                type="text"
+                                placeholder="Caută după nume, email, telefon..."
+                                value={searchQuery}
+                                onChange={e => setSearchQuery(e.target.value)}
+                                className="w-full sm:flex-1 p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"
+                            />
+                            <select
+                                onChange={handleSortChange}
+                                value={`${sortConfig.key}-${sortConfig.direction}`}
+                                className="w-full sm:w-60 p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"
+                            >
+                                <option value="event_date-asc">Data Eveniment (Crescător)</option>
+                                <option value="event_date-desc">Data Eveniment (Descrescător)</option>
+                                <option value="status-asc">Status (A-Z)</option>
+                                <option value="status-desc">Status (Z-A)</option>
+                            </select>
+                        </div>
+                        {filterDate && (
+                            <div className="bg-gray-200 p-3 rounded-md text-center mt-4">
+                                <p className="text-sm text-gray-700">Afișez rezervări pentru: <span className="font-bold">{format(filterDate, 'd MMMM yyyy', { locale: ro })}</span></p>
+                                <button onClick={() => setFilterDate(null)} className="text-xs text-brand-orange hover:underline mt-1">Șterge filtru</button>
                             </div>
-                            {filterDate && (
-                                <div className="bg-gray-200 p-3 rounded-md text-center mt-4">
-                                    <p className="text-sm text-gray-700">Afișez rezervări pentru: <span className="font-bold">{format(filterDate, 'd MMMM yyyy', { locale: ro })}</span></p>
-                                    <button onClick={() => setFilterDate(null)} className="text-xs text-brand-orange hover:underline mt-1">Șterge filtru</button>
-                                </div>
-                            )}
-                        </div>
-
-                        <div>
-                            {isLoading ? (
-                                <div className="text-center text-gray-500 py-10">Se încarcă rezervările...</div>
-                            ) : filteredAndSortedBookings.length === 0 ? (
-                                <div className="text-center text-gray-500 bg-white p-6 rounded-lg shadow">
-                                    {searchQuery || filterDate ? 'Nu am găsit nicio rezervare conform filtrelor.' : 'Nu există nicio rezervare înregistrată.'}
-                                </div>
-                            ) : (
-                                <>
-                                    {/* Desktop Table View */}
-                                    <div className="hidden md:block overflow-x-auto bg-white rounded-lg shadow-lg">
-                                        <table className="w-full text-sm text-left text-gray-700">
-                                            <thead className="text-xs text-gray-500 uppercase bg-gray-50">
-                                                <tr>
-                                                    <th scope="col" className="px-6 py-3">Data Evenimentului</th>
-                                                    <th scope="col" className="px-6 py-3">Nume Client</th>
-                                                    <th scope="col" className="px-6 py-3">Tip Eveniment</th>
-                                                    <th scope="col" className="px-6 py-3">Status</th>
-                                                    <th scope="col" className="px-6 py-3"><span className="sr-only">Actions</span></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {filteredAndSortedBookings.map((booking) => (
-                                                    <tr key={booking.id} className="border-b border-gray-200 hover:bg-gray-50">
-                                                        <td className="px-6 py-4 font-medium">{booking.event_date}</td>
-                                                        <td className="px-6 py-4">{booking.name}</td>
-                                                        <td className="px-6 py-4">{booking.event_type}</td>
-                                                        <td className="px-6 py-4"><StatusBadge status={booking.status} /></td>
-                                                        <td className="px-6 py-4 text-right">
-                                                            <button onClick={() => setSelectedBooking(booking)} className="font-medium text-brand-orange hover:underline">Detalii</button>
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
-
-                                    {/* Mobile Card View */}
-                                    <div className="block md:hidden space-y-4">
-                                        {filteredAndSortedBookings.map((booking) => (
-                                            <div key={booking.id} className="bg-white p-4 rounded-lg shadow">
-                                                <div className="flex justify-between items-start">
-                                                    <div>
-                                                        <p className="font-bold text-lg text-gray-900">{booking.name}</p>
-                                                        <p className="text-sm text-gray-500">{booking.event_date}</p>
-                                                    </div>
-                                                    <StatusBadge status={booking.status} />
-                                                </div>
-                                                <div className="mt-4 text-right">
-                                                    <button onClick={() => setSelectedBooking(booking)} className="font-medium text-brand-orange hover:underline">
-                                                        Vezi Detalii & Editează
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </>
-                            )}
-                        </div>
+                        )}
                     </div>
 
-                    {/* Right Column: Calendar */}
-                    <div className="xl:col-span-1">
-                        <h2 className="text-xl font-bold text-gray-900 mb-4">Calendar Evenimente</h2>
-                        <AdminCalendar
-                            bookings={bookings}
-                            filterDate={filterDate}
-                            onDateClick={setFilterDate}
-                        />
+                    <div>
+                        {isLoading ? (
+                            <div className="text-center text-gray-500 py-10">Se încarcă rezervările...</div>
+                        ) : filteredAndSortedBookings.length === 0 ? (
+                            <div className="text-center text-gray-500 bg-white p-6 rounded-lg shadow">
+                                {searchQuery || filterDate ? 'Nu am găsit nicio rezervare conform filtrelor.' : 'Nu există nicio rezervare înregistrată.'}
+                            </div>
+                        ) : (
+                            <>
+                                {/* Desktop Table View */}
+                                <div className="hidden md:block overflow-x-auto bg-white rounded-lg shadow-lg">
+                                    <table className="w-full text-sm text-left text-gray-700">
+                                        <thead className="text-xs text-gray-500 uppercase bg-gray-50">
+                                            <tr>
+                                                <th scope="col" className="px-6 py-3">Data Evenimentului</th>
+                                                <th scope="col" className="px-6 py-3">Nume Client</th>
+                                                <th scope="col" className="px-6 py-3">Tip Eveniment</th>
+                                                <th scope="col" className="px-6 py-3">Status</th>
+                                                <th scope="col" className="px-6 py-3"><span className="sr-only">Actions</span></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {filteredAndSortedBookings.map((booking) => (
+                                                <tr key={booking.id} className="border-b border-gray-200 hover:bg-gray-50">
+                                                    <td className="px-6 py-4 font-medium">{booking.event_date}</td>
+                                                    <td className="px-6 py-4">{booking.name}</td>
+                                                    <td className="px-6 py-4">{booking.event_type}</td>
+                                                    <td className="px-6 py-4"><StatusBadge status={booking.status} /></td>
+                                                    <td className="px-6 py-4 text-right">
+                                                        <button onClick={() => setSelectedBooking(booking)} className="font-medium text-brand-orange hover:underline">Detalii</button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                {/* Mobile Card View */}
+                                <div className="block md:hidden space-y-4">
+                                    {filteredAndSortedBookings.map((booking) => (
+                                        <div key={booking.id} className="bg-white p-4 rounded-lg shadow">
+                                            <div className="flex justify-between items-start">
+                                                <div>
+                                                    <p className="font-bold text-lg text-gray-900">{booking.name}</p>
+                                                    <p className="text-sm text-gray-500">{booking.event_date}</p>
+                                                </div>
+                                                <StatusBadge status={booking.status} />
+                                            </div>
+                                            <div className="mt-4 text-right">
+                                                <button onClick={() => setSelectedBooking(booking)} className="font-medium text-brand-orange hover:underline">
+                                                    Vezi Detalii & Editează
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
-            </main>
+
+                {/* Right Column: Calendar */}
+                <div className="xl:col-span-1">
+                    <h2 className="text-xl font-bold text-gray-900 mb-4">Calendar Evenimente</h2>
+                    <AdminCalendar
+                        bookings={bookings}
+                        filterDate={filterDate}
+                        onDateClick={setFilterDate}
+                    />
+                </div>
+            </div>
 
             {selectedBooking && (
                 <BookingDetailsModal 
@@ -372,6 +347,6 @@ export default function AdminDashboardPage() {
                 />
             )}
             {toast.visible && <Toast message={toast.message} type={toast.type} onClose={() => setToast(prev => ({...prev, visible: false}))} />}
-        </div>
+        </>
     );
 }
