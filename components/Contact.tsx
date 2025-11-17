@@ -53,9 +53,9 @@ const Contact: React.FC = () => {
                 Alegeți metoda preferată: contactați-ne direct pentru o discuție rapidă sau completați formularul și vă vom suna noi pentru a stabili toate detaliile.
             </p>
         </div>
-        <div className="grid lg:grid-cols-2 gap-8 items-start">
+        <div className="grid lg:grid-cols-5 gap-8 items-start">
             {/* Direct Contact Card */}
-            <div className="bg-white p-6 rounded-lg shadow-lg h-full">
+            <div className="bg-white p-6 rounded-lg shadow-lg h-full lg:col-span-3">
                 <h3 className="font-serif text-xl font-bold text-brand-brown-dark mb-4">Contact Direct</h3>
                 <p className="text-brand-brown-light mb-6">
                     Pentru discuții rapide și întrebări, nu ezitați să ne sunați sau să ne scrieți.
@@ -69,7 +69,7 @@ const Contact: React.FC = () => {
                             </svg>
                         </div>
                         <div className="min-w-0">
-                            <span className="font-bold text-brand-brown-dark block text-sm">Sunați Acum</span>
+                            <span className="font-bold text-brand-brown-dark block text-sm whitespace-nowrap">Sunați Acum</span>
                             <span className="text-brand-brown-light group-hover:text-brand-orange group-hover:underline transition-colors text-md">+373 12 345 678</span>
                         </div>
                     </a>
@@ -82,8 +82,8 @@ const Contact: React.FC = () => {
                             </svg>
                         </div>
                         <div className="min-w-0">
-                            <span className="font-bold text-brand-brown-dark block text-sm">Trimiteți Email</span>
-                            <span className="text-brand-brown-light group-hover:text-brand-orange group-hover:underline transition-colors text-md break-all">contact@chefdechef.md</span>
+                            <span className="font-bold text-brand-brown-dark block text-sm whitespace-nowrap">Trimiteți Email</span>
+                            <span className="text-brand-brown-light group-hover:text-brand-orange group-hover:underline transition-colors text-md truncate">contact@chefdechef.md</span>
                         </div>
                     </a>
                     {/* Facebook */}
@@ -95,7 +95,7 @@ const Contact: React.FC = () => {
                         </div>
                         <div className="min-w-0">
                             <span className="font-bold text-brand-brown-dark block text-sm">Facebook</span>
-                            <span className="text-brand-brown-light group-hover:text-brand-orange group-hover:underline transition-colors text-md">Ansamblul Chef de Chef</span>
+                            <span className="text-brand-brown-light group-hover:text-brand-orange group-hover:underline transition-colors text-md truncate">Ansamblul Chef de Chef</span>
                         </div>
                     </a>
                     {/* Instagram */}
@@ -107,7 +107,7 @@ const Contact: React.FC = () => {
                         </div>
                         <div className="min-w-0">
                             <span className="font-bold text-brand-brown-dark block text-sm">Instagram</span>
-                            <span className="text-brand-brown-light group-hover:text-brand-orange group-hover:underline transition-colors text-md break-all">@ansamblul_chef_de_chef</span>
+                            <span className="text-brand-brown-light group-hover:text-brand-orange group-hover:underline transition-colors text-md truncate">@ansamblul_chef_de_chef</span>
                         </div>
                     </a>
                     {/* Telegram */}
@@ -138,7 +138,7 @@ const Contact: React.FC = () => {
             </div>
 
             {/* Form Card */}
-            <div className="bg-white p-6 rounded-lg shadow-lg">
+            <div className="bg-white p-6 rounded-lg shadow-lg lg:col-span-2">
                 <h3 className="font-serif text-xl font-bold text-brand-brown-dark mb-4">Lasă-ne datele și te sunăm noi</h3>
                 <form onSubmit={handleSubmit}>
                     <div className="grid sm:grid-cols-2 gap-3 mb-3">
