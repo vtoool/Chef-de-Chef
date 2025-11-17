@@ -73,7 +73,7 @@ ALTER TABLE public.bookings ADD COLUMN IF NOT EXISTS currency text NULL DEFAULT 
 
 ```sql
 -- Chef de Chef Supabase Schema
--- Version 1.5 - Multi-currency Update
+-- Version 1.6 - Client Management Update
 
 -- 1. Create bookings table
 CREATE TABLE IF NOT EXISTS public.bookings (
@@ -111,7 +111,20 @@ CREATE TABLE IF NOT EXISTS public.contact_messages (
 );
 COMMENT ON TABLE public.contact_messages IS 'Stores messages sent through the contact form.';
 
--- 3. Create testimonials table
+-- 3. Create clients table
+CREATE TABLE IF NOT EXISTS public.clients (
+    id uuid NOT NULL DEFAULT gen_random_uuid(),
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    name text NOT NULL,
+    emails jsonb NULL,
+    phones jsonb NULL,
+    notes_interne text NULL,
+    CONSTRAINT clients_pkey PRIMARY KEY (id)
+);
+COMMENT ON TABLE public.clients IS 'Stores unified client information.';
+
+
+-- 4. Create testimonials table
 CREATE TABLE IF NOT EXISTS public.testimonials (
     id uuid NOT NULL DEFAULT gen_random_uuid(),
     created_at timestamp with time zone NOT NULL DEFAULT now(),
@@ -124,7 +137,7 @@ CREATE TABLE IF NOT EXISTS public.testimonials (
 );
 COMMENT ON TABLE public.testimonials IS 'Stores customer testimonials.';
 
--- 4. Create media_assets table for gallery
+-- 5. Create media_assets table for gallery
 CREATE TABLE IF NOT EXISTS public.media_assets (
     id uuid NOT NULL DEFAULT gen_random_uuid(),
     created_at timestamp with time zone NOT NULL DEFAULT now(),
@@ -136,21 +149,51 @@ CREATE TABLE IF NOT EXISTS public.media_assets (
 );
 COMMENT ON TABLE public.media_assets IS 'Stores images and videos for the gallery.';
 
--- 5. Create a secure VIEW for public calendar data
+-- 6. Create a secure VIEW for public calendar data
 -- This view exposes only the necessary event dates, protecting client PII.
 CREATE OR REPLACE VIEW public.public_booking_dates AS
   SELECT event_date
   FROM public.bookings
   WHERE (status = 'pending'::text OR status = 'confirmed'::text);
 
+-- 7. Database Function for Client Upserting
+CREATE OR REPLACE FUNCTION upsert_client(client_name text, client_email text, client_phone text)
+RETURNS void AS $$
+DECLARE
+    client_id uuid;
+    existing_phones jsonb;
+BEGIN
+    -- Check if a client with this email already exists
+    SELECT id, phones INTO client_id, existing_phones
+    FROM public.clients
+    WHERE emails @> jsonb_build_array(client_email)
+    LIMIT 1;
 
--- 6. Set up Row Level Security (RLS) for all tables
+    IF client_id IS NOT NULL THEN
+        -- Client exists, check if phone needs to be added
+        IF existing_phones IS NULL OR NOT existing_phones @> jsonb_build_array(client_phone) THEN
+            UPDATE public.clients
+            SET phones = COALESCE(existing_phones, '[]'::jsonb) || jsonb_build_array(client_phone)
+            WHERE id = client_id;
+        END IF;
+    ELSE
+        -- Client does not exist, insert new record
+        INSERT INTO public.clients (name, emails, phones)
+        VALUES (client_name, jsonb_build_array(client_email), jsonb_build_array(client_phone));
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+COMMENT ON FUNCTION public.upsert_client IS 'Automatically creates or updates a client record from a booking or contact form submission.';
+
+
+-- 8. Set up Row Level Security (RLS) for all tables
 ALTER TABLE public.bookings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.contact_messages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.clients ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.testimonials ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.media_assets ENABLE ROW LEVEL SECURITY;
 
--- 7. Clean up old policies before creating new ones
+-- 9. Clean up old policies before creating new ones
 DROP POLICY IF EXISTS "Allow public read access to all bookings" ON public.bookings;
 DROP POLICY IF EXISTS "Allow admin read access" ON public.bookings;
 DROP POLICY IF EXISTS "Allow admin update access" ON public.bookings;
@@ -158,12 +201,13 @@ DROP POLICY IF EXISTS "Allow public insert for bookings" ON public.bookings;
 DROP POLICY IF EXISTS "Allow admin full access for bookings" ON public.bookings;
 DROP POLICY IF EXISTS "Allow public insert for contact messages" ON public.contact_messages;
 DROP POLICY IF EXISTS "Allow admin read access for contact" ON public.contact_messages;
+DROP POLICY IF EXISTS "Allow admin full access for clients" ON public.clients;
 DROP POLICY IF EXISTS "Allow public read access to testimonials" ON public.testimonials;
 DROP POLICY IF EXISTS "Allow admin full access for testimonials" ON public.testimonials;
 DROP POLICY IF EXISTS "Allow public read access to media assets" ON public.media_assets;
 DROP POLICY IF EXISTS "Allow admin full access for media" ON public.media_assets;
 
--- 8. Create new RLS policies
+-- 10. Create new RLS policies
 -- Bookings:
 -- Allow public to create new bookings via the website form.
 CREATE POLICY "Allow public insert for bookings" ON public.bookings
@@ -183,6 +227,12 @@ CREATE POLICY "Allow public insert for contact messages" ON public.contact_messa
 -- Allow authenticated users (admins) to read all messages.
 CREATE POLICY "Allow admin read access for contact" ON public.contact_messages FOR SELECT USING (auth.role() = 'authenticated');
 
+-- Clients:
+-- Allow authenticated users (admins) full access.
+CREATE POLICY "Allow admin full access for clients" ON public.clients
+  FOR ALL USING (auth.role() = 'authenticated')
+  WITH CHECK (auth.role() = 'authenticated');
+
 -- Testimonials:
 -- Allow public to read all testimonials.
 CREATE POLICY "Allow public read access to testimonials" ON public.testimonials FOR SELECT USING (true);
@@ -196,7 +246,7 @@ CREATE POLICY "Allow public read access to media assets" ON public.media_assets 
 CREATE POLICY "Allow admin full access for media" ON public.media_assets FOR ALL USING (auth.role() = 'authenticated');
 
 
--- 9. Insert sample data (if tables are empty)
+-- 11. Insert sample data (if tables are empty)
 -- Sample Testimonials
 INSERT INTO public.testimonials (name, event_type, message, rating)
 SELECT 'Ana & Ion Popescu', 'Nuntă', 'Ați fost absolut fantastici! Ați creat o atmosferă de poveste și toți invitații au fost impresionați. Recomandăm cu toată inima!', 5

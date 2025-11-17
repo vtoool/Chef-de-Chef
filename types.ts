@@ -43,3 +43,12 @@ export interface MediaAsset {
   thumbnail_url?: string;
   description?: string;
 }
+
+export interface Client {
+  id: string;
+  created_at: string;
+  name: string;
+  emails: string[];
+  phones: string[];
+  notes_interne?: string | null;
+}

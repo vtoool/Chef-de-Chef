@@ -24,7 +24,21 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: 'Eroare la baza de date', error: supabaseError.message }, { status: 500 });
   }
 
-  // 2. Send emails via Resend
+  // 2. Upsert client info
+  if (booking.name && booking.email && booking.phone) {
+      const { error: rpcError } = await supabase.rpc('upsert_client', {
+        client_name: booking.name,
+        client_email: booking.email.toLowerCase(),
+        client_phone: booking.phone,
+      });
+    
+      if (rpcError) {
+        // This is a non-critical error, so we just log it and continue
+        console.warn('RPC upsert_client error (booking):', rpcError);
+      }
+  }
+
+  // 3. Send emails via Resend
   if (!fromEmail || !adminEmail || !process.env.RESEND_API_KEY) {
     console.error('Configurația de email lipsește din variabilele de mediu.');
     // Still return success to the user as the booking was saved.
