@@ -86,31 +86,6 @@ const Contact: React.FC = () => {
                             <span className="text-brand-brown-light group-hover:text-brand-orange group-hover:underline transition-colors text-md">contact@chefdechef.md</span>
                         </div>
                     </a>
-                    {/* WhatsApp */}
-                    <a href="https://wa.me/37312345678" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-4 group">
-                        <div className="flex-shrink-0 w-12 h-12 bg-brand-orange/10 rounded-full flex items-center justify-center transition-colors group-hover:bg-brand-orange/20">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-brand-orange" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.894 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.626.712.227 1.36.195 1.871.118.571-.078 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <span className="font-bold text-brand-brown-dark block text-sm">WhatsApp</span>
-                            <span className="text-brand-brown-light group-hover:text-brand-orange group-hover:underline transition-colors text-md">+373 12 345 678</span>
-                        </div>
-                    </a>
-                    {/* Telegram */}
-                    <a href="https://t.me/chefdechef_md" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-4 group">
-                        <div className="flex-shrink-0 w-12 h-12 bg-brand-orange/10 rounded-full flex items-center justify-center transition-colors group-hover:bg-brand-orange/20">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-brand-orange" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M9.78 18.65l.28-4.23 l6.85-6.08c.24-.21.01-.63-.29-.44l-8.5 4.86c-.4.22-.44.8-.06 1.06l1.72 1.72z"/>
-                                <path d="M21.92 3.02c.28-.15.54.12.4.41l-3.23 14.22c-.15.65-.63.85-1.13.54l-4.75-3.51-2.25 2.16c-.24.24-.59.08-.65-.22l-.9-4.21-4.2-1.3c-.66-.2- .65-1.1.05-1.25l15.3-2.91z"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <span className="font-bold text-brand-brown-dark block text-sm">Telegram</span>
-                            <span className="text-brand-brown-light group-hover:text-brand-orange group-hover:underline transition-colors text-md">@chefdechef_md</span>
-                        </div>
-                    </a>
                     {/* Facebook */}
                     <a href="https://www.facebook.com/ansamblul.chefdechef/" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-4 group">
                         <div className="flex-shrink-0 w-12 h-12 bg-brand-orange/10 rounded-full flex items-center justify-center transition-colors group-hover:bg-brand-orange/20">
@@ -133,6 +108,28 @@ const Contact: React.FC = () => {
                         <div>
                             <span className="font-bold text-brand-brown-dark block text-sm">Instagram</span>
                             <span className="text-brand-brown-light group-hover:text-brand-orange group-hover:underline transition-colors text-md">@ansamblul_chef_de_chef</span>
+                        </div>
+                    </a>
+                    {/* Telegram */}
+                    <a href="https://t.me/chefdechef_md" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-4 group">
+                        <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-12 h-12" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 512"><defs><linearGradient id="prefix__a" gradientUnits="userSpaceOnUse" x1="256" y1="3.84" x2="256" y2="512"><stop offset="0" stop-color="#2AABEE"/><stop offset="1" stop-color="#229ED9"/></linearGradient></defs><circle fill="url(#prefix__a)" cx="256" cy="256" r="256"/><path fill="#fff" d="M115.88 253.3c74.63-32.52 124.39-53.95 149.29-64.31 71.1-29.57 85.87-34.71 95.5-34.88 2.12-.03 6.85.49 9.92 2.98 2.59 2.1 3.3 4.94 3.64 6.93.34 2 .77 6.53.43 10.08-3.85 40.48-20.52 138.71-29 184.05-3.59 19.19-10.66 25.62-17.5 26.25-14.86 1.37-26.15-9.83-40.55-19.27-22.53-14.76-35.26-23.96-57.13-38.37-25.28-16.66-8.89-25.81 5.51-40.77 3.77-3.92 69.27-63.5 70.54-68.9.16-.68.31-3.2-1.19-4.53s-3.71-.87-5.3-.51c-2.26.51-38.25 24.3-107.98 71.37-10.22 7.02-19.48 10.43-27.77 10.26-9.14-.2-26.72-5.17-39.79-9.42-16.03-5.21-28.77-7.97-27.66-16.82.57-4.61 6.92-9.32 19.04-14.14z"/></svg>
+                        </div>
+                        <div>
+                            <span className="font-bold text-brand-brown-dark block text-sm">Telegram</span>
+                            <span className="text-brand-brown-light group-hover:text-brand-orange group-hover:underline transition-colors text-md">@chefdechef_md</span>
+                        </div>
+                    </a>
+                    {/* WhatsApp */}
+                    <a href="https://wa.me/37312345678" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-4 group">
+                        <div className="flex-shrink-0 w-12 h-12 bg-brand-orange/10 rounded-full flex items-center justify-center transition-colors group-hover:bg-brand-orange/20">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-brand-orange" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.894 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.626.712.227 1.36.195 1.871.118.571-.078 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <span className="font-bold text-brand-brown-dark block text-sm">WhatsApp</span>
+                            <span className="text-brand-brown-light group-hover:text-brand-orange group-hover:underline transition-colors text-md">+373 12 345 678</span>
                         </div>
                     </a>
                 </div>
