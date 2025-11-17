@@ -51,4 +51,5 @@ export interface Client {
   emails: string[];
   phones: string[];
   notes_interne?: string | null;
+  notes_client?: string | null;
 }

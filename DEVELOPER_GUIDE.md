@@ -73,7 +73,7 @@ ALTER TABLE public.bookings ADD COLUMN IF NOT EXISTS currency text NULL DEFAULT 
 
 ```sql
 -- Chef de Chef Supabase Schema
--- Version 1.8 - Robust Client Management Function
+-- Version 2.1 - Separated Client and Admin Notes
 
 -- 1. Create bookings table
 CREATE TABLE IF NOT EXISTS public.bookings (
@@ -119,9 +119,12 @@ CREATE TABLE IF NOT EXISTS public.clients (
     emails jsonb NULL,
     phones jsonb NULL,
     notes_interne text NULL,
+    notes_client text NULL,
     CONSTRAINT clients_pkey PRIMARY KEY (id)
 );
 COMMENT ON TABLE public.clients IS 'Stores unified client information.';
+COMMENT ON COLUMN public.clients.notes_client IS 'Aggregated notes provided by the client via booking/contact forms.';
+COMMENT ON COLUMN public.clients.notes_interne IS 'Internal notes for admin use only.';
 
 
 -- 4. Create testimonials table
@@ -160,23 +163,23 @@ CREATE OR REPLACE VIEW public.public_booking_dates AS
 -- Drops the old version (if it exists) to avoid conflicts.
 DROP FUNCTION IF EXISTS public.upsert_client(text, text, text);
 
--- Creates the new version that handles notes.
+-- Creates the new version that handles notes and runs with elevated privileges.
 CREATE OR REPLACE FUNCTION upsert_client(client_name text, client_email text, client_phone text, new_note text DEFAULT NULL)
 RETURNS void AS $$
 DECLARE
     client_id uuid;
-    existing_notes text;
+    existing_client_notes text;
     existing_phones jsonb;
     note_prefix text;
 BEGIN
     -- Check if a client with this email already exists
-    SELECT id, notes_interne, phones INTO client_id, existing_notes, existing_phones
+    SELECT id, notes_client, phones INTO client_id, existing_client_notes, existing_phones
     FROM public.clients
     WHERE emails @> jsonb_build_array(client_email)
     LIMIT 1;
 
-    -- Create a formatted note if a new note is provided
-    IF new_note IS NOT NULL AND new_note != '' THEN
+    -- Create a formatted note if a new note is provided and is not a duplicate.
+    IF new_note IS NOT NULL AND new_note != '' AND (existing_client_notes IS NULL OR existing_client_notes NOT LIKE '%' || trim(new_note) || '%') THEN
         note_prefix := format(E'\n--- Notă adăugată la %s ---\n', to_char(now(), 'YYYY-MM-DD HH24:MI'));
         new_note := note_prefix || new_note;
     ELSE
@@ -184,7 +187,7 @@ BEGIN
     END IF;
 
     IF client_id IS NOT NULL THEN
-        -- Client exists, update phones and append notes
+        -- Client exists, update phones and append to client notes
         UPDATE public.clients
         SET 
             phones = CASE 
@@ -193,18 +196,18 @@ BEGIN
                 ELSE
                     existing_phones
             END,
-            notes_interne = COALESCE(notes_interne, '') || new_note
+            notes_client = COALESCE(notes_client, '') || new_note
         WHERE id = client_id;
     ELSE
-        -- Client does not exist, insert new record with the note
-        INSERT INTO public.clients (name, emails, phones, notes_interne)
+        -- Client does not exist, insert new record with the client note
+        INSERT INTO public.clients (name, emails, phones, notes_client)
         VALUES (client_name, jsonb_build_array(client_email), jsonb_build_array(client_phone), TRIM(both E'\n' FROM new_note));
     END IF;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Add a comment, specifying the function signature to avoid ambiguity.
-COMMENT ON FUNCTION public.upsert_client(text, text, text, text) IS 'Automatically creates or updates a client record from a booking or contact form submission, including notes.';
+COMMENT ON FUNCTION public.upsert_client(text, text, text, text) IS 'Automatically creates or updates a client record, appending notes from bookings/contact forms into the client notes field.';
 
 
 -- 8. Set up Row Level Security (RLS) for all tables
@@ -249,10 +252,11 @@ CREATE POLICY "Allow public insert for contact messages" ON public.contact_messa
 CREATE POLICY "Allow admin read access for contact" ON public.contact_messages FOR SELECT USING (auth.role() = 'authenticated');
 
 -- Clients:
--- Allow authenticated users (admins) full access.
+-- Allow authenticated users (admins) full access. Also allows the 'postgres' superuser
+-- which is required for the SECURITY DEFINER function to work correctly.
 CREATE POLICY "Allow admin full access for clients" ON public.clients
-  FOR ALL USING (auth.role() = 'authenticated')
-  WITH CHECK (auth.role() = 'authenticated');
+  FOR ALL USING (auth.role() = 'authenticated' OR current_user = 'postgres')
+  WITH CHECK (auth.role() = 'authenticated' OR current_user = 'postgres');
 
 -- Testimonials:
 -- Allow public to read all testimonials.

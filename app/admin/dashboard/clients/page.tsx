@@ -88,8 +88,28 @@ const ClientModal: React.FC<{
                         </div>
                     </div>
                     <div>
-                        <label htmlFor="notes_interne" className="text-sm font-bold text-gray-600 block mb-1">Notițe Interne</label>
-                        <textarea id="notes_interne" name="notes_interne" value={editedClient.notes_interne || ''} onChange={handleInputChange} rows={3} className="w-full p-2 bg-gray-50 border border-gray-300 rounded-md"></textarea>
+                        <label htmlFor="notes_client" className="text-sm font-bold text-gray-600 block mb-1">Istoric Notițe Client</label>
+                        <textarea 
+                            id="notes_client" 
+                            name="notes_client" 
+                            value={editedClient.notes_client || ''} 
+                            readOnly 
+                            rows={4} 
+                            className="w-full p-2 bg-gray-100 border border-gray-300 rounded-md cursor-not-allowed focus:ring-0 focus:border-gray-300"
+                            placeholder="Nicio notiță de la client."
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="notes_interne" className="text-sm font-bold text-gray-600 block mb-1">Notițe Interne (Admin)</label>
+                        <textarea 
+                            id="notes_interne" 
+                            name="notes_interne" 
+                            value={editedClient.notes_interne || ''} 
+                            onChange={handleInputChange} 
+                            rows={4} 
+                            className="w-full p-2 bg-gray-50 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"
+                            placeholder="Adaugă notițe private aici..."
+                        />
                     </div>
                 </div>
                 <div className="p-4 bg-gray-50 flex justify-end space-x-3">
@@ -204,7 +224,7 @@ export default function ClientsPage() {
     
     const handleOpenAddModal = () => {
         setSelectedClient({
-            id: '', created_at: '', name: '', emails: [], phones: [], notes_interne: ''
+            id: '', created_at: '', name: '', emails: [], phones: [], notes_interne: '', notes_client: ''
         });
     };
 
