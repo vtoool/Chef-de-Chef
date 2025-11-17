@@ -5,6 +5,22 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '../../../../lib/supabaseClient';
 import { Client } from '../../../../types';
 
+// Helper functions for note snippets
+const getLastNote = (notes: string | null | undefined): string => {
+    if (!notes) return '';
+    // Split by the note header, filter out empty strings from split, and return the last non-empty part.
+    const parts = notes.trim().split(/--- Notă adăugată la .*? ---/);
+    return parts.filter(p => p.trim()).pop()?.trim() || '';
+};
+
+const getSnippet = (text: string, maxLength = 70): string => {
+    if (!text) return '';
+    // Normalize whitespace to prevent long empty spaces from taking up the snippet
+    const cleanedText = text.trim().replace(/\s+/g, ' '); 
+    if (cleanedText.length <= maxLength) return cleanedText;
+    return cleanedText.substring(0, maxLength) + '...';
+};
+
 
 // Sub-component for the Add/Edit Modal
 const ClientModal: React.FC<{
@@ -321,18 +337,48 @@ export default function ClientsPage() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredAndSortedClients.map((client) => (
-                                    <tr key={client.id} className="border-b hover:bg-gray-50">
-                                        <td className="px-6 py-4 font-medium">{client.name}</td>
-                                        <td className="px-6 py-4 whitespace-pre-wrap max-w-xs">{client.emails.join('\n')}</td>
-                                        <td className="px-6 py-4 whitespace-pre-wrap max-w-xs">{client.phones.join('\n')}</td>
-                                        <td className="px-6 py-4 text-xs whitespace-pre-wrap max-w-sm">{client.notes_interne || '—'}</td>
-                                        <td className="px-6 py-4 text-right space-x-3">
-                                            <button onClick={() => setSelectedClient(client)} disabled={isMigrationNeeded} className="font-medium text-brand-orange hover:underline disabled:opacity-50 disabled:cursor-not-allowed">Editează</button>
-                                            <button onClick={() => handleDeleteClient(client.id)} disabled={isMigrationNeeded} className="font-medium text-red-600 hover:underline disabled:opacity-50 disabled:cursor-not-allowed">Șterge</button>
-                                        </td>
-                                    </tr>
-                                ))}
+                                {filteredAndSortedClients.map((client) => {
+                                    const clientNoteSnippet = getSnippet(getLastNote(client.notes_client));
+                                    const adminNoteSnippet = getSnippet(client.notes_interne || '');
+
+                                    return (
+                                        <tr key={client.id} className="border-b hover:bg-gray-50">
+                                            <td className="px-6 py-4 font-medium align-top">{client.name}</td>
+                                            <td className="px-6 py-4 whitespace-pre-wrap max-w-xs align-top">{client.emails.join('\n')}</td>
+                                            <td className="px-6 py-4 whitespace-pre-wrap max-w-xs align-top">{client.phones.join('\n')}</td>
+                                            <td className="px-6 py-4 text-xs max-w-sm align-top">
+                                                {isMigrationNeeded ? (
+                                                    <span className="whitespace-pre-wrap">{client.notes_interne || '—'}</span>
+                                                ) : (
+                                                    <>
+                                                        {!clientNoteSnippet && !adminNoteSnippet ? (
+                                                            '—'
+                                                        ) : (
+                                                            <div className="space-y-2">
+                                                                {clientNoteSnippet && (
+                                                                    <div>
+                                                                        <strong className="font-semibold text-gray-500 block">Client:</strong>
+                                                                        <p className="italic pl-1">{clientNoteSnippet}</p>
+                                                                    </div>
+                                                                )}
+                                                                {adminNoteSnippet && (
+                                                                    <div>
+                                                                        <strong className="font-semibold text-gray-500 block">Admin:</strong>
+                                                                        <p className="pl-1">{adminNoteSnippet}</p>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                    </>
+                                                )}
+                                            </td>
+                                            <td className="px-6 py-4 text-right space-x-3 align-top">
+                                                <button onClick={() => setSelectedClient(client)} disabled={isMigrationNeeded} className="font-medium text-brand-orange hover:underline disabled:opacity-50 disabled:cursor-not-allowed">Editează</button>
+                                                <button onClick={() => handleDeleteClient(client.id)} disabled={isMigrationNeeded} className="font-medium text-red-600 hover:underline disabled:opacity-50 disabled:cursor-not-allowed">Șterge</button>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
                             </tbody>
                         </table>
                     </div>
