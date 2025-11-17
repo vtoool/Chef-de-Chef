@@ -11,6 +11,7 @@ interface Client {
     phone: string;
     source: 'Booking' | 'Contact';
     createdAt: string;
+    message?: string;
 }
 
 export default function ClientsPage() {
@@ -30,7 +31,7 @@ export default function ClientsPage() {
 
         const { data: contactsData, error: contactsError } = await supabase
             .from('contact_messages')
-            .select('name, email, phone, created_at');
+            .select('name, email, phone, created_at, message');
             
         if (bookingsError || contactsError) {
             console.error("Error fetching client data:", bookingsError || contactsError);
@@ -40,28 +41,32 @@ export default function ClientsPage() {
 
         const clientMap = new Map<string, Client>();
 
-        const processData = (items: (Partial<Booking> | Partial<ContactMessage>)[], source: 'Booking' | 'Contact') => {
-            items.forEach(item => {
-                if (!item.email || !item.created_at || !item.name || !item.phone) return;
+        // Combine and sort all entries chronologically to process oldest first
+        const allEntries = [
+            ...((bookingsData as any[]) || []).map(item => ({ ...item, source: 'Booking' as const })),
+            ...((contactsData as any[]) || []).map(item => ({ ...item, source: 'Contact' as const }))
+        ].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
 
-                const existingClient = clientMap.get(item.email);
-                const newClient: Client = {
-                    name: item.name,
-                    email: item.email,
-                    phone: item.phone,
-                    source,
-                    createdAt: item.created_at
-                };
 
-                // If client doesn't exist or the new record is more recent, add/update it
-                if (!existingClient || new Date(newClient.createdAt) > new Date(existingClient.createdAt)) {
-                    clientMap.set(item.email, newClient);
-                }
-            });
-        };
+        // Process entries to build the final client list, with newest data overwriting older data
+        allEntries.forEach(item => {
+            if (!item.email || !item.name || !item.phone) return;
 
-        if (bookingsData) processData(bookingsData, 'Booking');
-        if (contactsData) processData(contactsData, 'Contact');
+            const emailKey = item.email.toLowerCase();
+            const existingClient = clientMap.get(emailKey);
+
+            const updatedClient: Client = {
+                name: item.name,
+                email: item.email,
+                phone: item.phone,
+                source: item.source,
+                createdAt: item.created_at,
+                // Preserve existing message if the current item is a booking, otherwise update with new message
+                message: item.source === 'Contact' && item.message ? item.message : existingClient?.message,
+            };
+
+            clientMap.set(emailKey, updatedClient);
+        });
         
         setClients(Array.from(clientMap.values()));
         setIsLoading(false);
@@ -144,6 +149,7 @@ export default function ClientsPage() {
                                     <th scope="col" className="px-6 py-3">Email</th>
                                     <th scope="col" className="px-6 py-3">Telefon</th>
                                     <th scope="col" className="px-6 py-3">Sursă Contact</th>
+                                    <th scope="col" className="px-6 py-3">Mesaj</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -153,6 +159,7 @@ export default function ClientsPage() {
                                         <td className="px-6 py-4">{client.email}</td>
                                         <td className="px-6 py-4">{client.phone}</td>
                                         <td className="px-6 py-4">{client.source}</td>
+                                        <td className="px-6 py-4 text-xs whitespace-pre-wrap max-w-sm">{client.message || '—'}</td>
                                     </tr>
                                 ))}
                             </tbody>

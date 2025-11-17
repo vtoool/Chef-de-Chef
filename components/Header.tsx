@@ -20,7 +20,6 @@ const navLinks = [
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSticky, setIsSticky] = useState(true);
-  const [activeLink, setActiveLink] = useState('#home');
 
   // Effect to handle body scroll lock for mobile menu
   useEffect(() => {
@@ -55,52 +54,6 @@ const Header: React.FC = () => {
     };
   }, []);
   
-  // Effect to track active section on scroll
-  useEffect(() => {
-    const handleScroll = () => {
-      const sections = [
-        document.querySelector('#home'),
-        ...navLinks.map(link => document.querySelector(link.href))
-      ].filter(Boolean) as HTMLElement[];
-
-      if (sections.length === 0) return;
-
-      const scrollY = window.scrollY;
-      const viewportCenter = scrollY + window.innerHeight / 2;
-
-      // Find the section whose center is closest to the viewport's center
-      const closestSection = sections.reduce(
-        (closest, section) => {
-          const sectionCenter = section.offsetTop + section.offsetHeight / 2;
-          const distance = Math.abs(viewportCenter - sectionCenter);
-
-          if (distance < closest.distance) {
-            return { distance, id: section.id };
-          }
-          return closest;
-        },
-        { distance: Infinity, id: sections[0].id }
-      );
-
-      let newActiveLink = `#${closestSection.id}`;
-
-      // Edge case: If scrolled to the very bottom, forcefully activate the last link.
-      // This is helpful for short final sections.
-      const isAtBottom = (window.innerHeight + scrollY) >= document.body.offsetHeight - 5;
-      if (isAtBottom) {
-        newActiveLink = navLinks[navLinks.length - 1].href;
-      }
-
-      setActiveLink(newActiveLink);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll(); // Call once on mount to set the initial state
-
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-
   const handleLinkClick = () => {
     setIsMenuOpen(false);
   };
@@ -109,24 +62,17 @@ const Header: React.FC = () => {
     <>
       <header className={`w-full bg-brand-cream z-50 ${isSticky ? 'sticky top-0' : ''}`}>
         <div className="container mx-auto max-w-6xl px-6 py-3 flex justify-between items-center">
-          <a href="#home" onClick={() => setActiveLink('#home')} aria-label="Pagina principală"><Logo /></a>
+          <a href="#home" aria-label="Pagina principală"><Logo /></a>
           <nav className="hidden md:flex items-center space-x-2">
-            {navLinks.map((link) => {
-              const isActive = activeLink === link.href;
-              return (
+            {navLinks.map((link) => (
                 <a
                   key={link.name}
                   href={link.href}
-                  className={`px-4 py-2 rounded-full font-medium transition-all duration-300 ${
-                    isActive
-                      ? 'bg-brand-orange/10 text-brand-orange'
-                      : 'text-brand-brown-light hover:bg-brand-orange/10 hover:text-brand-orange'
-                  }`}
+                  className="px-4 py-2 rounded-full font-medium transition-all duration-300 text-brand-brown-light hover:bg-brand-orange/10 hover:text-brand-orange"
                 >
                   {link.name}
                 </a>
-              );
-            })}
+            ))}
           </nav>
           <BookingButton href="#book" className="hidden md:inline-block">
             Rezervă Acum
