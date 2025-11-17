@@ -104,6 +104,7 @@ const ClientModal: React.FC<{
 export default function ClientsPage() {
     const [clients, setClients] = useState<Client[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isMigrationNeeded, setIsMigrationNeeded] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [sortConfig, setSortConfig] = useState<{ key: keyof Client; direction: 'asc' | 'desc' }>({ key: 'name', direction: 'asc' });
     const [selectedClient, setSelectedClient] = useState<Client | null>(null);
@@ -112,13 +113,50 @@ export default function ClientsPage() {
     const fetchClients = useCallback(async () => {
         if (!supabase) return;
         setIsLoading(true);
-        const { data, error } = await supabase.from('clients').select('*');
-            
-        if (error) {
-            console.error("Error fetching clients:", error);
-        } else if (data) {
-            setClients(data as Client[]);
+        setIsMigrationNeeded(false);
+
+        const { data: clientsData, error: clientsError } = await supabase.from('clients').select('*');
+
+        if (clientsError) {
+            console.error("Error fetching from 'clients' table:", clientsError);
+            if (clientsError.code === 'PGRST205') {
+                setIsMigrationNeeded(true);
+                
+                const { data: bookings } = await supabase.from('bookings').select('name, email, phone');
+                const { data: contacts } = await supabase.from('contact_messages').select('name, email, phone, message');
+
+                const combined = [...(bookings || []), ...(contacts || [])];
+                const clientMap = new Map<string, any>();
+
+                combined.forEach(item => {
+                    const email = item.email?.toLowerCase();
+                    if (!email) return;
+                    
+                    if (!clientMap.has(email)) {
+                        clientMap.set(email, {
+                            id: email,
+                            created_at: '',
+                            name: item.name,
+                            emails: [item.email],
+                            phones: [item.phone],
+                            notes_interne: (item as any).message || null,
+                        });
+                    } else {
+                        const existing = clientMap.get(email);
+                        if (!existing.phones.includes(item.phone)) {
+                            existing.phones.push(item.phone);
+                        }
+                    }
+                });
+
+                setClients(Array.from(clientMap.values()));
+            } else {
+                 setClients([]);
+            }
+        } else if (clientsData) {
+            setClients(clientsData as Client[]);
         }
+        
         setIsLoading(false);
     }, []);
 
@@ -134,9 +172,15 @@ export default function ClientsPage() {
         };
         checkUser();
     }, [router, fetchClients]);
+    
+     useEffect(() => {
+        if (isMigrationNeeded && sortConfig.key === 'created_at') {
+            setSortConfig({ key: 'name', direction: 'asc' });
+        }
+    }, [isMigrationNeeded, sortConfig.key]);
 
     const handleSaveClient = async (client: Client) => {
-        if (!supabase) return;
+        if (!supabase || isMigrationNeeded) return;
         
         const { id, created_at, ...upsertData } = client;
 
@@ -152,7 +196,7 @@ export default function ClientsPage() {
     };
 
     const handleDeleteClient = async (clientId: string) => {
-        if (!supabase || !window.confirm('Sunteți sigur că doriți să ștergeți acest client?')) return;
+        if (!supabase || isMigrationNeeded || !window.confirm('Sunteți sigur că doriți să ștergeți acest client?')) return;
         const { error } = await supabase.from('clients').delete().eq('id', clientId);
         if (error) console.error("Error deleting client:", error);
         else fetchClients();
@@ -177,7 +221,6 @@ export default function ClientsPage() {
             if (aValue === null || aValue === undefined) return 1;
             if (bValue === null || bValue === undefined) return -1;
             
-            // Handle string comparison for name and created_at
             if (typeof aValue === 'string' && typeof bValue === 'string') {
                  if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
                  if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
@@ -193,9 +236,22 @@ export default function ClientsPage() {
 
     return (
         <>
+            {isMigrationNeeded && (
+                <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 mb-6 rounded-md shadow" role="alert">
+                    <p className="font-bold">Actualizare Necesară a Bazei de Date</p>
+                    <p className="text-sm">
+                        Funcționalitatea completă de gestionare (adăugare, editare, ștergere) este dezactivată. Pentru a o activa, vă rugăm să rulați scriptul SQL din fișierul <strong>DEVELOPER_GUIDE.md</strong> în editorul SQL Supabase.
+                    </p>
+                </div>
+            )}
             <div className="flex justify-between items-center mb-6">
                  <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Lista Clienților</h1>
-                 <button onClick={handleOpenAddModal} className="bg-chef-gradient text-white font-bold py-2 px-5 rounded-lg shadow-md hover:shadow-lg">
+                 <button 
+                    onClick={handleOpenAddModal} 
+                    disabled={isMigrationNeeded}
+                    className="bg-chef-gradient text-white font-bold py-2 px-5 rounded-lg shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    title={isMigrationNeeded ? "Funcționalitate dezactivată. Necesită actualizarea bazei de date." : "Adaugă client nou"}
+                 >
                     Adaugă Client
                  </button>
             </div>
@@ -215,8 +271,12 @@ export default function ClientsPage() {
                     >
                         <option value="name-asc">Nume (A-Z)</option>
                         <option value="name-desc">Nume (Z-A)</option>
-                        <option value="created_at-desc">Cei mai recenți</option>
-                        <option value="created_at-asc">Cei mai vechi</option>
+                        {!isMigrationNeeded && (
+                            <>
+                                <option value="created_at-desc">Cei mai recenți</option>
+                                <option value="created_at-asc">Cei mai vechi</option>
+                            </>
+                        )}
                     </select>
                 </div>
             </div>
@@ -236,7 +296,7 @@ export default function ClientsPage() {
                                     <th className="px-6 py-3">Nume</th>
                                     <th className="px-6 py-3">Email-uri</th>
                                     <th className="px-6 py-3">Telefoane</th>
-                                    <th className="px-6 py-3">Notițe</th>
+                                    <th className="px-6 py-3">{isMigrationNeeded ? 'Mesaj Inițial' : 'Notițe'}</th>
                                     <th className="px-6 py-3 text-right">Acțiuni</th>
                                 </tr>
                             </thead>
@@ -248,8 +308,8 @@ export default function ClientsPage() {
                                         <td className="px-6 py-4 whitespace-pre-wrap max-w-xs">{client.phones.join('\n')}</td>
                                         <td className="px-6 py-4 text-xs whitespace-pre-wrap max-w-sm">{client.notes_interne || '—'}</td>
                                         <td className="px-6 py-4 text-right space-x-3">
-                                            <button onClick={() => setSelectedClient(client)} className="font-medium text-brand-orange hover:underline">Editează</button>
-                                            <button onClick={() => handleDeleteClient(client.id)} className="font-medium text-red-600 hover:underline">Șterge</button>
+                                            <button onClick={() => setSelectedClient(client)} disabled={isMigrationNeeded} className="font-medium text-brand-orange hover:underline disabled:opacity-50 disabled:cursor-not-allowed">Editează</button>
+                                            <button onClick={() => handleDeleteClient(client.id)} disabled={isMigrationNeeded} className="font-medium text-red-600 hover:underline disabled:opacity-50 disabled:cursor-not-allowed">Șterge</button>
                                         </td>
                                     </tr>
                                 ))}
