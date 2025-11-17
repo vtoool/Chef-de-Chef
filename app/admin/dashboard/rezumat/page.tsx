@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
@@ -31,6 +32,18 @@ const StatCard: React.FC<{ title: string; value: string | number; description: s
         </div>
     </div>
 );
+
+// Helper function to pluralize event types for the chart
+const pluralizeEventType = (type: string): string => {
+    const plurals: Record<string, string> = {
+        'Nuntă': 'Nunți',
+        'Cumătrie': 'Cumătrii',
+        'Corporativă': 'Corporative',
+        'Petrecere': 'Petreceri',
+        'Altul': 'Altele',
+    };
+    return plurals[type] || type;
+};
 
 export default function RezumatPage() {
     const [stats, setStats] = useState<Stats | null>(null);
@@ -123,8 +136,13 @@ export default function RezumatPage() {
 
     const sortedEventTypes = useMemo<[string, number][]>(() => {
         if (!stats) return [];
+        
+        const pluralizedData = Object.entries(stats.eventTypeCounts).map(([type, count]) => {
+            return [pluralizeEventType(type), count] as [string, number];
+        });
+
         // FIX: Explicitly type sort callback parameters to resolve arithmetic operation error.
-        return Object.entries(stats.eventTypeCounts).sort(
+        return pluralizedData.sort(
             (a: [string, number], b: [string, number]) => b[1] - a[1]
         );
     }, [stats]);
