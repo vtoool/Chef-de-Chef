@@ -110,13 +110,13 @@ const WhyUs: React.FC = () => {
               style={{ transitionDelay: `${isVisible ? index * 250 : 0}ms` }}
             >
                 {stat.isIcon ? (
-                     <h3 className="text-4xl md:text-5xl font-black text-brand-orange mb-2 h-[56px] flex items-center justify-center">
+                     <h3 className="text-4xl md:text-5xl font-black text-brand-orange mb-2 h-[56px] flex items-center justify-center drop-shadow-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                     </h3>
                 ) : (
-                    <h3 className="text-4xl md:text-5xl font-black bg-chef-gradient bg-clip-text text-transparent mb-2 h-[56px]">
+                    <h3 className="text-4xl md:text-5xl font-black bg-chef-gradient bg-clip-text text-transparent mb-2 h-[56px] drop-shadow-lg">
                         {isVisible && <CountUpNumber target={stat.number} />}
                         {stat.suffix}
                     </h3>

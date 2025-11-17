@@ -75,56 +75,44 @@ const BookingDetailsModal: React.FC<{
                     {!isAddMode && <p className="text-sm text-gray-500">Data eveniment: {booking.event_date}</p>}
                 </div>
                 <div className="p-6 grid md:grid-cols-2 gap-6 max-h-[70vh] overflow-y-auto">
-                    {/* Details Column (Inputs for Add Mode) */}
+                    {/* Client & Event Details Column - Now fully editable */}
                     <div className="space-y-4">
-                        {isAddMode ? (
-                            <>
-                                <div>
-                                    <label htmlFor="event_date" className="text-sm font-bold text-gray-600 block mb-1">Data Eveniment</label>
-                                    <input type="date" id="event_date" name="event_date" value={editedBooking.event_date} onChange={handleInputChange} required className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
-                                </div>
-                                <div>
-                                    <label htmlFor="name" className="text-sm font-bold text-gray-600 block mb-1">Nume Client</label>
-                                    <input type="text" id="name" name="name" value={editedBooking.name} onChange={handleInputChange} required placeholder="ex: Ion Popescu" className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
-                                </div>
-                                <div>
-                                    <label htmlFor="phone" className="text-sm font-bold text-gray-600 block mb-1">Telefon</label>
-                                    <input type="tel" id="phone" name="phone" value={editedBooking.phone} onChange={handleInputChange} required placeholder="ex: 069123456" className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
-                                </div>
-                                <div>
-                                    <label htmlFor="email" className="text-sm font-bold text-gray-600 block mb-1">Email (Opțional)</label>
-                                    <input type="email" id="email" name="email" value={editedBooking.email} onChange={handleInputChange} placeholder="ex: client@email.com" className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
-                                </div>
-                                <div>
-                                    <label htmlFor="event_type" className="text-sm font-bold text-gray-600 block mb-1">Tip Eveniment</label>
-                                    <select id="event_type" name="event_type" value={editedBooking.event_type} onChange={handleInputChange} required className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange">
-                                        <option>Nuntă</option>
-                                        <option>Cumătrie</option>
-                                        <option>Petrecere</option>
-                                        <option>Corporate</option>
-                                        <option>Altul</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label htmlFor="location" className="text-sm font-bold text-gray-600 block mb-1">Locație</label>
-                                    <input type="text" id="location" name="location" value={editedBooking.location} onChange={handleInputChange} required placeholder="ex: Restaurant, Chișinău" className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
-                                </div>
-                                 <div>
-                                    <label htmlFor="notes" className="text-sm font-bold text-gray-600 block mb-1">Detalii Suplimentare (Client)</label>
-                                    <textarea id="notes" name="notes" value={editedBooking.notes || ''} onChange={handleInputChange} rows={2} className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"></textarea>
-                                </div>
-                            </>
-                        ) : (
-                            <>
-                                <div><label className="text-xs font-bold text-gray-500 block">Nume Client</label><p>{booking.name}</p></div>
-                                <div><label className="text-xs font-bold text-gray-500 block">Contact</label><p>{booking.phone} / {booking.email}</p></div>
-                                <div><label className="text-xs font-bold text-gray-500 block">Tip Eveniment</label><p>{booking.event_type}</p></div>
-                                <div><label className="text-xs font-bold text-gray-500 block">Locație</label><p>{booking.location}</p></div>
-                                <div><label className="text-xs font-bold text-gray-500 block">Detalii Suplimentare (Client)</label><p className="text-sm whitespace-pre-wrap">{booking.notes || 'N/A'}</p></div>
-                            </>
-                        )}
+                        <div>
+                            <label htmlFor="event_date" className="text-sm font-bold text-gray-600 block mb-1">Data Eveniment</label>
+                            <input type="date" id="event_date" name="event_date" value={editedBooking.event_date} onChange={handleInputChange} required className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
+                        </div>
+                        <div>
+                            <label htmlFor="name" className="text-sm font-bold text-gray-600 block mb-1">Nume Client</label>
+                            <input type="text" id="name" name="name" value={editedBooking.name} onChange={handleInputChange} required placeholder={isAddMode ? "ex: Ion Popescu" : undefined} className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
+                        </div>
+                        <div>
+                            <label htmlFor="phone" className="text-sm font-bold text-gray-600 block mb-1">Telefon</label>
+                            <input type="tel" id="phone" name="phone" value={editedBooking.phone} onChange={handleInputChange} required placeholder={isAddMode ? "ex: 069123456" : undefined} className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
+                        </div>
+                        <div>
+                            <label htmlFor="email" className="text-sm font-bold text-gray-600 block mb-1">Email {isAddMode ? '(Opțional)' : ''}</label>
+                            <input type="email" id="email" name="email" value={editedBooking.email} onChange={handleInputChange} placeholder={isAddMode ? "ex: client@email.com" : undefined} className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
+                        </div>
+                        <div>
+                            <label htmlFor="event_type" className="text-sm font-bold text-gray-600 block mb-1">Tip Eveniment</label>
+                            <select id="event_type" name="event_type" value={editedBooking.event_type} onChange={handleInputChange} required className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange">
+                                <option>Nuntă</option>
+                                <option>Cumătrie</option>
+                                <option>Petrecere</option>
+                                <option>Corporate</option>
+                                <option>Altul</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label htmlFor="location" className="text-sm font-bold text-gray-600 block mb-1">Locație</label>
+                            <input type="text" id="location" name="location" value={editedBooking.location} onChange={handleInputChange} required placeholder={isAddMode ? "ex: Restaurant, Chișinău" : undefined} className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
+                        </div>
+                         <div>
+                            <label htmlFor="notes" className="text-sm font-bold text-gray-600 block mb-1">Detalii Suplimentare (Client)</label>
+                            <textarea id="notes" name="notes" value={editedBooking.notes || ''} onChange={handleInputChange} rows={2} className="w-full p-2 bg-gray-50 text-gray-900 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"></textarea>
+                        </div>
                     </div>
-                    {/* Editable Form Column */}
+                    {/* Admin Editable Form Column */}
                     <div className="space-y-4">
                         <div>
                             <label htmlFor="status" className="text-sm font-bold text-gray-600 block mb-1">Status Rezervare</label>
