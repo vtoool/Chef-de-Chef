@@ -375,7 +375,15 @@ export default function AdminDashboardPage() {
 
     return (
         <>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">Rezervări</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Rezervări</h1>
+            <div className="mb-6">
+                 <button onClick={handleOpenAddModal} className="flex items-center gap-2 bg-brand-orange/10 text-brand-orange font-semibold text-sm px-4 py-2 rounded-full hover:bg-brand-orange/20 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+                    </svg>
+                    <span>Adaugă Rezervare</span>
+                </button>
+            </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
                 {/* Left & Main Column: Filters and Bookings List */}
@@ -383,9 +391,6 @@ export default function AdminDashboardPage() {
                     <div>
                         <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-4">
                             <h2 className="text-xl font-bold text-gray-900">Filtre & Sortare</h2>
-                             <button onClick={handleOpenAddModal} className="bg-chef-gradient text-white font-bold py-2 px-5 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
-                                Adaugă Rezervare Nouă
-                            </button>
                         </div>
                         <div className="flex flex-col sm:flex-row gap-4 p-4 bg-white rounded-lg shadow">
                             <input

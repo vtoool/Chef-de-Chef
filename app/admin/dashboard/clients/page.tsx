@@ -280,16 +280,21 @@ export default function ClientsPage() {
                     </p>
                 </div>
             )}
-            <div className="flex justify-between items-center mb-6">
+            <div className="mb-6">
                  <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Lista Clienților</h1>
-                 <button 
-                    onClick={handleOpenAddModal} 
-                    disabled={isMigrationNeeded}
-                    className="bg-chef-gradient text-white font-bold py-2 px-5 rounded-lg shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                    title={isMigrationNeeded ? "Funcționalitate dezactivată. Necesită actualizarea bazei de date." : "Adaugă client nou"}
-                 >
-                    Adaugă Client
-                 </button>
+                 <div className="mt-4">
+                    <button 
+                        onClick={handleOpenAddModal} 
+                        disabled={isMigrationNeeded}
+                        className="flex items-center gap-2 bg-brand-orange/10 text-brand-orange font-semibold text-sm px-4 py-2 rounded-full hover:bg-brand-orange/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        title={isMigrationNeeded ? "Funcționalitate dezactivată. Necesită actualizarea bazei de date." : "Adaugă client nou"}
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                           <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+                        </svg>
+                        <span>Adaugă Client</span>
+                    </button>
+                 </div>
             </div>
             <div className="mb-6">
                 <div className="flex flex-col sm:flex-row gap-4 p-4 bg-white rounded-lg shadow">

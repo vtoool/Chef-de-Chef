@@ -13,8 +13,8 @@ const logoUrl = "https://scontent.fkiv7-1.fna.fbcdn.net/v/t39.30808-6/456236959_
 const siteUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
 
 const emailStyles = {
-    body: `background-color: #FFF7E5; font-family: Arial, sans-serif; color: #3B2414; line-height: 1.6;`,
-    container: `max-width: 600px; margin: 0 auto; padding: 20px; background-color: #ffffff; border-radius: 8px;`,
+    body: `background-color: #FFF7E5; font-family: Arial, sans-serif; color: #3B2414; line-height: 1.6; padding: 20px 0;`,
+    container: `max-width: 600px; margin: 0 auto; padding: 40px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);`,
     header: `font-family: Georgia, serif; font-size: 24px; font-weight: bold; color: #3B2414; text-align: center; margin-bottom: 20px;`,
     h1: `font-family: Georgia, serif; color: #3B2414;`,
     p: `font-size: 16px; color: #5A3A26;`,
