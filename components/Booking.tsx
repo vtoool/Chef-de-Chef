@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 // FIX: Changed date-fns import to submodule path.
 import { format } from 'date-fns/format';
 import { ro } from 'date-fns/locale/ro';
@@ -54,6 +54,7 @@ const ConfirmationView: React.FC = () => {
 
 
 const BookingComponent: React.FC = () => {
+  const bookingSectionRef = useRef<HTMLDivElement>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [unavailableDates, setUnavailableDates] = useState<Date[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -93,6 +94,12 @@ const BookingComponent: React.FC = () => {
       fetchUnavailableDates();
     }
   }, [fetchUnavailableDates]);
+
+  useEffect(() => {
+    if (isSubmitted && bookingSectionRef.current) {
+      bookingSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [isSubmitted]);
   
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);
@@ -147,7 +154,7 @@ const BookingComponent: React.FC = () => {
   minDate.setHours(0, 0, 0, 0);
 
   return (
-    <section id="book" className="py-12 md:py-16 bg-white">
+    <section id="book" ref={bookingSectionRef} className="py-12 md:py-16 bg-white">
       <div className="container mx-auto max-w-6xl px-6">
         {isSubmitted ? (
             <ConfirmationView />
