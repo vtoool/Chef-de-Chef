@@ -73,7 +73,7 @@ ALTER TABLE public.bookings ADD COLUMN IF NOT EXISTS currency text NULL DEFAULT 
 
 ```sql
 -- Chef de Chef Supabase Schema
--- Version 1.6 - Client Management Update
+-- Version 1.8 - Robust Client Management Function
 
 -- 1. Create bookings table
 CREATE TABLE IF NOT EXISTS public.bookings (
@@ -157,33 +157,54 @@ CREATE OR REPLACE VIEW public.public_booking_dates AS
   WHERE (status = 'pending'::text OR status = 'confirmed'::text);
 
 -- 7. Database Function for Client Upserting
-CREATE OR REPLACE FUNCTION upsert_client(client_name text, client_email text, client_phone text)
+-- Drops the old version (if it exists) to avoid conflicts.
+DROP FUNCTION IF EXISTS public.upsert_client(text, text, text);
+
+-- Creates the new version that handles notes.
+CREATE OR REPLACE FUNCTION upsert_client(client_name text, client_email text, client_phone text, new_note text DEFAULT NULL)
 RETURNS void AS $$
 DECLARE
     client_id uuid;
+    existing_notes text;
     existing_phones jsonb;
+    note_prefix text;
 BEGIN
     -- Check if a client with this email already exists
-    SELECT id, phones INTO client_id, existing_phones
+    SELECT id, notes_interne, phones INTO client_id, existing_notes, existing_phones
     FROM public.clients
     WHERE emails @> jsonb_build_array(client_email)
     LIMIT 1;
 
-    IF client_id IS NOT NULL THEN
-        -- Client exists, check if phone needs to be added
-        IF existing_phones IS NULL OR NOT existing_phones @> jsonb_build_array(client_phone) THEN
-            UPDATE public.clients
-            SET phones = COALESCE(existing_phones, '[]'::jsonb) || jsonb_build_array(client_phone)
-            WHERE id = client_id;
-        END IF;
+    -- Create a formatted note if a new note is provided
+    IF new_note IS NOT NULL AND new_note != '' THEN
+        note_prefix := format(E'\n--- Notă adăugată la %s ---\n', to_char(now(), 'YYYY-MM-DD HH24:MI'));
+        new_note := note_prefix || new_note;
     ELSE
-        -- Client does not exist, insert new record
-        INSERT INTO public.clients (name, emails, phones)
-        VALUES (client_name, jsonb_build_array(client_email), jsonb_build_array(client_phone));
+        new_note := '';
+    END IF;
+
+    IF client_id IS NOT NULL THEN
+        -- Client exists, update phones and append notes
+        UPDATE public.clients
+        SET 
+            phones = CASE 
+                WHEN existing_phones IS NULL OR NOT existing_phones @> jsonb_build_array(client_phone) THEN
+                    COALESCE(existing_phones, '[]'::jsonb) || jsonb_build_array(client_phone)
+                ELSE
+                    existing_phones
+            END,
+            notes_interne = COALESCE(notes_interne, '') || new_note
+        WHERE id = client_id;
+    ELSE
+        -- Client does not exist, insert new record with the note
+        INSERT INTO public.clients (name, emails, phones, notes_interne)
+        VALUES (client_name, jsonb_build_array(client_email), jsonb_build_array(client_phone), TRIM(both E'\n' FROM new_note));
     END IF;
 END;
 $$ LANGUAGE plpgsql;
-COMMENT ON FUNCTION public.upsert_client IS 'Automatically creates or updates a client record from a booking or contact form submission.';
+
+-- Add a comment, specifying the function signature to avoid ambiguity.
+COMMENT ON FUNCTION public.upsert_client(text, text, text, text) IS 'Automatically creates or updates a client record from a booking or contact form submission, including notes.';
 
 
 -- 8. Set up Row Level Security (RLS) for all tables

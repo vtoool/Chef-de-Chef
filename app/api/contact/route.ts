@@ -24,12 +24,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: 'Eroare la baza de date', error: supabaseError.message }, { status: 500 });
   }
 
-  // 2. Upsert client info
+  // 2. Upsert client info, now including the message content as a note
   if (message.name && message.email && message.phone) {
     const { error: rpcError } = await supabase.rpc('upsert_client', {
       client_name: message.name,
       client_email: message.email.toLowerCase(),
       client_phone: message.phone,
+      new_note: message.message,
     });
 
     if (rpcError) {
