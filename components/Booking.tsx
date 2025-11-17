@@ -144,7 +144,7 @@ const BookingComponent: React.FC = () => {
                       <option>Nuntă</option>
                       <option>Cumătrie</option>
                       <option>Petrecere</option>
-                      <option>Corporate</option>
+                      <option>Corporativă</option>
                       <option>Altul</option>
                   </select>
                 </div>

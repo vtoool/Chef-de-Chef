@@ -371,9 +371,27 @@ export default function ClientsPage() {
                                                     </>
                                                 )}
 
-                                                <td className="px-4 py-3 text-right space-x-3 align-top">
-                                                    <button onClick={() => setSelectedClient(client)} disabled={isMigrationNeeded} className="font-medium text-brand-orange hover:underline disabled:opacity-50 disabled:cursor-not-allowed">Editează</button>
-                                                    <button onClick={() => handleDeleteClient(client.id)} disabled={isMigrationNeeded} className="font-medium text-red-600 hover:underline disabled:opacity-50 disabled:cursor-not-allowed">Șterge</button>
+                                                <td className="px-4 py-3 text-right space-x-2 align-top">
+                                                    <button
+                                                        onClick={() => setSelectedClient(client)}
+                                                        disabled={isMigrationNeeded}
+                                                        className="p-2 rounded-md bg-yellow-100 text-yellow-800 hover:bg-yellow-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                        title="Editează client"
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z" />
+                                                        </svg>
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDeleteClient(client.id)}
+                                                        disabled={isMigrationNeeded}
+                                                        className="p-2 rounded-md bg-red-100 text-red-800 hover:bg-red-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                        title="Șterge client"
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                        </svg>
+                                                    </button>
                                                 </td>
                                             </tr>
                                         );
@@ -391,9 +409,27 @@ export default function ClientsPage() {
                                     <div key={client.id} className="bg-white p-3 rounded-lg shadow">
                                         <div className="flex justify-between items-start mb-2">
                                             <p className="font-bold text-lg text-gray-900 pr-2">{client.name}</p>
-                                            <div className="flex space-x-3 flex-shrink-0">
-                                                <button onClick={() => setSelectedClient(client)} disabled={isMigrationNeeded} className="font-medium text-brand-orange hover:underline disabled:opacity-50 disabled:cursor-not-allowed text-sm">Editează</button>
-                                                <button onClick={() => handleDeleteClient(client.id)} disabled={isMigrationNeeded} className="font-medium text-red-600 hover:underline disabled:opacity-50 disabled:cursor-not-allowed text-sm">Șterge</button>
+                                            <div className="flex space-x-2 flex-shrink-0">
+                                                 <button
+                                                    onClick={() => setSelectedClient(client)}
+                                                    disabled={isMigrationNeeded}
+                                                    className="p-2 rounded-md bg-yellow-100 text-yellow-800 hover:bg-yellow-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    title="Editează client"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z" />
+                                                    </svg>
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDeleteClient(client.id)}
+                                                    disabled={isMigrationNeeded}
+                                                    className="p-2 rounded-md bg-red-100 text-red-800 hover:bg-red-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    title="Șterge client"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </button>
                                             </div>
                                         </div>
                                         <div className="mt-2 pt-3 border-t border-gray-200 space-y-3 text-sm">
