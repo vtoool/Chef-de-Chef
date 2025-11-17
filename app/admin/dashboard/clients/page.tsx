@@ -328,21 +328,21 @@ export default function ClientsPage() {
                     <>
                         {/* Desktop Table View */}
                         <div className="hidden md:block overflow-x-auto bg-white rounded-lg shadow-lg">
-                            <table className="w-full text-sm text-left text-gray-700">
+                            <table className="w-full text-xs text-left text-gray-700">
                                 <thead className="text-xs text-gray-500 uppercase bg-gray-50">
                                     <tr>
-                                        <th className="px-6 py-3">Nume</th>
-                                        <th className="px-6 py-3">Email-uri</th>
-                                        <th className="px-6 py-3">Telefoane</th>
+                                        <th className="px-4 py-2">Nume</th>
+                                        <th className="px-4 py-2">Email-uri</th>
+                                        <th className="px-4 py-2">Telefoane</th>
                                         {isMigrationNeeded ? (
-                                            <th className="px-6 py-3">Mesaj Inițial</th>
+                                            <th className="px-4 py-2">Mesaj Inițial</th>
                                         ) : (
                                             <>
-                                                <th className="px-6 py-3">Mesaj Client</th>
-                                                <th className="px-6 py-3">Notițe Admin</th>
+                                                <th className="px-4 py-2">Mesaj Client</th>
+                                                <th className="px-4 py-2">Notițe Admin</th>
                                             </>
                                         )}
-                                        <th className="px-6 py-3 text-right">Acțiuni</th>
+                                        <th className="px-4 py-2 text-right">Acțiuni</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -352,26 +352,26 @@ export default function ClientsPage() {
 
                                         return (
                                             <tr key={client.id} className="border-b hover:bg-gray-50">
-                                                <td className="px-6 py-4 font-medium align-top">{client.name}</td>
-                                                <td className="px-6 py-4 whitespace-pre-wrap max-w-xs align-top">{client.emails.join('\n')}</td>
-                                                <td className="px-6 py-4 whitespace-pre-wrap max-w-xs align-top">{client.phones.join('\n')}</td>
+                                                <td className="px-4 py-3 font-medium align-top">{client.name}</td>
+                                                <td className="px-4 py-3 whitespace-pre-wrap max-w-xs align-top">{client.emails.join('\n')}</td>
+                                                <td className="px-4 py-3 whitespace-pre-wrap max-w-xs align-top">{client.phones.join('\n')}</td>
                                                 
                                                 {isMigrationNeeded ? (
-                                                    <td className="px-6 py-4 text-xs max-w-sm align-top">
+                                                    <td className="px-4 py-3 text-xs max-w-sm align-top">
                                                         <span className="whitespace-pre-wrap">{getSnippet(client.notes_interne || '') || '—'}</span>
                                                     </td>
                                                 ) : (
                                                     <>
-                                                        <td className="px-6 py-4 text-xs max-w-xs align-top italic text-gray-600">
+                                                        <td className="px-4 py-3 text-xs max-w-xs align-top italic text-gray-600">
                                                             {clientNoteSnippet || '—'}
                                                         </td>
-                                                        <td className="px-6 py-4 text-xs max-w-xs align-top">
+                                                        <td className="px-4 py-3 text-xs max-w-xs align-top">
                                                             {adminNoteSnippet || '—'}
                                                         </td>
                                                     </>
                                                 )}
 
-                                                <td className="px-6 py-4 text-right space-x-3 align-top">
+                                                <td className="px-4 py-3 text-right space-x-3 align-top">
                                                     <button onClick={() => setSelectedClient(client)} disabled={isMigrationNeeded} className="font-medium text-brand-orange hover:underline disabled:opacity-50 disabled:cursor-not-allowed">Editează</button>
                                                     <button onClick={() => handleDeleteClient(client.id)} disabled={isMigrationNeeded} className="font-medium text-red-600 hover:underline disabled:opacity-50 disabled:cursor-not-allowed">Șterge</button>
                                                 </td>
@@ -388,7 +388,7 @@ export default function ClientsPage() {
                                 const clientNoteSnippet = getSnippet(getLastNote(client.notes_client));
                                 const adminNoteSnippet = getSnippet(client.notes_interne || '');
                                 return (
-                                    <div key={client.id} className="bg-white p-4 rounded-lg shadow">
+                                    <div key={client.id} className="bg-white p-3 rounded-lg shadow">
                                         <div className="flex justify-between items-start mb-2">
                                             <p className="font-bold text-lg text-gray-900 pr-2">{client.name}</p>
                                             <div className="flex space-x-3 flex-shrink-0">

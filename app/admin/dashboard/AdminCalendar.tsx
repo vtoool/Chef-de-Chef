@@ -116,7 +116,7 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({
           }
 
           const cellClasses = [
-            'w-10 h-10 flex items-center justify-center rounded-full transition-colors duration-200 cursor-pointer',
+            'w-9 h-9 flex items-center justify-center rounded-full transition-colors duration-200 cursor-pointer',
             isDayInCurrentMonth ? 'text-gray-700' : 'text-gray-400',
             !statusClass && 'hover:bg-gray-100',
             statusClass,
@@ -129,7 +129,7 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({
           return (
             <div
               key={day.toString()}
-              className="py-1 flex justify-center"
+              className="flex justify-center"
             >
               <button
                 type="button"

@@ -36,7 +36,7 @@ const StatusBadge: React.FC<{ status: Booking['status'] }> = ({ status }) => {
         rejected: { text: 'Refuzat', classes: 'bg-red-100 text-red-800' },
     };
     const { text, classes } = statusMap[status] || { text: status, classes: 'bg-gray-100 text-gray-800' };
-    return <span className={`px-2 py-1 text-xs font-bold rounded-full capitalize ${classes}`}>{text}</span>;
+    return <span className={`px-2 py-1 text-xs font-bold rounded-full capitalize whitespace-nowrap ${classes}`}>{text}</span>;
 };
 
 // Modal Component for Booking Details
@@ -437,17 +437,17 @@ export default function AdminDashboardPage() {
                             <>
                                 {/* Desktop Table View */}
                                 <div className="hidden md:block overflow-x-auto bg-white rounded-lg shadow-lg">
-                                    <table className="w-full text-sm text-left text-gray-700">
+                                    <table className="w-full text-xs text-left text-gray-700">
                                         <thead className="text-xs text-gray-500 uppercase bg-gray-50">
                                             <tr>
-                                                <th scope="col" className="px-6 py-3">Data Evenimentului</th>
-                                                <th scope="col" className="px-6 py-3">Nume Client</th>
-                                                <th scope="col" className="px-6 py-3">Tip Eveniment</th>
-                                                <th scope="col" className="px-6 py-3">Status</th>
-                                                <th scope="col" className="px-6 py-3 text-right">Preț Total</th>
-                                                <th scope="col" className="px-6 py-3 text-right">Avans Plătit</th>
-                                                <th scope="col" className="px-6 py-3 text-right">De Plătit</th>
-                                                <th scope="col" className="px-6 py-3"><span className="sr-only">Actions</span></th>
+                                                <th scope="col" className="px-4 py-2">Data Evenimentului</th>
+                                                <th scope="col" className="px-4 py-2">Nume Client</th>
+                                                <th scope="col" className="px-4 py-2">Tip Eveniment</th>
+                                                <th scope="col" className="px-4 py-2">Status</th>
+                                                <th scope="col" className="px-4 py-2 text-right">Preț Total</th>
+                                                <th scope="col" className="px-4 py-2 text-right">Avans Plătit</th>
+                                                <th scope="col" className="px-4 py-2 text-right">De Plătit</th>
+                                                <th scope="col" className="px-4 py-2"><span className="sr-only">Actions</span></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -456,14 +456,14 @@ export default function AdminDashboardPage() {
 
                                                 return (
                                                 <tr key={booking.id} className="border-b border-gray-200 hover:bg-gray-50">
-                                                    <td className="px-6 py-4 font-medium">{booking.event_date}</td>
-                                                    <td className="px-6 py-4">{booking.name}</td>
-                                                    <td className="px-6 py-4">{booking.event_type}</td>
-                                                    <td className="px-6 py-4"><StatusBadge status={booking.status} /></td>
-                                                    <td className="px-6 py-4 text-right font-mono">{formatNumber(booking.price, booking.currency)}</td>
-                                                    <td className="px-6 py-4 text-right font-mono">{formatNumber(booking.prepayment, booking.currency)}</td>
-                                                    <td className="px-6 py-4 text-right font-mono font-bold">{formatNumber(remaining, booking.currency)}</td>
-                                                    <td className="px-6 py-4 text-right">
+                                                    <td className="px-4 py-3 font-medium">{booking.event_date}</td>
+                                                    <td className="px-4 py-3">{booking.name}</td>
+                                                    <td className="px-4 py-3">{booking.event_type}</td>
+                                                    <td className="px-4 py-3"><StatusBadge status={booking.status} /></td>
+                                                    <td className="px-4 py-3 text-right font-mono">{formatNumber(booking.price, booking.currency)}</td>
+                                                    <td className="px-4 py-3 text-right font-mono">{formatNumber(booking.prepayment, booking.currency)}</td>
+                                                    <td className="px-4 py-3 text-right font-mono font-bold">{formatNumber(remaining, booking.currency)}</td>
+                                                    <td className="px-4 py-3 text-right">
                                                         <button onClick={() => setSelectedBooking(booking)} className="font-medium text-brand-orange hover:underline">Detalii</button>
                                                     </td>
                                                 </tr>
@@ -478,7 +478,7 @@ export default function AdminDashboardPage() {
                                         const remaining = (booking.price || 0) - (booking.prepayment || 0);
                                         
                                         return (
-                                        <div key={booking.id} className="bg-white p-4 rounded-lg shadow">
+                                        <div key={booking.id} className="bg-white p-3 rounded-lg shadow">
                                             <div className="flex justify-between items-start">
                                                 <div>
                                                     <p className="font-bold text-lg text-gray-900">{booking.name}</p>
@@ -487,7 +487,7 @@ export default function AdminDashboardPage() {
                                                 </div>
                                                 <StatusBadge status={booking.status} />
                                             </div>
-                                            <div className="mt-4 pt-4 border-t border-gray-200 grid grid-cols-3 gap-2 text-center text-sm">
+                                            <div className="mt-3 pt-3 border-t border-gray-200 grid grid-cols-3 gap-1 text-center text-sm">
                                                 <div>
                                                     <p className="text-xs text-gray-500">Preț Total</p>
                                                     <p className="font-semibold text-gray-800">{formatNumber(booking.price, booking.currency)}</p>
@@ -501,7 +501,7 @@ export default function AdminDashboardPage() {
                                                     <p className="font-bold text-gray-900">{formatNumber(remaining, booking.currency)}</p>
                                                 </div>
                                             </div>
-                                            <div className="mt-4 text-right">
+                                            <div className="mt-3 text-right">
                                                 <button onClick={() => setSelectedBooking(booking)} className="font-medium text-brand-orange hover:underline">
                                                     Vezi Detalii & Editează
                                                 </button>
