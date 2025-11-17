@@ -89,11 +89,8 @@ const Calendar: React.FC<CalendarProps> = ({
           const isDayInCurrentMonth = isSameMonth(day, monthStart);
           const isDaySelected = selectedDate && isSameDay(day, selectedDate);
           const isDayBeforeMin = isBefore(day, minDate) && !isSameDay(day, minDate);
-          const isDayUnavailable = unavailableDates.some((unavailableDate) =>
-            isSameDay(day, unavailableDate)
-          );
 
-          const isDisabled = isDayBeforeMin || isDayUnavailable;
+          const isDisabled = isDayBeforeMin;
 
           const cellClasses = [
             'w-10 h-10 flex items-center justify-center rounded-full transition-colors duration-200',
