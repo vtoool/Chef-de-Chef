@@ -7,8 +7,8 @@ const Footer: React.FC = () => {
         <p className="font-serif-alt text-lg font-bold mb-2">Ansamblul Chef de Chef</p>
         <p className="text-brand-cream/80 text-sm mb-5">Creăm momente de neuitat prin dans.</p>
         <div className="flex justify-center space-x-5 mb-6">
-            <a href="#" aria-label="Facebook" className="hover:text-brand-gold transition-colors text-sm">Facebook</a>
-            <a href="#" aria-label="Instagram" className="hover:text-brand-gold transition-colors text-sm">Instagram</a>
+            <a href="https://www.facebook.com/ansamblul.chefdechef/" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="hover:text-brand-gold transition-colors text-sm">Facebook</a>
+            <a href="https://instagram.com/ansamblul_chef_de_chef" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:text-brand-gold transition-colors text-sm">Instagram</a>
             <a href="tel:+37312345678" aria-label="Telefon" className="hover:text-brand-gold transition-colors text-sm">Telefon</a>
         </div>
         <div className="text-xs text-brand-cream/60">
