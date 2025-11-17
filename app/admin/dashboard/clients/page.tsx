@@ -332,7 +332,14 @@ export default function ClientsPage() {
                                     <th className="px-6 py-3">Nume</th>
                                     <th className="px-6 py-3">Email-uri</th>
                                     <th className="px-6 py-3">Telefoane</th>
-                                    <th className="px-6 py-3">{isMigrationNeeded ? 'Mesaj Inițial' : 'Notițe'}</th>
+                                    {isMigrationNeeded ? (
+                                        <th className="px-6 py-3">Mesaj Inițial</th>
+                                    ) : (
+                                        <>
+                                            <th className="px-6 py-3">Mesaj Client</th>
+                                            <th className="px-6 py-3">Notițe Admin</th>
+                                        </>
+                                    )}
                                     <th className="px-6 py-3 text-right">Acțiuni</th>
                                 </tr>
                             </thead>
@@ -346,32 +353,22 @@ export default function ClientsPage() {
                                             <td className="px-6 py-4 font-medium align-top">{client.name}</td>
                                             <td className="px-6 py-4 whitespace-pre-wrap max-w-xs align-top">{client.emails.join('\n')}</td>
                                             <td className="px-6 py-4 whitespace-pre-wrap max-w-xs align-top">{client.phones.join('\n')}</td>
-                                            <td className="px-6 py-4 text-xs max-w-sm align-top">
-                                                {isMigrationNeeded ? (
-                                                    <span className="whitespace-pre-wrap">{client.notes_interne || '—'}</span>
-                                                ) : (
-                                                    <>
-                                                        {!clientNoteSnippet && !adminNoteSnippet ? (
-                                                            '—'
-                                                        ) : (
-                                                            <div className="space-y-2">
-                                                                {clientNoteSnippet && (
-                                                                    <div>
-                                                                        <strong className="font-semibold text-gray-500 block">Client:</strong>
-                                                                        <p className="italic pl-1">{clientNoteSnippet}</p>
-                                                                    </div>
-                                                                )}
-                                                                {adminNoteSnippet && (
-                                                                    <div>
-                                                                        <strong className="font-semibold text-gray-500 block">Admin:</strong>
-                                                                        <p className="pl-1">{adminNoteSnippet}</p>
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        )}
-                                                    </>
-                                                )}
-                                            </td>
+                                            
+                                            {isMigrationNeeded ? (
+                                                <td className="px-6 py-4 text-xs max-w-sm align-top">
+                                                    <span className="whitespace-pre-wrap">{getSnippet(client.notes_interne || '') || '—'}</span>
+                                                </td>
+                                            ) : (
+                                                <>
+                                                    <td className="px-6 py-4 text-xs max-w-xs align-top italic text-gray-600">
+                                                        {clientNoteSnippet || '—'}
+                                                    </td>
+                                                    <td className="px-6 py-4 text-xs max-w-xs align-top">
+                                                        {adminNoteSnippet || '—'}
+                                                    </td>
+                                                </>
+                                            )}
+
                                             <td className="px-6 py-4 text-right space-x-3 align-top">
                                                 <button onClick={() => setSelectedClient(client)} disabled={isMigrationNeeded} className="font-medium text-brand-orange hover:underline disabled:opacity-50 disabled:cursor-not-allowed">Editează</button>
                                                 <button onClick={() => handleDeleteClient(client.id)} disabled={isMigrationNeeded} className="font-medium text-red-600 hover:underline disabled:opacity-50 disabled:cursor-not-allowed">Șterge</button>
