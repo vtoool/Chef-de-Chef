@@ -1,12 +1,11 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-// FIX: Changed date-fns import to submodule path.
 import { format } from 'date-fns/format';
 import { ro } from 'date-fns/locale/ro';
-import { supabase, isSupabaseConfigured } from '../lib/supabaseClient';
 import { Booking } from '../types';
-import Calendar from './Calendar'; // Import the new component
+import { submitToWeb3Forms } from '../lib/web3forms';
+import Calendar from './Calendar';
 
 // --- New Confirmation and Confetti Components ---
 
@@ -70,31 +69,6 @@ const BookingComponent: React.FC = () => {
       notes: ''
   });
 
-  const fetchUnavailableDates = useCallback(async () => {
-    if (!supabase) {
-      console.warn('Supabase client not available. Cannot fetch unavailable dates.');
-      return;
-    }
-
-    const { data, error } = await supabase
-      .from('public_booking_dates')
-      .select('event_date');
-
-    if (error) {
-      console.error('Error fetching unavailable dates:', error);
-      return;
-    }
-    
-    const dates = data.map(b => new Date(b.event_date + 'T00:00:00Z')); 
-    setUnavailableDates(dates);
-  }, []);
-
-  useEffect(() => {
-    if (isSupabaseConfigured) {
-      fetchUnavailableDates();
-    }
-  }, [fetchUnavailableDates]);
-
   useEffect(() => {
     if (isSubmitted && bookingSectionRef.current) {
       bookingSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -120,27 +94,22 @@ const BookingComponent: React.FC = () => {
     setIsLoading(true);
     setFormError('');
 
-    const newBooking: Booking = {
-      event_date: format(selectedDate, 'yyyy-MM-dd'),
-      event_type: formData.eventType,
-      location: formData.location,
+    const bookingData = {
       name: formData.name,
       email: formData.email,
       phone: formData.phone,
+      event_type: formData.eventType,
+      event_date: format(selectedDate, 'yyyy-MM-dd'),
+      location: formData.location,
       notes: formData.notes,
-      status: 'pending',
     };
     
     try {
-      const response = await fetch('/api/bookings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newBooking),
-      });
-
-      if (!response.ok) throw new Error('Network response was not ok');
+      const result = await submitToWeb3Forms(bookingData);
       
-      setIsSubmitted(true); // Trigger the confirmation view
+      if (!result.success) throw new Error('Submission failed');
+      
+      setIsSubmitted(true);
 
     } catch (error) {
       setFormError('A apărut o eroare. Vă rugăm să încercați din nou.');
@@ -167,30 +136,22 @@ const BookingComponent: React.FC = () => {
                 <div className="grid lg:grid-cols-2 gap-10 bg-brand-cream p-6 md:p-8 rounded-lg shadow-lg">
                 <div className="flex flex-col items-center">
                     <h3 className="font-serif text-xl font-bold text-brand-brown-dark mb-4">1. Alegeți data evenimentului</h3>
-                    {isSupabaseConfigured ? (
-                        <Calendar 
-                        selectedDate={selectedDate}
-                        onDateSelect={handleDateSelect}
-                        unavailableDates={unavailableDates}
-                        minDate={minDate}
-                        />
-                    ) : (
-                        <div className="w-full max-w-sm p-4 text-center bg-white/50 rounded-lg">
-                        <p className="text-brand-brown-light/80">
-                            Calendarul este inactiv în modul de previzualizare deoarece cheile Supabase nu sunt configurate.
-                        </p>
-                        </div>
-                    )}
+                    <Calendar 
+                      selectedDate={selectedDate}
+                      onDateSelect={handleDateSelect}
+                      unavailableDates={unavailableDates}
+                      minDate={minDate}
+                    />
                 </div>
                 <div className="flex flex-col justify-center">
                     {selectedDate ? (
                     <form onSubmit={handleSubmit}>
                         <h3 className="font-serif text-lg font-bold mb-4">2. Completați detaliile pentru: <br className="sm:hidden"/><span className="text-brand-orange">{format(selectedDate, 'd MMMM yyyy', { locale: ro })}</span></h3>
                         <div className="grid sm:grid-cols-2 gap-3 mb-3">
-                        <input type="text" name="name" placeholder="Numele Dvs." required value={formData.name} onChange={handleInputChange} disabled={!isSupabaseConfigured} className="w-full p-2 bg-white text-brand-brown-dark border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange disabled:opacity-50"/>
-                        <input type="email" name="email" placeholder="Email" required value={formData.email} onChange={handleInputChange} disabled={!isSupabaseConfigured} className="w-full p-2 bg-white text-brand-brown-dark border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange disabled:opacity-50"/>
-                        <input type="tel" name="phone" placeholder="Telefon" required value={formData.phone} onChange={handleInputChange} disabled={!isSupabaseConfigured} className="w-full p-2 bg-white text-brand-brown-dark border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange disabled:opacity-50"/>
-                        <select name="eventType" value={formData.eventType} onChange={handleInputChange} disabled={!isSupabaseConfigured} className="w-full p-2 bg-white text-brand-brown-dark border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange disabled:opacity-50">
+                        <input type="text" name="name" placeholder="Numele Dvs." required value={formData.name} onChange={handleInputChange} className="w-full p-2 bg-white text-brand-brown-dark border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
+                        <input type="email" name="email" placeholder="Email" required value={formData.email} onChange={handleInputChange} className="w-full p-2 bg-white text-brand-brown-dark border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
+                        <input type="tel" name="phone" placeholder="Telefon" required value={formData.phone} onChange={handleInputChange} className="w-full p-2 bg-white text-brand-brown-dark border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"/>
+                        <select name="eventType" value={formData.eventType} onChange={handleInputChange} className="w-full p-2 bg-white text-brand-brown-dark border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange">
                             <option>Nuntă</option>
                             <option>Cumătrie</option>
                             <option>Petrecere</option>
@@ -198,9 +159,9 @@ const BookingComponent: React.FC = () => {
                             <option>Altul</option>
                         </select>
                         </div>
-                        <input type="text" name="location" placeholder="Locația Evenimentului (Oraș)" required value={formData.location} onChange={handleInputChange} disabled={!isSupabaseConfigured} className="w-full p-2 bg-white text-brand-brown-dark border border-gray-300 rounded-md mb-3 focus:ring-brand-orange focus:border-brand-orange disabled:opacity-50"/>
-                        <textarea name="notes" placeholder="Detalii Suplimentare" rows={2} value={formData.notes} onChange={handleInputChange} disabled={!isSupabaseConfigured} className="w-full p-2 bg-white text-brand-brown-dark border border-gray-300 rounded-md mb-4 focus:ring-brand-orange focus:border-brand-orange disabled:opacity-50"></textarea>
-                        <button type="submit" disabled={isLoading || !isSupabaseConfigured} className="w-full bg-chef-gradient text-white font-bold py-2 px-6 rounded-full shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-50">
+                        <input type="text" name="location" placeholder="Locația Evenimentului (Oraș)" required value={formData.location} onChange={handleInputChange} className="w-full p-2 bg-white text-brand-brown-dark border border-gray-300 rounded-md mb-3 focus:ring-brand-orange focus:border-brand-orange"/>
+                        <textarea name="notes" placeholder="Detalii Suplimentare" rows={2} value={formData.notes} onChange={handleInputChange} className="w-full p-2 bg-white text-brand-brown-dark border border-gray-300 rounded-md mb-4 focus:ring-brand-orange focus:border-brand-orange"></textarea>
+                        <button type="submit" disabled={isLoading} className="w-full bg-chef-gradient text-white font-bold py-2 px-6 rounded-full shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-50">
                         {isLoading ? 'Se trimite...' : 'Trimite Cererea'}
                         </button>
                     </form>

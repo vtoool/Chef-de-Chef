@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '../../../lib/supabaseClient';
-import { Resend } from 'resend';
 import { Booking } from '../../../types';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY ? require('resend') : null;
 const fromEmail = process.env.FROM_EMAIL;
 const adminEmail = process.env.ADMIN_EMAIL;
+const resendClient = resend ? new resend.Resend(process.env.RESEND_API_KEY) : null;
 
 // --- STYLED EMAIL TEMPLATES ---
 
@@ -106,16 +106,14 @@ export async function POST(request: Request) {
   }
 
   // 3. Send emails via Resend
-  if (!fromEmail || !adminEmail || !process.env.RESEND_API_KEY) {
-    console.error('Configurația de email lipsește din variabilele de mediu.');
-    // Still return success to the user as the booking was saved.
-    // The admin will need to check the DB manually.
-    return NextResponse.json({ message: 'Rezervare reușită, dar configurarea notificării prin email a eșuat.' }, { status: 201 });
+  if (!resendClient || !fromEmail || !adminEmail) {
+    console.warn('Email configuration missing. Email not sent.');
+    return NextResponse.json({ message: 'Rezervare reușită, dar notificarea prin email nu a fost trimisă.' }, { status: 201 });
   }
 
   try {
     // Email to customer
-    await resend.emails.send({
+    await resendClient.emails.send({
       from: `Chef de Chef <${fromEmail}>`,
       to: booking.email,
       subject: 'Cererea de rezervare a fost primită!',
@@ -123,7 +121,7 @@ export async function POST(request: Request) {
     });
 
     // Email to admin
-    await resend.emails.send({
+    await resendClient.emails.send({
       from: `Notificare Site <${fromEmail}>`,
       to: adminEmail,
       subject: `Cerere nouă de rezervare pentru ${booking.event_date}`,

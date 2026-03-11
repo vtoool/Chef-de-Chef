@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ContactMessage } from '../types';
-import { isSupabaseConfigured } from '../lib/supabaseClient';
+import { submitToWeb3Forms } from '../lib/web3forms';
 
 const Contact: React.FC = () => {
     const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
@@ -19,19 +18,15 @@ const Contact: React.FC = () => {
         setIsLoading(true);
         setFormStatus({ type: 'idle', message: '' });
 
-        const newContactMessage: ContactMessage = { ...formData };
-
         try {
-            const response = await fetch('/api/contact', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(newContactMessage),
+            const result = await submitToWeb3Forms({
+                name: formData.name,
+                email: formData.email,
+                phone: formData.phone,
+                message: formData.message,
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Network response was not ok');
-            }
+            if (!result.success) throw new Error('Submission failed');
 
             setFormStatus({ type: 'success', message: 'Mesaj trimis! Vă mulțumim.' });
             setFormData({ name: '', email: '', phone: '', message: '' });
@@ -147,15 +142,10 @@ const Contact: React.FC = () => {
                     </div>
                     <input type="tel" name="phone" placeholder="Telefon" required value={formData.phone} onChange={handleInputChange} className="w-full p-2 bg-white text-brand-brown-dark border border-gray-300 rounded-md mb-3 focus:ring-brand-orange focus:border-brand-orange"/>
                     <textarea name="message" placeholder="Mesajul Dvs." rows={3} required value={formData.message} onChange={handleInputChange} className="w-full p-2 bg-white text-brand-brown-dark border border-gray-300 rounded-md mb-4 focus:ring-brand-orange focus:border-brand-orange"></textarea>
-                    <button type="submit" disabled={isLoading || !isSupabaseConfigured} className="w-full bg-chef-gradient text-white font-bold py-2 px-6 rounded-full shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-50">
+                    <button type="submit" disabled={isLoading} className="w-full bg-chef-gradient text-white font-bold py-2 px-6 rounded-full shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-50">
                         {isLoading ? 'Se trimite...' : 'Trimite Mesajul'}
                     </button>
                 </form>
-                {!isSupabaseConfigured && (
-                    <p className="mt-3 text-xs text-center text-brand-brown-light">
-                        Formularul este inactiv în modul de previzualizare.
-                    </p>
-                )}
                 {formStatus.message && (
                     <div className={`mt-3 p-2 rounded-md text-center text-sm ${formStatus.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                         {formStatus.message}

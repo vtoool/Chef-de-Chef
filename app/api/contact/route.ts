@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '../../../lib/supabaseClient';
-import { Resend } from 'resend';
 import { ContactMessage } from '../../../types';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY ? require('resend') : null;
 const fromEmail = process.env.FROM_EMAIL;
 const adminEmail = process.env.ADMIN_EMAIL;
+const resendClient = resend ? new resend.Resend(process.env.RESEND_API_KEY) : null;
 
 export async function POST(request: Request) {
   if (!supabase) {
@@ -41,13 +41,13 @@ export async function POST(request: Request) {
 
 
   // 3. Send email via Resend
-   if (!fromEmail || !adminEmail || !process.env.RESEND_API_KEY) {
-    console.error('Configurația de email lipsește din variabilele de mediu.');
-    return NextResponse.json({ message: 'Mesaj trimis, dar configurarea notificării prin email a eșuat.' }, { status: 201 });
+   if (!resendClient || !fromEmail || !adminEmail) {
+    console.warn('Email configuration missing. Email not sent.');
+    return NextResponse.json({ message: 'Mesaj trimis, dar notificarea prin email nu a fost trimisă.' }, { status: 201 });
   }
 
   try {
-    await resend.emails.send({
+    await resendClient.emails.send({
       from: `Notificare Site <${fromEmail}>`,
       to: adminEmail,
       subject: `Mesaj nou de la ${message.name}`,
