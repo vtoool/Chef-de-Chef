@@ -14,7 +14,11 @@ const Footer: React.FC = () => {
         <div className="text-xs text-brand-cream/60">
             &copy; {new Date().getFullYear()} Ansamblul Chef de Chef. Toate drepturile rezervate.
         </div>
-        <div className="mt-4">
+        <div className="mt-4 flex justify-center gap-4">
+            <a href="/admin" className="text-xs text-brand-cream/40 hover:text-brand-cream/80 transition-colors">
+                Admin
+            </a>
+            <span className="text-brand-cream/20">|</span>
             <a href="/admin/demo" className="text-xs text-brand-cream/40 hover:text-brand-cream/80 transition-colors">
                 Admin Demo
             </a>
