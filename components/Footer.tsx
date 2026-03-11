@@ -15,8 +15,8 @@ const Footer: React.FC = () => {
             &copy; {new Date().getFullYear()} Ansamblul Chef de Chef. Toate drepturile rezervate.
         </div>
         <div className="mt-4">
-            <a href="/admin" className="text-xs text-brand-cream/40 hover:text-brand-cream/80 transition-colors">
-                Admin
+            <a href="/admin/demo" className="text-xs text-brand-cream/40 hover:text-brand-cream/80 transition-colors">
+                Admin Demo
             </a>
         </div>
       </div>

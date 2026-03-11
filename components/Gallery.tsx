@@ -3,13 +3,12 @@
 import React from 'react';
 import { MediaAsset } from '../types';
 
-// Dummy data, to be replaced by data from Supabase
 const galleryItems: MediaAsset[] = Array.from({ length: 8 }).map((_, i) => ({
   id: `${i + 1}`,
   created_at: new Date().toISOString(),
   type: 'image',
-  url: `https://picsum.photos/seed/${i + 1}/600/400`,
-  thumbnail_url: `https://picsum.photos/seed/${i + 1}/300/200`,
+  url: `/images/gallery-${i + 1}.webp`,
+  thumbnail_url: `/images/gallery-${i + 1}.webp`,
   description: `Imagine din galerie ${i + 1}`,
 }));
 
