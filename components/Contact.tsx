@@ -69,7 +69,7 @@ const Contact: React.FC = () => {
                         </div>
                     </a>
                     {/* Email */}
-                    <a href="mailto:contact@chefdechef.md" className="flex items-center space-x-4 group">
+                    <a href="mailto:teslarutynka@gmail.com" className="flex items-center space-x-4 group">
                          <div className="flex-shrink-0 w-12 h-12 bg-brand-orange/10 rounded-full flex items-center justify-center transition-colors group-hover:bg-brand-orange/20">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-brand-orange" viewBox="0 0 20 20" fill="currentColor">
                                 <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
@@ -78,7 +78,7 @@ const Contact: React.FC = () => {
                         </div>
                         <div className="min-w-0">
                             <span className="font-bold text-brand-brown-dark block text-sm whitespace-nowrap">Trimiteți Email</span>
-                            <span className="text-brand-brown-light group-hover:text-brand-orange group-hover:underline transition-colors text-md truncate">contact@chefdechef.md</span>
+                            <span className="text-brand-brown-light group-hover:text-brand-orange group-hover:underline transition-colors text-md truncate">teslarutynka@gmail.com</span>
                         </div>
                     </a>
                     {/* Facebook */}
